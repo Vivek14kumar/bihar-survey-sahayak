@@ -86,6 +86,14 @@ export default function Navbar() {
           </Link>
 
           <Link
+            href="/paper-format"
+            onClick={() => setOpen(false)}
+            className="block"
+          >
+            Prapatra (Format) and Forms
+          </Link>
+
+          <Link
             href="/privacy"
             onClick={() => setOpen(false)}
             className="block"
