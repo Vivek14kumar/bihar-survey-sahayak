@@ -1,6 +1,7 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import VisitTracker from "@/components/VisitTracker";
+import Script from "next/script";
 
 export const metadata = {
   title: "Bihar Land Survey Helper | Vanshavali Maker 2026",
@@ -15,6 +16,11 @@ export default function RootLayout({ children }) {
     <html lang="hi">
       <body className="bg-slate-50 text-slate-900 antialiased">
 
+        <Script
+          src="https://www.google.com/inputtools/request?itc=hi-t-i0-und&num=1"
+          strategy="beforeInteractive"
+        />
+        
         {/* 🔥 TRACK VISIT */}
         <VisitTracker />
 

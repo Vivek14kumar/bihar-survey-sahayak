@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ReactTransliterate } from "react-transliterate";
-import "react-transliterate/dist/index.css";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Plus,
   Trash2,
   FileDown,
-  Info,
   Users,
   UserPlus,
   List,
@@ -23,11 +20,106 @@ export default function Vanshavali() {
   const [parent, setParent] = useState("");
   const [relation, setRelation] = useState("स्वयं");
 
-  const trackVanshawaliDownload = async () => {
-  await fetch("/api/track-vanshawali", {
-    method: "POST",
-  });
-};
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [currentField, setCurrentField] = useState(null);
+
+  const debounceRef = useRef(null);
+  const cacheRef = useRef({});
+
+  /* ---------------- GOOGLE API (DEBOUNCED + CACHED) ---------------- */
+
+  const fetchSuggestions = async (word) => {
+    if (!word) return;
+
+    // Check cache first
+    if (cacheRef.current[word]) {
+      setSuggestions(cacheRef.current[word]);
+      setActiveIndex(0);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://inputtools.google.com/request?text=${word}&itc=hi-t-i0-und&num=5`
+      );
+      const data = await res.json();
+
+      if (data[0] === "SUCCESS") {
+        const result = data[1][0][1];
+        cacheRef.current[word] = result; // Save to cache
+        setSuggestions(result);
+        setActiveIndex(0);
+      }
+    } catch {
+      setSuggestions([]);
+    }
+  };
+
+  const debounceFetch = (word) => {
+    clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      fetchSuggestions(word);
+    }, 300); // 300ms debounce
+  };
+
+  /* ---------------- INPUT HANDLING ---------------- */
+
+  const handleInputChange = (value, setter) => {
+    setter(value);
+
+    const words = value.split(" ");
+    const lastWord = words[words.length - 1];
+
+    if (lastWord.trim()) {
+      debounceFetch(lastWord);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const selectSuggestion = (selectedWord) => {
+    const setter = currentField === "name" ? setName : setParent;
+    const value = currentField === "name" ? name : parent;
+
+    const words = value.split(" ");
+    words[words.length - 1] = selectedWord;
+
+    setter(words.join(" ") + " ");
+    setSuggestions([]);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!suggestions.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      );
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    }
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+      selectSuggestion(suggestions[activeIndex]);
+    }
+
+    // SPACE selects first suggestion automatically
+    if (e.key === " ") {
+      if (suggestions.length > 0) {
+        e.preventDefault();
+        selectSuggestion(suggestions[0]);
+      }
+    }
+  };
+
+  /* ---------------- STORAGE ---------------- */
 
   useEffect(() => {
     const saved = localStorage.getItem("survey_data");
@@ -38,8 +130,14 @@ export default function Vanshavali() {
     localStorage.setItem("survey_data", JSON.stringify(members));
   }, [members]);
 
+  const trackVanshawaliDownload = async () => {
+    await fetch("/api/track-vanshawali", { method: "POST" });
+  };
+
+  /* ---------------- ADD MEMBER ---------------- */
+
   const handleAddMember = () => {
-    if (!name) {
+    if (!name.trim()) {
       alert("नाम आवश्यक है");
       return;
     }
@@ -62,16 +160,12 @@ export default function Vanshavali() {
     setRelation("पुत्र");
   };
 
+  /* ---------------- TREE ---------------- */
+
   const buildTree = () => {
     const map = {};
-
     members.forEach((m) => {
-      map[m.name] = {
-        ...m,
-        children: [],
-        spouse: null,
-        father: null,
-      };
+      map[m.name] = { ...m, children: [], spouse: null };
     });
 
     let root = null;
@@ -86,13 +180,7 @@ export default function Vanshavali() {
       if (!parentNode) return;
 
       if (m.relation === "पत्नी") {
-        parentNode.spouse = {
-          name: m.name,
-          relation: "पत्नी",
-        };
-      } else if (m.relation === "स्वयं") {
-        map[m.name].father = m.parent;
-        root = map[m.name];
+        parentNode.spouse = { name: m.name };
       } else {
         parentNode.children.push(map[m.name]);
       }
@@ -102,6 +190,39 @@ export default function Vanshavali() {
   };
 
   const treeData = buildTree();
+
+  /* ---------------- UI ---------------- */
+
+  const renderInput = (value, setter, fieldName, placeholder) => (
+    <div className="relative">
+      <input
+        value={value}
+        onFocus={() => setCurrentField(fieldName)}
+        onChange={(e) => handleInputChange(e.target.value, setter)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        className="p-3 rounded-xl border w-full"
+      />
+
+      {currentField === fieldName && suggestions.length > 0 && (
+        <div className="absolute bg-white border rounded-xl mt-1 w-full shadow-lg z-50 max-h-48 overflow-auto">
+          {suggestions.map((s, i) => (
+            <div
+              key={i}
+              onClick={() => selectSuggestion(s)}
+              className={`px-3 py-2 cursor-pointer ${
+                i === activeIndex
+                  ? "bg-indigo-100"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {s}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-emerald-50 py-6 px-4 rounded-xl">
@@ -115,25 +236,9 @@ export default function Vanshavali() {
               बिहार भूमि सर्वेक्षण वंशावली
             </h1>
           </div>
-          <p className="text-sm mt-2 opacity-90">
-            परिवार के सदस्यों की जानकारी जोड़ें और PDF तैयार करें
-          </p>
         </div>
 
-        {/* GUIDE */}
-        <div className="bg-white shadow-md border border-indigo-100 p-5 rounded-2xl mb-6">
-          <div className="flex items-center gap-2 text-indigo-700 font-semibold mb-2">
-            <Info size={18} />
-            कैसे भरें
-          </div>
-          <ol className="text-sm text-gray-600 list-decimal pl-5 space-y-1">
-            <li>सबसे पहले परिवार के मूल व्यक्ति का नाम जोड़ें</li>
-            <li>फिर उनके पुत्र / पुत्री जोड़ें</li>
-            <li>पत्नी जोड़ते समय पति का नाम लिखें</li>
-          </ol>
-        </div>
-
-        {/* FORM CARD */}
+        {/* FORM */}
         <div className="bg-white shadow-xl rounded-3xl p-6 mb-8">
           <div className="flex items-center gap-2 mb-4 text-emerald-600 font-semibold">
             <UserPlus size={20} />
@@ -142,122 +247,56 @@ export default function Vanshavali() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-            <ReactTransliterate
-              value={name}
-              onChangeText={setName}
-              lang="hi"
-              placeholder="नाम लिखें"
-              className="p-3 rounded-xl border focus:ring-2 focus:ring-indigo-400 outline-none"
-            />
+            {renderInput(name, setName, "name", "नाम लिखें")}
 
             <select
               value={relation}
               onChange={(e) => setRelation(e.target.value)}
-              className="p-3 rounded-xl border focus:ring-2 focus:ring-indigo-400"
+              className="p-3 rounded-xl border"
             >
               {RELATIONS.map((r) => (
                 <option key={r}>{r}</option>
               ))}
             </select>
 
-            <ReactTransliterate
-              value={parent}
-              onChangeText={setParent}
-              lang="hi"
-              placeholder={
-                members.length === 0
-                  ? "पहला व्यक्ति"
-                  : relation === "पत्नी"
-                  ? "पति का नाम"
-                  : "पिता का नाम"
-              }
-              className="p-3 rounded-xl border focus:ring-2 focus:ring-indigo-400"
-            />
+            {renderInput(
+              parent,
+              setParent,
+              "parent",
+              "पिता / पति का नाम"
+            )}
 
             <button
               onClick={handleAddMember}
-              className="bg-gradient-to-r from-indigo-600 to-emerald-600 hover:opacity-90 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg"
+              className="bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold rounded-xl flex items-center justify-center gap-2"
             >
               <Plus size={18} /> जोड़ें
             </button>
           </div>
         </div>
 
-        {/* MEMBER LIST */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4 text-indigo-700 font-semibold">
-            <List size={20} />
-            जोड़े गए सदस्य
-          </div>
-
-          {members.length === 0 ? (
-            <div className="text-center text-gray-500 bg-white p-8 rounded-2xl shadow">
-              अभी कोई सदस्य नहीं जोड़ा गया है
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {members.map((m, i) => (
-                <div
-                  key={m.id}
-                  className="flex flex-col md:flex-row md:justify-between md:items-center bg-white p-4 rounded-2xl shadow-sm border"
-                >
-                  <div>
-                    <p className="font-semibold">
-                      {i + 1}. {m.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {m.parent
-                        ? relation === "पत्नी"
-                          ? `पति: ${m.parent}`
-                          : `पिता: ${m.parent}`
-                        : "मूल व्यक्ति"}{" "}
-                      | {m.relation}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      setMembers(members.filter((x) => x.id !== m.id))
-                    }
-                    className="mt-3 md:mt-0 text-red-600 bg-red-50 p-2 rounded-full hover:bg-red-100"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* PDF SECTION */}
+        {/* PDF */}
         {treeData && (
           <div className="bg-white p-6 rounded-3xl shadow-xl">
-            <div className="flex items-center gap-2 text-indigo-700 font-semibold mb-4">
-              <FileDown size={20} />
-              PDF Preview
-            </div>
-
-            <div className="border rounded-xl overflow-hidden mb-6">
-              <PDFViewer width="100%" height={400}>
-                <AutoFamilyTreePDF data={treeData} />
-              </PDFViewer>
-            </div>
+            <PDFViewer width="100%" height={400}>
+              <AutoFamilyTreePDF data={treeData} />
+            </PDFViewer>
 
             <PDFDownloadLink
-  document={<AutoFamilyTreePDF data={treeData} />}
-  fileName="bihar_vanshavali.pdf"
->
-  {({ loading }) => (
-    <button
-      onClick={trackVanshawaliDownload}
-      className="w-full bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold p-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg"
-    >
-      <FileDown size={18} />
-      {loading ? "PDF तैयार हो रहा है..." : "PDF डाउनलोड करें"}
-    </button>
-  )}
-</PDFDownloadLink>
-
+              document={<AutoFamilyTreePDF data={treeData} />}
+              fileName="bihar_vanshavali.pdf"
+            >
+              {({ loading }) => (
+                <button
+                  onClick={trackVanshawaliDownload}
+                  className="w-full mt-4 bg-indigo-600 text-white p-4 rounded-xl"
+                >
+                  {loading
+                    ? "PDF तैयार हो रहा है..."
+                    : "PDF डाउनलोड करें"}
+                </button>
+              )}
+            </PDFDownloadLink>
           </div>
         )}
       </div>
