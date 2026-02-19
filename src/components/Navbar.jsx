@@ -41,7 +41,7 @@ export default function Navbar() {
             होम / Home
           </Link>
           
-          <Link href="/paper-format" className="hover:text-indigo-600 transition">
+          <Link href="/pdf" className="hover:text-indigo-600 transition">
             Prapatra (Format) and Forms
           </Link>
 
@@ -86,7 +86,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/paper-format"
+            href="/pdf"
             onClick={() => setOpen(false)}
             className="block"
           >
