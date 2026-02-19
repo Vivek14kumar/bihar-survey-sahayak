@@ -2,6 +2,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import VisitTracker from "@/components/VisitTracker";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata = {
   title: "Bihar Land Survey Helper | Vanshavali Maker 2026",
@@ -27,6 +28,8 @@ export default function RootLayout({ children }) {
         {/* ✅ NEW MODERN NAVBAR */}
         <Navbar />
 
+        <Analytics/>
+        
         {/* PAGE CONTENT */}
         <main className="min-h-screen">
           {children}
