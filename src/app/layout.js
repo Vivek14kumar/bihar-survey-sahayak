@@ -108,7 +108,17 @@ export default function RootLayout({ children }) {
 
           {/* Bottom Bar */}
           <div className="border-t border-slate-800 text-center text-xs text-slate-500 py-6">
-            © {new Date().getFullYear()} Bihar Survey Sahayak — Private Technical Tool
+            © {new Date().getFullYear()} Bihar Survey Sahayak — Private Technical Tool  <br></br>
+            <span className="block sm:inline">
+            Designed &amp; Maintained by{" "}
+            <a
+              href="mailto:viktechz@example.com"
+              className="text-blue-500 hover:text-blue-600 font-semibold"
+              aria-label="Email VIKTECHZ"
+            >
+              VIK-TECHZ
+            </a>
+          </span>
           </div>
         </footer>
 
