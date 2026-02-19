@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 
 export default function MobilePopup() {
   const [isMobile, setIsMobile] = useState(false);
-  const [showPopup, setShowPopup] = useState(true);
+  const [showPopup, setShowPopup] = useState(false); // start hidden
 
   useEffect(() => {
     const checkMobile = () => {
@@ -15,8 +15,17 @@ export default function MobilePopup() {
 
     checkMobile();
     window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+
+    // Show popup after 2 seconds
+    const timer = setTimeout(() => {
+      if (isMobile) setShowPopup(true);
+    }, 2000);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+      clearTimeout(timer);
+    };
+  }, [isMobile]);
 
   if (!isMobile || !showPopup) return null;
 
