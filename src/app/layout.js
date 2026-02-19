@@ -98,6 +98,14 @@ export default function RootLayout({ children }) {
                 </li>
                 <li>
                   <a
+                    href="/feedback"
+                    className="hover:text-white transition"
+                  >
+                    Feedback
+                  </a>
+                </li>
+                <li>
+                  <a
                     href="/faq"
                     className="hover:text-white transition"
                   >
