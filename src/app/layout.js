@@ -114,7 +114,7 @@ export default function RootLayout({ children }) {
             <span className="block sm:inline">
             Designed &amp; Maintained by{" "}
             <a
-              href="mailto:viktechz@example.com"
+              href="mailto:viktechzweb@gmail.com"
               className="text-blue-500 hover:text-blue-600 font-semibold"
               aria-label="Email VIKTECHZ"
             >
