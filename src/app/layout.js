@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import VisitTracker from "@/components/VisitTracker";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
+import MobilePopup from "@/components/MobilePopup";
 
 export const metadata = {
   title: "वंशावली निर्माण ऑनलाइन | Bihar Land Survey Helper | Vanshavali Maker 2026",
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
         {/* PAGE CONTENT */}
         <main className="min-h-screen">
           {children}
+          <MobilePopup /> {/* Pop-up will appear only on mobile */}
         </main>
 
         {/* FOOTER */}
