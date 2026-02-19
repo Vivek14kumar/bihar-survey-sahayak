@@ -5,7 +5,7 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
 
 export const metadata = {
-  title: "Bihar Land Survey Helper | Vanshavali Maker 2026",
+  title: "वंशावली निर्माण ऑनलाइन | Bihar Land Survey Helper | Vanshavali Maker 2026",
   description:
     "Prepare your Vanshavali safely for Bihar Land Survey 2026. Generate official format PDF instantly without login.",
   keywords:
