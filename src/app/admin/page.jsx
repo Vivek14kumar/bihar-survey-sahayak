@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Eye, Users, Calendar, FileText, Download, Activity, Mail } from "lucide-react";
+import { Eye, Users, Calendar, FileText, Download, Activity, Mail, Printer } from "lucide-react";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -10,6 +10,7 @@ export default function AdminDashboard() {
     vanshawaliCreated: 0,
     totalPreview: 0,
     totalDownload: 0,
+    prapatra2Printed: 0,
     pdfData: [],
   });
 
@@ -46,6 +47,7 @@ export default function AdminDashboard() {
         <StatCard title="Vanshawali Created" value={stats.vanshawaliCreated} icon={<FileText size={28} />} gradient="from-purple-500 to-purple-700" />
         <StatCard title="Total PDF Preview" value={stats.totalPreview} icon={<Activity size={28} />} gradient="from-pink-500 to-rose-500" />
         <StatCard title="Total PDF Downloads" value={stats.totalDownload} icon={<Download size={28} />} gradient="from-red-500 to-red-700" />
+        <StatCard title="Prapatra-2 Printed" value={stats.prapatra2Printed} icon={<Printer size={28} />} gradient="from-orange-500 to-red-600"/>
       </div>
 
       {/* PDF TABLE */}

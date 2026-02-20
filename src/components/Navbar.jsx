@@ -22,6 +22,7 @@ export default function Navbar() {
     { name: "होम", href: "/", icon: <Home size={20} /> },
     { name: "वंशावली", href: "/#tool", icon: <Users size={20} /> },
     { name: "Prapatra", href: "/pdf", icon: <FileText size={20} /> },
+    { name: "Prapatra-2", href: "/prapatra-2", icon: <FileText size={20} /> },
     { name: "Privacy", href: "/privacy-policy", icon: <ShieldCheck size={20} /> },
     { name: "Terms", href: "/terms-and-conditions", icon: <FileWarning size={20} /> },
   ];
@@ -49,10 +50,12 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <nav className="flex items-center gap-8 text-sm font-medium text-slate-700">
             <Link href="/" className="hover:text-indigo-600 transition">होम / Home</Link>
+            <Link href="/prapatra-2" className="hover:text-indigo-600 transition">Prapatra-2 भरे </Link>
             <Link href="/pdf" className="hover:text-indigo-600 transition">Prapatra (Format) and Forms</Link>
             <Link href="/privacy-policy" className="hover:text-indigo-600 transition">Privacy</Link>
             <Link href="/terms-and-conditions" className="hover:text-indigo-600 transition">Terms</Link>
             <Link href="/disclaimer" className="hover:text-indigo-600 transition">Disclaimer</Link>
+            <Link href="/feedback" className="hover:text-indigo-600 transition">Contact</Link>
             <Link
               href="/#tool"
               className="bg-indigo-600 text-white px-5 py-2 rounded-xl hover:bg-indigo-700 transition shadow-md"
