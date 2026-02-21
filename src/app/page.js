@@ -34,7 +34,7 @@ export default function Home() {
           </p>
           
           {/* CTA */}
-          <div className="mt-8 sm:mt-10 flex flex-col items-center gap-4">
+          <div className="mt-8 sm:mt-10 grid grid-cols-2 items-center gap-4">
             <a
               href="#tool"
               className="inline-block bg-gradient-to-r from-emerald-400 to-green-500 text-white font-semibold
@@ -42,11 +42,18 @@ export default function Home() {
             >
               अभी वंशावली बनाएं
             </a>
-
-            <p className="text-xs sm:text-xs font-bold text-white border border-black rounded p-1 bg-black max-w-[100%] text-center">
+            
+            <a
+              href="/prapatra-2"
+              className="inline-block bg-gradient-to-r from-emerald-400 to-fuchsia-500 text-white font-semibold
+              px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-300"
+            >
+              अभी प्रपत्र-2 भरे
+            </a>
+          </div>
+          <p className=" mt-4 text-xs sm:text-xs font-bold text-white border border-black rounded p-1 bg-black max-w-[100%] text-center">
               यह एक निजी नागरिक सहायता टूल है। यह कोई सरकारी वेबसाइट नहीं है। उपयोगकर्ता सभी विवरण अपने स्थानीय सर्वे शिविर (अमीन / पर्यवेक्षक) से सत्यापित करें।
             </p>
-          </div>
         </motion.div>
       </section>
 

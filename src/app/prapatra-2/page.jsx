@@ -25,7 +25,7 @@ export default function LandscapePage() {
       anchal: "",
       district: "",
       // Table Fields
-      ryotName: "",
+      ryotDetails: [{ name: "", fatherName: "" }], // Changed from ryotName: ""
       address: "",
       jamabandi: "",
       claimBasis: "",
@@ -40,6 +40,47 @@ export default function LandscapePage() {
       ]
     }
   ]);
+
+  const addShareholder = (entryId) => {
+  const entry = entries.find(e => e.id === entryId);
+  // Limit to 4 shareholders
+  if (entry.ryotDetails.length < 4) {
+    setEntries(prev => prev.map(e => 
+      e.id === entryId 
+        ? { ...e, ryotDetails: [...e.ryotDetails, { name: "", fatherName: "" }] }
+        : e
+    ));
+  }
+};
+
+const removeShareholder = (entryId, index) => {
+  setEntries(prev => prev.map(e => {
+    if (e.id === entryId && e.ryotDetails.length > 1) {
+      const newDetails = e.ryotDetails.filter((_, i) => i !== index);
+      return { ...e, ryotDetails: newDetails };
+    }
+    return e;
+  }));
+};
+
+const handleShareholderChange = (entryId, index, field, value) => {
+  setEntries(prev => prev.map(e => {
+    if (e.id === entryId) {
+      const newDetails = [...e.ryotDetails];
+      newDetails[index][field] = value;
+      return { ...e, ryotDetails: newDetails };
+    }
+    return e;
+  }));
+  
+  // Trigger Hindi Suggestions
+  const words = value.split(" ");
+  const lastWord = words[words.length - 1];
+  if (lastWord.trim()) {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
+  }
+};
 
   // 2. HINDI TRANSLITERATION LOGIC
   const fetchSuggestions = async (word) => {
@@ -61,57 +102,95 @@ export default function LandscapePage() {
     } catch { setSuggestions([]); }
   };
 
-  const handleHindiChange = (entryId, plotIndex, field, value) => {
-    if (plotIndex === null) {
-      setEntries(prev => prev.map(e => e.id === entryId ? { ...e, [field]: value } : e));
-    } else {
-      setEntries(prev => prev.map(e => {
-        if (e.id === entryId) {
-          const newPlots = [...e.plots];
-          newPlots[plotIndex][field] = value;
-          return { ...e, plots: newPlots };
-        }
-        return e;
-      }));
-    }
+const handleHindiChange = (entryId, plotIndex, field, value, isNumeric = false) => {
+  // If numeric, only allow digits (0-9). If not a digit, stop.
+  if (isNumeric && value !== "" && !/^\d+$/.test(value)) {
+    return;
+  }
 
-    const words = value.split(" ");
-    const lastWord = words[words.length - 1];
-    if (lastWord.trim()) {
-      clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
-    } else {
-      setSuggestions([]);
-    }
-  };
+  // 1. Update the state
+  if (plotIndex === null) {
+    setEntries(prev => prev.map(e => e.id === entryId ? { ...e, [field]: value } : e));
+  } else {
+    setEntries(prev => prev.map(e => {
+      if (e.id === entryId) {
+        const newPlots = [...e.plots];
+        newPlots[plotIndex][field] = value;
+        return { ...e, plots: newPlots };
+      }
+      return e;
+    }));
+  }
 
-  const selectSuggestion = (selectedWord) => {
-    if (!currentCell) return;
-    const { entryId, plotIndex, field } = currentCell;
-    const entry = entries.find(e => e.id === entryId);
-    const currentValue = plotIndex === null ? entry[field] : entry.plots[plotIndex][field];
-
-    const words = currentValue.split(" ");
-    words[words.length - 1] = selectedWord;
-    const finalValue = words.join(" ") + " ";
-
-    handleHindiChange(entryId, plotIndex, field, finalValue);
+  // 2. Hindi Suggestion Logic
+  // SKIP if field is numeric OR value is empty
+  if (isNumeric || !value.trim()) {
     setSuggestions([]);
-  };
+    return;
+  }
+
+  const words = value.split(" ");
+  const lastWord = words[words.length - 1];
+  
+  if (lastWord.trim()) {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
+  } else {
+    setSuggestions([]);
+  }
+};
+
+const selectSuggestion = (selectedWord) => {
+  if (!currentCell) return;
+  const { entryId, shareholderIndex, plotIndex, field } = currentCell;
+
+  setEntries(prev => prev.map(e => {
+    if (e.id === entryId) {
+      // 1. Logic for Shareholders
+      if (shareholderIndex !== null && shareholderIndex !== undefined) {
+        const newDetails = [...e.ryotDetails];
+        const words = newDetails[shareholderIndex][field].trim().split(" ");
+        words[words.length - 1] = selectedWord;
+        newDetails[shareholderIndex][field] = words.join(" ") + " "; // Add ONE space to move to next word
+        return { ...e, ryotDetails: newDetails };
+      }
+
+      // 2. Logic for Plots (North, South, etc.)
+      if (plotIndex !== null && plotIndex !== undefined) {
+        const newPlots = [...e.plots];
+        const words = newPlots[plotIndex][field].trim().split(" ");
+        words[words.length - 1] = selectedWord;
+        newPlots[plotIndex][field] = words.join(" ") + " ";
+        return { ...e, plots: newPlots };
+      }
+
+      // 3. Logic for Header/Footer fields
+      const words = e[field].trim().split(" ");
+      words[words.length - 1] = selectedWord;
+      return { ...e, [field]: words.join(" ") + " " };
+    }
+    return e;
+  }));
+
+  setSuggestions([]);
+};
 
   const handleKeyDown = (e) => {
-    if (!suggestions.length) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex(prev => (prev > 0 ? prev - 1 : 0));
-    } else if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      selectSuggestion(suggestions[activeIndex]);
-    }
-  };
+  if (!suggestions.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    setActiveIndex(prev => (prev > 0 ? prev - 1 : 0));
+  } else if (e.key === "Enter" || e.key === " ") {
+    // This prevents the "Space" character from being added to the textarea 
+    // by the browser AFTER we've already updated the state.
+    e.preventDefault(); 
+    selectSuggestion(suggestions[activeIndex]);
+  }
+};
 
   const handlePrint = async () => {
     setIsPrinting(true);
@@ -158,14 +237,14 @@ export default function LandscapePage() {
           </header>
 
           {/* TOP HEADER SECTION WITH HINDI INPUT */}
-          <section className="grid grid-cols-3 gap-y-4 text-sm mb-6 text-black font-medium">
+          <section className="grid grid-cols-3 gap-y-4 text-sm mb-4 text-black font-medium">
             {[
-              { label: "राजस्व ग्राम", field: "revenueVillage", width: "w-40" },
-              { label: "थाना नं०", field: "thanaNo", width: "w-24" },
-              { label: "हल्का नं०", field: "halkaNo", width: "w-24" },
-              { label: "पुलिस थाना", field: "policeThana", width: "w-40" },
-              { label: "अंचल", field: "anchal", width: "w-40" },
-              { label: "जिला", field: "district", width: "w-40" },
+              { label: "राजस्व ग्राम", field: "revenueVillage", width: "w-52", numeric: false },
+              { label: "थाना नं०", field: "thanaNo", width: "w-24", numeric: true }, // Set to true
+              { label: "हल्का नं०", field: "halkaNo", width: "w-24", numeric: true }, // Set to true
+              { label: "पुलिस थाना", field: "policeThana", width: "w-50", numeric: false },
+              { label: "अंचल", field: "anchal", width: "w-50", numeric: false },
+              { label: "जिला", field: "district", width: "w-50", numeric: false },
             ].map((item) => (
               <span key={item.field}>
                 {item.label} :- 
@@ -173,9 +252,11 @@ export default function LandscapePage() {
                   className={`border-b border-dotted border-black outline-none px-1 bg-transparent ${item.width}`}
                   value={entries[0][item.field]}
                   onFocus={() => setCurrentCell({ entryId: entries[0].id, plotIndex: null, field: item.field })}
-                  onChange={(e) => handleHindiChange(entries[0].id, null, item.field, e.target.value)}
+                  onChange={(e) => 
+                    handleHindiChange(entries[0].id, null, item.field, e.target.value, item.numeric)
+                  }
                   onKeyDown={handleKeyDown}
-                  placeholder="लिखें"
+                  placeholder={item.numeric ? "00" : "लिखें"}
                 />
               </span>
             ))}
@@ -196,22 +277,35 @@ export default function LandscapePage() {
             )}
 
             <table className="w-full border-collapse border-[1.5px] border-black text-[11px] text-center table-fixed">
+               <colgroup>
+                <col style={{ width: '12%' }} /> {/* Column 1: Ryot Name */}
+                <col style={{ width: '10%' }} /> {/* Column 2: Address */}
+                <col style={{ width: '4%' }} />  {/* Column 3: Khata */}
+                <col style={{ width: '4%' }} />  {/* Column 4: Khesra */}
+                <col style={{ width: '4%' }} />  {/* Column 5: Rakba */}
+                <col style={{ width: '20%' }} /> {/* Column 6: CHAUHADDI (Maximized) */}
+                <col style={{ width: '7%' }} />  {/* Column 7: Type */}
+                <col style={{ width: '4%' }} />  {/* Column 8: Rent */}
+                <col style={{ width: '5%' }} />  {/* Column 9: Jamabandi */}
+                <col style={{ width: '8%' }} />  {/* Column 10: Claim Basis */}
+                <col style={{ width: '8%' }} />  {/* Column 11: Remarks */}
+              </colgroup>
               <thead>
                 <tr className="">
-                  <th className="border border-black p-1 w-[14%]" rowSpan={2}>रैयत का नाम (सह-हिस्सेदारों कनाम एवं अंश, अगर कोई हो, सहित) एवं पिता का नाम</th>
-                  <th className="border border-black p-1 w-[12%]" rowSpan={2}>स्थायी पता</th>
-                  <th className="border border-black p-1" colSpan={6}>स्वामित्व/धारित भूमि का ब्यौरा</th>
-                  <th className="border border-black p-1 w-[8%]" rowSpan={2}>जमाबंदी सं०</th>
-                  <th className="border border-black p-1 w-[12%]" rowSpan={2}>भूमि पर दावा का आधार यथा-उत्तराधिकार/दान क्रय/बंदोबस्त/अन्य</th>
-                  <th className="border border-black p-1 w-[10%]" rowSpan={2}>अभ्युक्ति अगर <br />कोई हो</th>
+                  <th className="border border-black p-1" rowSpan={2}>रैयत का नाम (सह-हिस्सेदारों का नाम एवं अंश, अगर कोई हो, सहित) एवं पिता का नाम</th>
+                  <th className="border border-black p-1" rowSpan={2}>स्थायी पता</th>
+                  <th className="border border-black p-1 " colSpan={6}>स्वामित्व/धारित भूमि का ब्यौरा</th>
+                  <th className="border border-black p-1 " rowSpan={2}>जमाबंदी सं०</th>
+                  <th className="border border-black p-1 " rowSpan={2}>भूमि पर दावा का आधार यथा-उत्तराधिकार/दान क्रय/बंदोबस्त/अन्य</th>
+                  <th className="border border-black p-1 " rowSpan={2}>अभ्युक्ति अगर <br />कोई हो</th>
                 </tr>
                 <tr className=" text-[10px]">
-                  <th className="border border-black p-1 w-[5%]">खाता</th>
-                  <th className="border border-black p-1 w-[5%]">खेसरा</th>
-                  <th className="border border-black p-1 w-[6%]">रकबा <br />ए0 डी0</th>
-                  <th className="border border-black p-1 w-[20%]">चौहद्दी</th>
-                  <th className="border border-black p-1 w-[7%]">किस्म जमीन</th>
-                  <th className="border border-black p-1 w-[7%]">सेस को ए0 डी0 छोड़कर लगान</th>
+                  <th className="border border-black p-1">खाता</th>
+                  <th className="border border-black p-1">खेसरा</th>
+                  <th className="border border-black p-1">रकबा <br />ए0 डी0</th>
+                  <th className="border border-black p-1]">चौहद्दी</th>
+                  <th className="border border-black p-1">किस्म जमीन</th>
+                  <th className="border border-black p-1">सेस को छोड़कर लगान</th>
                 </tr>
                 <tr className=" font-bold text-[9px]">
                   {Array.from({ length: 11 }).map((_, i) => <td key={i} className="border border-black">{i + 1}</td>)}
@@ -225,12 +319,55 @@ export default function LandscapePage() {
                         {pIdx === 0 && (
                           <>
                             <td className="border border-black p-1 align-top" rowSpan={entry.plots.length}>
-                              <textarea 
-                                value={entry.ryotName}
-                                onFocus={() => setCurrentCell({ entryId: entry.id, plotIndex: null, field: 'ryotName' })}
-                                onChange={(e) => handleHindiChange(entry.id, null, 'ryotName', e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                className="w-full min-h-[140px] outline-none resize-none bg-transparent" />
+                              {entry.ryotDetails.map((ryot, rIdx) => (
+                                <div key={rIdx} className="mb-2 border-b border-gray-200 last:border-0 pb-1 relative group">
+                                  <div className="flex items-start gap-1">
+                                    <span className="text-[10px] font-bold mt-1">{rIdx + 1}.</span>
+                                    <div className="flex-1 text-[11px]">
+                                      <textarea 
+                                        placeholder="रैयत का नाम"
+                                        value={ryot.name}
+                                        spellCheck="false"
+                                        onFocus={() => setCurrentCell({ entryId: entry.id, shareholderIndex: rIdx, field: 'name' })}
+                                        onChange={(e) => handleShareholderChange(entry.id, rIdx, 'name', e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        className="w-full min-h-[30px] leading-tight outline-none resize-none bg-transparent placeholder:italic "
+                                      />
+                                      <textarea 
+                                        placeholder="पिता / पति का नाम"
+                                        value={ryot.fatherName}
+                                        spellCheck="false"
+                                        onFocus={() => setCurrentCell({ entryId: entry.id, shareholderIndex: rIdx, field: 'fatherName' })}
+                                        onChange={(e) => handleShareholderChange(entry.id, rIdx, 'fatherName', e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        className="w-full min-h-[30px] leading-tight outline-none resize-none bg-transparent text-gray-700 border-t border-dotted border-gray-300"
+                                      />
+                                    </div>
+                                    
+                                    {/* Remove Button - Hidden in Print and hidden if only 1 item remains */}
+                                    {entry.ryotDetails.length > 1 && (
+                                      <button 
+                                        onClick={() => removeShareholder(entry.id, rIdx)}
+                                        className="print:hidden text-red-500 hover:text-red-700 text-[10px] font-bold px-1"
+                                        title="Remove"
+                                      >
+                                        ✕
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              
+                              {/* Add Button - Hidden in Print and hidden if limit reached */}
+                              {entry.ryotDetails.length < 4 && (
+                                <button 
+                                  type="button"
+                                  onClick={() => addShareholder(entry.id)}
+                                  className="print:hidden mt-1 w-full text-[9px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 py-1 rounded border border-indigo-200 dashed"
+                                >
+                                  + अन्य हिस्सेदार जोड़ें ({entry.ryotDetails.length}/4)
+                                </button>
+                              )}
                             </td>
                             <td className="border border-black p-1 align-top" rowSpan={entry.plots.length}>
                               <textarea 
@@ -243,11 +380,11 @@ export default function LandscapePage() {
                           </>
                         )}
 
-                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" value={plot.khata} onChange={(e) => handlePlotChange(entry.id, pIdx, 'khata', e.target.value)} /></td>
-                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" value={plot.khesra} onChange={(e) => handlePlotChange(entry.id, pIdx, 'khesra', e.target.value)} /></td>
-                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" value={plot.rakba} onChange={(e) => handlePlotChange(entry.id, pIdx, 'rakba', e.target.value)} /></td>
+                        <td className="border border-black "><input className="w-full text-center outline-none bg-transparent" placeholder="00" value={plot.khata} onChange={(e) => handlePlotChange(entry.id, pIdx, 'khata', e.target.value)} /></td>
+                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" placeholder="00" value={plot.khesra} onChange={(e) => handlePlotChange(entry.id, pIdx, 'khesra', e.target.value)} /></td>
+                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" placeholder="00" value={plot.rakba} onChange={(e) => handlePlotChange(entry.id, pIdx, 'rakba', e.target.value)} /></td>
 
-                        <td className="border border-black p-0 text-left">
+                        <td className="border border-black p-0 text-left ">
                           <div className="flex flex-col text-[10px]">
                             {['north', 'south', 'east', 'west'].map((dir, i) => {
                               const labels = { north: 'ऊ०-', south: 'द०-', east: 'पु०-', west: 'प०-' };
@@ -268,18 +405,19 @@ export default function LandscapePage() {
 
                         <td className="border border-black p-1">
                           <input 
+                            placeholder="किस्म जमीन"
                             value={plot.type}
                             onFocus={() => setCurrentCell({ entryId: entry.id, plotIndex: pIdx, field: 'type' })}
                             onChange={(e) => handleHindiChange(entry.id, pIdx, 'type', e.target.value)}
                             onKeyDown={handleKeyDown}
                             className="w-full text-center outline-none bg-transparent" />
                         </td>
-                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" value={plot.rent} onChange={(e) => handlePlotChange(entry.id, pIdx, 'rent', e.target.value)} /></td>
+                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" placeholder="00.00" value={plot.rent} onChange={(e) => handlePlotChange(entry.id, pIdx, 'rent', e.target.value)} /></td>
 
                         {pIdx === 0 && (
                           <>
                             <td className="border border-black p-1 align-top" rowSpan={entry.plots.length}>
-                              <input value={entry.jamabandi} onChange={(e) => handleEntryChange(entry.id, 'jamabandi', e.target.value)} className="w-full text-center outline-none bg-transparent" />
+                              <input placeholder="00" value={entry.jamabandi} onChange={(e) => handleEntryChange(entry.id, 'jamabandi', e.target.value)} className="w-full text-center outline-none bg-transparent" />
                             </td>
                             <td className="border border-black p-1 align-top" rowSpan={entry.plots.length}>
                               <textarea 
@@ -307,13 +445,13 @@ export default function LandscapePage() {
             </table>
           </div>
 
-          <p className="text-[9px] mt-4 text-black leading-tight font-medium">
+          <p className="text-[9px] text-black leading-tight font-medium">
             मैं/हम घोषणा करता हूँ/करते हैं कि स्व-घोषणा में की गई प्रविष्टि मेरी/हमारी जानकारी में सही है। स्व-घोषणा में किसी गलत प्रविष्टि के लिए मैं/हम जवाबदेह हूँ/है। <br />
             नोट :- इस प्रपत्र को दो प्रतियों में दाखिल किया जायेगा। एक प्रति आवेदक को प्राप्तकर्त्ता पदा0/कर्मी द्वारा हस्ताक्षर तथा आवेदन की तारीख एवं क्रमांक अंकित कर प्राप्ति के प्रमाण के रूप में लौटाया जाएगा
           </p>
-          <section className="mt-4 text-black">
+          <section className="mt-2 text-black">
             <div className="grid grid-cols-3 items-start px-4">
-              <div className="space-y-4 text-sm font-medium">
+              <div className="space-y-0.5 text-sm font-medium">
                 {/* PLACE WITH HINDI INPUT */}
                 <p>
                   स्थान: 
@@ -333,9 +471,9 @@ export default function LandscapePage() {
                   <p>आधार सं०: <input className="border-b border-dotted border-black outline-none w-40 font-bold bg-transparent" maxLength={12} minLength={12} placeholder="लिखें" /></p>
               </div>
               <div className="text-center">
-                <div className="w-64 mb-2"></div>
+                <div className="w-64"></div>
                 <p className="text-sm font-bold">रैयत का हस्ताक्षर / अंगूठे का निशान</p>
-                <div className="mt-10 space-y-2 text-left text-[13px] border-t border-black">
+                <div className="mt-6 space-y-2 text-left text-[13px] border-t border-black">
                 </div>
               </div>
             </div>
@@ -373,6 +511,12 @@ export default function LandscapePage() {
   /* Hide everything */
   body * {
     visibility: hidden !important;
+  }
+  
+ 
+  input::placeholder,
+  textarea::placeholder {
+    color: transparent !important; /* Hide placeholder in print */
   }
 
   /* Show only form container */
