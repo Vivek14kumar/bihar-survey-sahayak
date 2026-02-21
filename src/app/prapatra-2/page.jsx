@@ -297,7 +297,7 @@ const selectSuggestion = (selectedWord) => {
       </div>
 
       <div className="w-full overflow-x-auto print:overflow-visible  ">
-        <div ref={contentRef} className=" relative mx-auto bg-white shadow-2xl print:shadow-none print:m-0 page-container p-4 md:p-6 lg:p-8 border border-gray-200 print:border-none w-full">
+        <div ref={contentRef} className=" relative max-md:min-w-[1000px] mx-auto bg-white shadow-2xl print:shadow-none print:m-0 page-container p-4 md:p-6 lg:p-8 border border-gray-200 print:border-none w-full">
           
           <header className="text-center underline mb-2">
             <p className="font-bold text-lg text-black">प्रपत्र-2</p>

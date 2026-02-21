@@ -45,10 +45,10 @@ export default function Home() {
             
             <a
               href="/prapatra-2"
-              className="inline-block bg-gradient-to-r from-emerald-400 to-fuchsia-500 text-white font-semibold
+              className="inline-block border border-2 text-white font-semibold
               px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-300"
             >
-              अभी प्रपत्र-2 भरे
+              अभी प्रपत्र-2 भरे ⟶
             </a>
           </div>
           <p className=" mt-4 text-xs sm:text-xs font-bold text-white border border-black rounded p-1 bg-black max-w-[100%] text-center">
