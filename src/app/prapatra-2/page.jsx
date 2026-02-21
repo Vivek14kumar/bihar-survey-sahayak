@@ -1,6 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useReactToPrint } from "react-to-print";
+import * as htmlToImage from 'html-to-image';
+import jsPDF from 'jspdf';
+import { Download, Printer, Loader2 } from "lucide-react";
 
 export default function LandscapePage() {
   const [todayDate, setTodayDate] = useState("");
@@ -12,6 +16,60 @@ export default function LandscapePage() {
   const cacheRef = useRef({});
 
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const contentRef = useRef(null);
+
+  const handleDownloadPDF = async () => {
+  if (!contentRef.current) return;
+  setIsDownloading(true); // Start loading
+
+  // 1. Hide interactive elements (Add/Remove buttons)
+  const buttons = contentRef.current.querySelectorAll('.print\\:hidden');
+  buttons.forEach(btn => btn.style.display = 'none');
+  
+  const inputs = contentRef.current.querySelectorAll('input, textarea');
+  
+  const originalPlaceholders = new Map();
+  inputs.forEach((el, index) => {
+    if (el.placeholder) {
+      originalPlaceholders.set(el, el.placeholder);
+      el.placeholder = ''; // This makes them invisible in the snapshot
+    }
+  });
+
+  try {
+    // 2. Generate the snapshot
+    // We increase pixel ratio to 3 for crystal clear Hindi text
+    const dataUrl = await htmlToImage.toPng(contentRef.current, { 
+      pixelRatio: 3,
+      backgroundColor: '#ffffff',
+    });
+
+    // 3. Setup PDF (A4 Landscape)
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    // 4. Add the image and save
+    pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`Bihar_Survey_Prapatra2_${todayDate}.pdf`);
+
+  } catch (err) {
+    console.error('PDF Generation Error:', err);
+  } finally {
+    // 5. Restore the buttons
+    buttons.forEach(btn => btn.style.display = '');
+    setIsDownloading(false);
+    await fetch("/api/track-prapatra2-print", { method: "POST" });
+  }
+};
+
 
   // 1. DATA STRUCTURE: Includes Header, Table, and Footer fields
   const [entries, setEntries] = useState([
@@ -192,45 +250,56 @@ const selectSuggestion = (selectedWord) => {
   }
 };
 
-  const handlePrint = async () => {
-    setIsPrinting(true);
-
-    // Track only AFTER print dialog closes
-    const afterPrintHandler = async () => {
-      await fetch("/api/track-prapatra2-print", {
-        method: "POST",
-      });
-
-      window.removeEventListener("afterprint", afterPrintHandler);
-      setIsPrinting(false);
-    };
-
-    window.addEventListener("afterprint", afterPrintHandler);
-
-    window.print();
-  };
+  const handlePrint = useReactToPrint({
+    contentRef,
+    documentTitle: `Prapatra-2_${todayDate}`,
+    // Optional: Keep your tracking logic
+    onAfterPrint: async () => {
+      await fetch("/api/track-prapatra2-print", { method: "POST" });
+      console.log("Print tracked successfully");
+    },
+  });
 
   useEffect(() => {
     setTodayDate(new Date().toLocaleDateString("en-GB"));
   }, []);
-
   
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 no-print-bg">
-      <div className="flex justify-center mb-6 print:hidden">
+      <div className="flex justify-center gap-4 mb-6 print:hidden">
+        {/* Print Button */}
         <button
-        onClick={handlePrint}
-        disabled={isPrinting}
-        className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700"
-      >
-        {isPrinting ? "Preparing Print..." : "Print Prapatra-2"}
-      </button>
+          onClick={handlePrint}
+          disabled={isPrinting}
+          className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+        >
+          {isPrinting ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Printer className="w-5 h-5" />
+          )}
+          {isPrinting ? "Preparing..." : "Print Prapatra-2"}
+        </button>
+        
+        {/* Download Button */}
+        <button
+          onClick={handleDownloadPDF}
+          disabled={isDownloading}
+          className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+        >
+          {isDownloading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Download className="w-5 h-5" />
+          )}
+          <span>{isDownloading ? "Downloading..." : "Download PDF"}</span>
+        </button>
       </div>
 
       <div className="w-full overflow-x-auto print:overflow-visible  ">
-        <div className=" relative mx-auto bg-white shadow-2xl print:shadow-none print:m-0 page-container p-4 md:p-6 lg:p-8 border border-gray-200 print:border-none w-full">
+        <div ref={contentRef} className=" relative mx-auto bg-white shadow-2xl print:shadow-none print:m-0 page-container p-4 md:p-6 lg:p-8 border border-gray-200 print:border-none w-full">
           
-          <header className="text-center underline mb-6">
+          <header className="text-center underline mb-2">
             <p className="font-bold text-lg text-black">प्रपत्र-2</p>
             <p className="text-sm">(देखें नियम-6 उप नियम-(1))</p>
             <h1 className="font-bold mt-2 text-black text-base">रैयत द्वारा स्वामित्व/धारित भूमि की स्व-घोषणा हेतु प्रपत्र</h1>
@@ -249,7 +318,7 @@ const selectSuggestion = (selectedWord) => {
               <span key={item.field}>
                 {item.label} :- 
                 <input
-                  className={`border-b border-dotted border-black outline-none px-1 bg-transparent ${item.width}`}
+                  className={`border-b border-dotted border-black outline-none px-1 placeholder:italic bg-transparent ${item.width}`}
                   value={entries[0][item.field]}
                   onFocus={() => setCurrentCell({ entryId: entries[0].id, plotIndex: null, field: item.field })}
                   onChange={(e) => 
@@ -257,6 +326,7 @@ const selectSuggestion = (selectedWord) => {
                   }
                   onKeyDown={handleKeyDown}
                   placeholder={item.numeric ? "00" : "लिखें"}
+                  
                 />
               </span>
             ))}
@@ -340,7 +410,7 @@ const selectSuggestion = (selectedWord) => {
                                         onFocus={() => setCurrentCell({ entryId: entry.id, shareholderIndex: rIdx, field: 'fatherName' })}
                                         onChange={(e) => handleShareholderChange(entry.id, rIdx, 'fatherName', e.target.value)}
                                         onKeyDown={handleKeyDown}
-                                        className="w-full min-h-[30px] leading-tight outline-none resize-none bg-transparent text-gray-700 border-t border-dotted border-gray-300"
+                                        className="w-full min-h-[30px] leading-tight outline-none resize-none bg-transparent text-gray-700 border-t border-dotted border-gray-300 placeholder:italic"
                                       />
                                     </div>
                                     
@@ -371,18 +441,19 @@ const selectSuggestion = (selectedWord) => {
                             </td>
                             <td className="border border-black p-1 align-top" rowSpan={entry.plots.length}>
                               <textarea 
+                              placeholder="स्थायी पता"
                                 value={entry.address}
                                 onFocus={() => setCurrentCell({ entryId: entry.id, plotIndex: null, field: 'address' })}
                                 onChange={(e) => handleHindiChange(entry.id, null, 'address', e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                className="w-full min-h-[140px] outline-none resize-none bg-transparent" />
+                                className="w-full min-h-[140px] outline-none resize-none bg-transparent placeholder:italic" />
                             </td>
                           </>
                         )}
 
-                        <td className="border border-black "><input className="w-full text-center outline-none bg-transparent" placeholder="00" value={plot.khata} onChange={(e) => handlePlotChange(entry.id, pIdx, 'khata', e.target.value)} /></td>
-                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" placeholder="00" value={plot.khesra} onChange={(e) => handlePlotChange(entry.id, pIdx, 'khesra', e.target.value)} /></td>
-                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" placeholder="00" value={plot.rakba} onChange={(e) => handlePlotChange(entry.id, pIdx, 'rakba', e.target.value)} /></td>
+                        <td className="border border-black "><input className="w-full text-center outline-none bg-transparent placeholder:italic" placeholder="00" value={plot.khata} onChange={(e) => handlePlotChange(entry.id, pIdx, 'khata', e.target.value)} /></td>
+                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent placeholder:italic" placeholder="00" value={plot.khesra} onChange={(e) => handlePlotChange(entry.id, pIdx, 'khesra', e.target.value)} /></td>
+                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent placeholder:italic" placeholder="00" value={plot.rakba} onChange={(e) => handlePlotChange(entry.id, pIdx, 'rakba', e.target.value)} /></td>
 
                         <td className="border border-black p-0 text-left ">
                           <div className="flex flex-col text-[10px]">
@@ -410,33 +481,41 @@ const selectSuggestion = (selectedWord) => {
                             onFocus={() => setCurrentCell({ entryId: entry.id, plotIndex: pIdx, field: 'type' })}
                             onChange={(e) => handleHindiChange(entry.id, pIdx, 'type', e.target.value)}
                             onKeyDown={handleKeyDown}
-                            className="w-full text-center outline-none bg-transparent" />
+                            className="w-full text-center outline-none bg-transparent placeholder:italic" />
                         </td>
-                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent" placeholder="00.00" value={plot.rent} onChange={(e) => handlePlotChange(entry.id, pIdx, 'rent', e.target.value)} /></td>
+                        <td className="border border-black"><input className="w-full text-center outline-none bg-transparent placeholder:italic" placeholder="00.00" value={plot.rent} onChange={(e) => handlePlotChange(entry.id, pIdx, 'rent', e.target.value)} /></td>
 
-                        {pIdx === 0 && (
-                          <>
-                            <td className="border border-black p-1 align-top" rowSpan={entry.plots.length}>
-                              <input placeholder="00" value={entry.jamabandi} onChange={(e) => handleEntryChange(entry.id, 'jamabandi', e.target.value)} className="w-full text-center outline-none bg-transparent" />
-                            </td>
-                            <td className="border border-black p-1 align-top" rowSpan={entry.plots.length}>
-                              <textarea 
-                                value={entry.claimBasis}
-                                onFocus={() => setCurrentCell({ entryId: entry.id, plotIndex: null, field: 'claimBasis' })}
-                                onChange={(e) => handleHindiChange(entry.id, null, 'claimBasis', e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                className="w-full min-h-[140px] outline-none resize-none bg-transparent text-[10px]" />
-                            </td>
-                            <td className="border border-black p-1 align-top" rowSpan={entry.plots.length}>
-                              <textarea 
-                                value={entry.remarks}
-                                onFocus={() => setCurrentCell({ entryId: entry.id, plotIndex: null, field: 'remarks' })}
-                                onChange={(e) => handleHindiChange(entry.id, null, 'remarks', e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                className="w-full min-h-[140px] outline-none resize-none bg-transparent text-[10px]" />
-                            </td>
-                          </>
-                        )}
+                        {/* Individual cells for Jamabandi, Claim Basis, and Remarks for every row */}
+                        <td className="border border-black p-1 align-top">
+                          <input 
+                            placeholder="00" 
+                            value={plot.jamabandi || ""} // Accessing from plot level if you moved it, otherwise entry.jamabandi
+                            onChange={(e) => handlePlotChange(entry.id, pIdx, 'jamabandi', e.target.value)} 
+                            className="w-full text-center outline-none bg-transparent placeholder:italic" 
+                          />
+                        </td>
+
+                        <td className="border border-black p-1 align-top">
+                          <textarea 
+                            placeholder="दावा का आधार"
+                            value={plot.claimBasis || ""} 
+                            onFocus={() => setCurrentCell({ entryId: entry.id, plotIndex: pIdx, field: 'claimBasis' })}
+                            onChange={(e) => handleHindiChange(entry.id, pIdx, 'claimBasis', e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="w-full min-h-[40px] outline-none resize-none bg-transparent text-[10px] placeholder:italic" 
+                          />
+                        </td>
+
+                        <td className="border border-black p-1 align-top">
+                          <textarea 
+                            placeholder="अभ्युक्ति"
+                            value={plot.remarks || ""} 
+                            onFocus={() => setCurrentCell({ entryId: entry.id, plotIndex: pIdx, field: 'remarks' })}
+                            onChange={(e) => handleHindiChange(entry.id, pIdx, 'remarks', e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="w-full min-h-[40px] outline-none resize-none bg-transparent text-[10px] placeholder:italic" 
+                          />
+                        </td>
                       </tr>
                     ))}
                   </React.Fragment>
@@ -456,7 +535,7 @@ const selectSuggestion = (selectedWord) => {
                 <p>
                   स्थान: 
                   <input 
-                    className="border-b border-dotted border-black outline-none w-40 px-1 bg-transparent" 
+                    className="border-b border-dotted border-black outline-none w-40 px-1 bg-transparent placeholder:italic" 
                     value={entries[0].place}
                     onFocus={() => setCurrentCell({ entryId: entries[0].id, plotIndex: null, field: 'place' })}
                     onChange={(e) => handleHindiChange(entries[0].id, null, 'place', e.target.value)}
@@ -465,10 +544,10 @@ const selectSuggestion = (selectedWord) => {
                   />
                 </p>
                   <p>दिनांक: <span className="font-bold underline">{todayDate}</span></p>
-                  <p>मोबाईल नं०: <input className="border-b border-dotted border-black outline-none w-32 font-bold bg-transparent" maxLength={10} minLength={10} placeholder="लिखें" /></p>
+                  <p>मोबाईल नं०: <input className="border-b border-dotted border-black outline-none w-32 font-bold bg-transparent placeholder:italic" maxLength={10} minLength={10} placeholder="लिखें" /></p>
               </div>
               <div>
-                  <p>आधार सं०: <input className="border-b border-dotted border-black outline-none w-40 font-bold bg-transparent" maxLength={12} minLength={12} placeholder="लिखें" /></p>
+                  <p>आधार सं०: <input className="border-b border-dotted border-black outline-none w-40 font-bold bg-transparent placeholder:italic" maxLength={12} minLength={12} placeholder="लिखें" /></p>
               </div>
               <div className="text-center">
                 <div className="w-64"></div>
@@ -481,14 +560,34 @@ const selectSuggestion = (selectedWord) => {
         </div>
       </div>
       
-      <div className="flex justify-center mb-6 print:hidden">
+      <div className="flex justify-center gap-4 mb-6 print:hidden">
+        {/* Print Button */}
         <button
-        onClick={handlePrint}
-        disabled={isPrinting}
-        className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700"
-      >
-        {isPrinting ? "Preparing Print..." : "Print Prapatra-2"}
-      </button>
+          onClick={handlePrint}
+          disabled={isPrinting}
+          className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+        >
+          {isPrinting ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Printer className="w-5 h-5" />
+          )}
+          {isPrinting ? "Preparing..." : "Print Prapatra-2"}
+        </button>
+        
+        {/* Download Button */}
+        <button
+          onClick={handleDownloadPDF}
+          disabled={isDownloading}
+          className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+        >
+          {isDownloading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Download className="w-5 h-5" />
+          )}
+          <span>{isDownloading ? "Downloading..." : "Download PDF"}</span>
+        </button>
       </div>
       <style jsx global>{`
   @page { 
