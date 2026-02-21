@@ -10,6 +10,7 @@ import {
   Users,
   Menu,
   X,
+  Form,
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -22,7 +23,7 @@ export default function Navbar() {
     { name: "होम", href: "/", icon: <Home size={20} /> },
     { name: "वंशावली", href: "/#tool", icon: <Users size={20} /> },
     { name: "Prapatra", href: "/pdf", icon: <FileText size={20} /> },
-    { name: "Prapatra-2", href: "/prapatra-2", icon: <FileText size={20} /> },
+    { name: "Prapatra-2", href: "/prapatra-2", icon: <Form  size={20} /> },
     { name: "Privacy", href: "/privacy-policy", icon: <ShieldCheck size={20} /> },
     { name: "Terms", href: "/terms-and-conditions", icon: <FileWarning size={20} /> },
   ];
@@ -51,7 +52,7 @@ export default function Navbar() {
           <nav className="flex items-center gap-8 text-sm font-medium text-slate-700">
             <Link href="/" className="hover:text-indigo-600 transition">होम / Home</Link>
             <Link href="/prapatra-2" className="hover:text-indigo-600 transition">Prapatra-2 भरे </Link>
-            <Link href="/pdf" className="hover:text-indigo-600 transition">Prapatra (Format) and Forms</Link>
+            <Link href="/pdf" className="hover:text-indigo-600 transition">Prapatra pdf and Forms</Link>
             <Link href="/privacy-policy" className="hover:text-indigo-600 transition">Privacy</Link>
             <Link href="/terms-and-conditions" className="hover:text-indigo-600 transition">Terms</Link>
             <Link href="/disclaimer" className="hover:text-indigo-600 transition">Disclaimer</Link>
@@ -126,6 +127,13 @@ export default function Navbar() {
           >
             <Users size={20} />
             <span className="mt-1">वंशावली</span>
+          </Link>
+          <Link
+            href="/prapatra-2"
+            className="flex flex-col items-center text-xs px-2 py-1 text-slate-600"
+          >
+            <Form size={20} />
+            <span className="mt-1">प्रपत्र-2 भरे</span>
           </Link>
           <Link
             href="/pdf"
