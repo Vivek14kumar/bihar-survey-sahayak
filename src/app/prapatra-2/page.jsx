@@ -20,7 +20,41 @@ export default function LandscapePage() {
 
   const contentRef = useRef(null);
 
+  const validateForm = () => {
+  const entry = entries[0];
+  const missingFields = [];
+
+  // 1. Check Header Fields
+  const headerLabels = {
+    revenueVillage: "राजस्व ग्राम",
+    thanaNo: "थाना नं०",
+    //halkaNo: "हल्का नं०",
+    policeThana: "पुलिस थाना",
+    anchal: "अंचल",
+    district: "जिला"
+  };
+
+  Object.keys(headerLabels).forEach(key => {
+    if (!entry[key] || entry[key].trim() === "") {
+      missingFields.push(headerLabels[key]);
+    }
+  });
+
+  // 2. Check at least one Ryot Name
+  if (!entry.ryotDetails[0].name.trim()) {
+    missingFields.push("रैयत का नाम");
+  }
+
+  if (missingFields.length > 0) {
+    alert(`कृपया निम्नलिखित विवरण भरें: \n${missingFields.join(", ")}`);
+    return false;
+  }
+
+  return true;
+};
+
   const handleDownloadPDF = async () => {
+    if (!validateForm()) return; // Stop if blank
   if (!contentRef.current) return;
   setIsDownloading(true); // Start loading
 
@@ -269,7 +303,11 @@ const selectSuggestion = (selectedWord) => {
       <div className="flex justify-center gap-4 mb-6 print:hidden">
         {/* Print Button */}
         <button
-          onClick={handlePrint}
+          onClick={() => {
+    if (validateForm()) {
+      handlePrint();
+    }
+  }}
           disabled={isPrinting}
           className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
         >
@@ -315,10 +353,13 @@ const selectSuggestion = (selectedWord) => {
               { label: "अंचल", field: "anchal", width: "w-50", numeric: false },
               { label: "जिला", field: "district", width: "w-50", numeric: false },
             ].map((item) => (
-              <span key={item.field}>
-                {item.label} :- 
-                <input
-                  className={`border-b border-dotted border-black outline-none px-1 placeholder:italic bg-transparent ${item.width}`}
+              <span key={item.field} className="flex flex-col">
+  <div className="flex items-center">
+    {item.label} :- 
+    <input
+      className={`border-b border-dotted outline-none px-1 bg-transparent ${item.width} ${
+        (!entries[0][item.field] && item.field !== 'halkaNo') ? "border-red-400" : "border-black"
+      } focus:border-blue-500 transition-colors`}
                   value={entries[0][item.field]}
                   onFocus={() => setCurrentCell({ entryId: entries[0].id, plotIndex: null, field: item.field })}
                   onChange={(e) => 
@@ -327,8 +368,11 @@ const selectSuggestion = (selectedWord) => {
                   onKeyDown={handleKeyDown}
                   placeholder={item.numeric ? "00" : "लिखें"}
                   
-                />
-              </span>
+                /></div>
+  {(!entries[0][item.field] && item.field !== 'halkaNo') && (
+    <span className="text-[10px] text-red-500 italic ml-14 print:hidden">आवश्यक है*</span>
+  )}
+</span>
             ))}
           </section>
 
