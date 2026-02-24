@@ -10,7 +10,7 @@ export async function GET() {
     timeZone: "Asia/Kolkata",
   });
 
-  /* ================= TOOL + REVENUE DATA ================= */
+  /* ================= DAILY DATA ================= */
 
   const dailyData = await analyticsDB
     .collection("dailyStats")
@@ -24,7 +24,13 @@ export async function GET() {
     vanshawaliPaid: 0,
     prapatra2Paid: 0,
     totalRevenue: 0,
+    pageViews: 0,
+    uniqueVisitors: 0,
   };
+
+  dailyData.forEach((day) => {
+  totals.pageViews += day.pageViews || 0;
+});
 
   dailyData.forEach((day) => {
     totals.vanshawaliCreated += day.vanshawaliCreated || 0;
@@ -32,25 +38,12 @@ export async function GET() {
     totals.vanshawaliPaid += day.vanshawaliPaid || 0;
     totals.prapatra2Paid += day.prapatra2Paid || 0;
     totals.totalRevenue += day.totalRevenue || 0;
+
+    totals.pageViews += day.pageViews || 0;
+    totals.uniqueVisitors += day.uniqueVisitors || 0;
   });
 
   const todayData = dailyData.find((d) => d.date === today) || {};
-
-  /* ================= VISITOR DATA ================= */
-
-  const pageViewsDoc = await analyticsDB
-    .collection("siteStats")
-    .findOne({ name: "pageViews" });
-
-  const uniqueVisitorsDoc = await analyticsDB
-    .collection("siteStats")
-    .findOne({ name: "uniqueVisitors" });
-
-  const todayVisitDoc = await analyticsDB
-    .collection("visits")
-    .findOne({ date: today });
-
-  const todayVisitors = todayVisitDoc?.visitors?.length || 0;
 
   /* ================= PDF ANALYTICS ================= */
 
@@ -73,9 +66,9 @@ export async function GET() {
     today: todayData,
     last7Days: dailyData.slice(0, 7),
 
-    pageViews: pageViewsDoc?.count || 0,
-    uniqueVisitors: uniqueVisitorsDoc?.count || 0,
-    todayVisitors,
+    pageViews: totals.pageViews,
+    uniqueVisitors: totals.uniqueVisitors,
+    todayVisitors: todayData.uniqueVisitors || 0,
 
     totalPreview,
     totalDownload,
