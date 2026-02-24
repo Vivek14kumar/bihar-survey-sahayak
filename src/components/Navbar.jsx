@@ -11,6 +11,8 @@ import {
   Menu,
   X,
   Form,
+  User,
+  Mail
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -22,10 +24,12 @@ export default function Navbar() {
   const mobileNavItems = [
     { name: "होम", href: "/", icon: <Home size={20} /> },
     { name: "वंशावली", href: "/#tool", icon: <Users size={20} /> },
-    { name: "Prapatra", href: "/pdf", icon: <FileText size={20} /> },
+    { name: "Prapatra Pdf", href: "/pdf", icon: <FileText size={20} /> },
     { name: "Prapatra-2", href: "/prapatra-2", icon: <Form  size={20} /> },
+    { name: "About", href: "/about", icon: <User  size={20} /> },
     { name: "Privacy", href: "/privacy-policy", icon: <ShieldCheck size={20} /> },
     { name: "Terms", href: "/terms-and-conditions", icon: <FileWarning size={20} /> },
+    { name: "Contact", href: "/contact", icon: <Mail size={20} /> },
   ];
 
   return (
@@ -53,10 +57,10 @@ export default function Navbar() {
             <Link href="/" className="hover:text-indigo-600 transition">होम / Home</Link>
             <Link href="/prapatra-2" className="hover:text-indigo-600 transition">Prapatra-2 भरे </Link>
             <Link href="/pdf" className="hover:text-indigo-600 transition">Prapatra pdf and Forms</Link>
+            <Link href="/about" className="hover:text-indigo-600 transition">About</Link>
             <Link href="/privacy-policy" className="hover:text-indigo-600 transition">Privacy</Link>
             <Link href="/terms-and-conditions" className="hover:text-indigo-600 transition">Terms</Link>
-            <Link href="/disclaimer" className="hover:text-indigo-600 transition">Disclaimer</Link>
-            <Link href="/feedback" className="hover:text-indigo-600 transition">Contact</Link>
+            <Link href="/contact" className="hover:text-indigo-600 transition">Contact</Link>
             <Link
               href="/#tool"
               className="bg-indigo-600 text-white px-5 py-2 rounded-xl hover:bg-indigo-700 transition shadow-md"

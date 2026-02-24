@@ -74,6 +74,14 @@ export default function RootLayout({ children }) {
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
+                    href="/about"
+                    className="hover:text-white transition"
+                  >
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a
                     href="/privacy-policy"
                     className="hover:text-white transition"
                   >
@@ -110,6 +118,14 @@ export default function RootLayout({ children }) {
                     className="hover:text-white transition"
                   >
                     FAQ
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/refund"
+                    className="hover:text-white transition"
+                  >
+                    Refund
                   </a>
                 </li>
               </ul>
