@@ -4,36 +4,30 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 export default function MobilePopup() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [showPopup, setShowPopup] = useState(false); // start hidden
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      const width = window.innerWidth;
-      setIsMobile(width < 768); // Mobile breakpoint
-    };
+    const isMobile = window.innerWidth < 768;
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    // Check if popup already shown in this browser session
+    const alreadyShown = sessionStorage.getItem("mobilePopupShown");
 
-    // Show popup after 2 seconds
-    const timer = setTimeout(() => {
-      if (isMobile) setShowPopup(true);
-    }, 2000);
+    if (isMobile && !alreadyShown) {
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+        sessionStorage.setItem("mobilePopupShown", "true");
+      }, 1500);
 
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-      clearTimeout(timer);
-    };
-  }, [isMobile]);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
-  if (!isMobile || !showPopup) return null;
+  if (!showPopup) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-gradient-to-br from-indigo-600 to-emerald-500 text-white rounded-3xl shadow-2xl p-6 max-w-lg w-full text-center relative animate-fadeIn">
+      <div className="bg-gradient-to-br from-indigo-600 to-emerald-500 text-white rounded-3xl shadow-2xl p-6 max-w-lg w-full text-center relative">
         
-        {/* Close button */}
         <button
           onClick={() => setShowPopup(false)}
           className="absolute top-4 right-4 text-white hover:text-gray-200"
@@ -41,15 +35,14 @@ export default function MobilePopup() {
           <X size={24} />
         </button>
 
-        {/* Icon */}
-        <div className="text-6xl mb-4 animate-bounce">💻</div>
+        <div className="text-6xl mb-4">💻</div>
 
-        {/* Message */}
         <h2 className="text-2xl sm:text-3xl font-bold mb-2">
           Better Experience on Laptop / Desktop
         </h2>
+
         <p className="text-lg sm:text-xl mb-4">
-          मोबाइल पर सर्वोत्तम अनुभव नहीं है। 
+          मोबाइल पर सर्वोत्तम अनुभव नहीं है।  
           कृपया लैपटॉप या डेस्कटॉप पर खोलें।  
           <br />
           For the best results, please use a Laptop or Desktop.

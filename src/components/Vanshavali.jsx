@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Plus, Trash2, Users, UserPlus, Edit3 } from "lucide-react";
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import AutoFamilyTreePDF from "./TreePDF";
+import { pdf } from "@react-pdf/renderer";
+import FamilyTreePreview from "./FamilyTreePreview";
+import toast from "react-hot-toast";
 
 const RELATIONS = ["स्वयं", "पुत्र", "पुत्री", "पत्नी", "मृतक"];
 
@@ -14,12 +16,31 @@ export default function Vanshavali() {
   const [relation, setRelation] = useState("स्वयं");
   const [editId, setEditId] = useState(null);
 
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [currentField, setCurrentField] = useState(null);
 
   const debounceRef = useRef(null);
   const cacheRef = useRef({});
+
+  const generatePDF = async () => {
+  if (!treeData) return;
+
+  const blob = await pdf(
+    <AutoFamilyTreePDF data={treeData} />
+  ).toBlob();
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "bihar_vanshavali.pdf";
+  link.click();
+
+  URL.revokeObjectURL(url);
+};
 
   // ---------- Transliteration API ----------
   const fetchSuggestions = async (word) => {
@@ -93,6 +114,15 @@ export default function Vanshavali() {
     }
   };
 
+  // ---------- Load Razorpay script ----------
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => setRazorpayLoaded(true);
+    document.body.appendChild(script);
+  }, []);
+
   // ---------- LocalStorage ----------
   useEffect(() => {
     const saved = localStorage.getItem("survey_data");
@@ -104,8 +134,86 @@ export default function Vanshavali() {
   }, [members]);
 
   const trackVanshawaliDownload = async () => {
-    await fetch("/api/track-vanshawali", { method: "POST" });
+    try {
+      const res = await fetch("/api/check-download", { method: "POST" });
+      const data = await res.json();
+
+      if (!data.allowed) {
+        // Free limit reached → open payment
+        openRazorpay();
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.error("Error checking download:", err);
+      return false;
+    }
   };
+
+  // ---------- Razorpay ----------
+  const openRazorpay = async () => {
+    if (!razorpayLoaded) {
+      alert("Payment system loading… please try again.");
+      return;
+    }
+
+    // Create order on backend
+    const orderRes = await fetch("/api/create-razorpay-order", { method: "POST" });
+    const orderData = await orderRes.json();
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY, // your Razorpay key
+      amount: orderData.amount,
+      currency: "INR",
+      name: "Vanshavali PDF",
+      description: "Payment for PDF download",
+      order_id: orderData.id,
+      handler: async function (response) {
+  await fetch("/api/verify-payment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(response),
+  });
+
+  generatePDF();
+},
+      theme: { color: "#437ee3" },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
+  /*const trackVanshawaliDownload = async () => {
+    await fetch("/api/track-vanshawali", { method: "POST" });
+  };*/
+
+  // ---------- PDF Download ----------
+  const handleDownload = async () => {
+  try {
+    const res = await fetch("/api/check-download", {
+      method: "POST",
+    });
+    const data = await res.json();
+
+    if (!data.allowed) {
+      // No free downloads → open payment
+      openRazorpay();
+      return;
+    }
+
+    // Show free downloads remaining
+    if (data.remaining > 0) {
+      toast.success(`आपके पास अभी ${data.remaining} मुफ्त डाउनलोड बाकी हैं।`);
+    }
+
+    generatePDF();
+  } catch (err) {
+    console.error("Download error:", err);
+    toast.error("डाउनलोड में समस्या हुई, कृपया पुनः प्रयास करें।");
+  }
+};
 
   // ---------- Add / Edit Member ----------
   const handleAddMember = () => {
@@ -304,26 +412,15 @@ export default function Vanshavali() {
 
         {/* PDF */}
         {treeData && (
-          <div className="bg-white p-6 rounded-3xl shadow-xl overflow-x-auto">
-            <div className="w-full h-[400px] sm:h-[500px]">
-              <PDFViewer width="100%" height="100%">
-                <AutoFamilyTreePDF data={treeData} />
-              </PDFViewer>
-            </div>
+          <div className="bg-white p-6 rounded-3xl shadow-xl">
+            <FamilyTreePreview data={treeData}  />
 
-            <PDFDownloadLink
-              document={<AutoFamilyTreePDF data={treeData} />}
-              fileName="bihar_vanshavali.pdf"
+            <button
+              onClick={handleDownload}
+              className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-xl font-semibold transition"
             >
-              {({ loading }) => (
-                <button
-                  onClick={trackVanshawaliDownload}
-                  className="w-full mt-4 bg-indigo-600 text-white p-4 rounded-xl"
-                >
-                  {loading ? "PDF तैयार हो रहा है..." : "PDF डाउनलोड करें"}
-                </button>
-              )}
-            </PDFDownloadLink>
+              PDF डाउनलोड करें
+            </button>
           </div>
         )}
       </div>
