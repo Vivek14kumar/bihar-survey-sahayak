@@ -190,25 +190,49 @@ export default function Vanshavali() {
   };*/
 
   // ---------- PDF Download ----------
-  const handleDownload = async () => {
+
+
+const handleDownload = async () => {
   try {
+    // 1️⃣ Check download eligibility
     const res = await fetch("/api/check-download", {
       method: "POST",
     });
     const data = await res.json();
 
+    let downloadType = "free";
+
     if (!data.allowed) {
-      // No free downloads → open payment
+      // User exceeded free downloads → open payment
+      downloadType = "paid";
+      toast(`मुफ़्त डाउनलोड खत्म हो गया। कृपया भुगतान करें।`, { 
+        icon: "💳", 
+        duration: 5000 
+      });
       openRazorpay();
-      return;
+      return; // stop free PDF generation until payment succeeds
     }
 
-    // Show free downloads remaining
+    // 2️⃣ Show remaining free downloads
     if (data.remaining > 0) {
       toast.success(`आपके पास अभी ${data.remaining} मुफ्त डाउनलोड बाकी हैं।`);
     }
 
+    // 3️⃣ Generate the PDF
     generatePDF();
+
+    // 4️⃣ Track the download in DB
+    await fetch("/api/track-vanshawali", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: downloadType, // "free" or "paid"
+        timestamp: new Date().toISOString(),
+        // Optional: add userId or PDF info
+        // userId: currentUser?.id,
+        // pdfName: "Vanshawali_2026.pdf",
+      }),
+    });
   } catch (err) {
     console.error("Download error:", err);
     toast.error("डाउनलोड में समस्या हुई, कृपया पुनः प्रयास करें।");
