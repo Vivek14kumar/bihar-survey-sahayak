@@ -13,7 +13,6 @@ import {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
-    totals: {},
     today: {},
     last7Days: [],
     pageViews: 0,
@@ -37,19 +36,16 @@ export default function AdminDashboard() {
   }, []);
 
   /* ================= Conversion Rate ================= */
-
   const totalCreated =
-    (stats.totals?.vanshawaliCreated || 0) +
-    (stats.totals?.prapatra2Printed || 0);
+    (stats.today?.vanshawaliCreated || 0) +
+    (stats.today?.prapatra2Printed || 0);
 
   const totalPaid =
-    (stats.totals?.vanshawaliPaid || 0) +
-    (stats.totals?.prapatra2Paid || 0);
+    (stats.today?.vanshawaliPaid || 0) +
+    (stats.today?.prapatra2Paid || 0);
 
   const conversionRate =
-    totalCreated > 0
-      ? ((totalPaid / totalCreated) * 100).toFixed(1)
-      : 0;
+    totalCreated > 0 ? ((totalPaid / totalCreated) * 100).toFixed(1) : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6 md:p-10">
@@ -67,37 +63,38 @@ export default function AdminDashboard() {
       {/* ================= TOP STATS ================= */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
 
+        {/* Today Stats */}
         <StatCard
           title="Vanshawali Created"
-          value={stats.totals?.vanshawaliCreated || 0}
+          value={stats.today?.vanshawaliCreated || 0}
           icon={<FileText size={28} />}
           gradient="from-purple-500 to-purple-700"
         />
 
         <StatCard
           title="Prapatra-2 Printed"
-          value={stats.totals?.prapatra2Printed || 0}
+          value={stats.today?.prapatra2Printed || 0}
           icon={<Printer size={28} />}
           gradient="from-orange-500 to-red-600"
         />
 
         <StatCard
           title="Vanshawali Paid"
-          value={stats.totals?.vanshawaliPaid || 0}
+          value={stats.today?.vanshawaliPaid || 0}
           icon={<Download size={28} />}
           gradient="from-green-500 to-green-700"
         />
 
         <StatCard
           title="Prapatra-2 Paid"
-          value={stats.totals?.prapatra2Paid || 0}
+          value={stats.today?.prapatra2Paid || 0}
           icon={<Download size={28} />}
           gradient="from-blue-500 to-blue-700"
         />
 
         <StatCard
           title="Total Revenue (₹)"
-          value={stats.totals?.totalRevenue || 0}
+          value={stats.today?.totalRevenue || 0}
           icon={<IndianRupee size={28} />}
           gradient="from-emerald-500 to-teal-600"
         />
@@ -116,6 +113,7 @@ export default function AdminDashboard() {
           gradient="from-indigo-600 to-purple-700"
         />
 
+        {/* PDF Stats */}
         <StatCard
           title="Total PDF Preview"
           value={stats.totalPreview || 0}
@@ -130,26 +128,27 @@ export default function AdminDashboard() {
           gradient="from-red-500 to-red-700"
         />
 
+        {/* Total Page Views & Visitors */}
         <StatCard
-  title="Total Page Views"
-  value={stats.pageViews || 0}
-  icon={<Eye size={28} />}
-  gradient="from-indigo-500 to-indigo-700"
-/>
+          title="Total Page Views"
+          value={stats.pageViews || 0}
+          icon={<Eye size={28} />}
+          gradient="from-indigo-500 to-indigo-700"
+        />
 
-<StatCard
-  title="Unique Visitors"
-  value={stats.uniqueVisitors || 0}
-  icon={<Activity size={28} />}
-  gradient="from-green-500 to-green-700"
-/>
+        <StatCard
+          title="Unique Visitors"
+          value={stats.uniqueVisitors || 0}
+          icon={<Activity size={28} />}
+          gradient="from-green-500 to-green-700"
+        />
 
-<StatCard
-  title="Today's Visitors"
-  value={stats.todayVisitors || 0}
-  icon={<Calendar size={28} />}
-  gradient="from-yellow-500 to-orange-500"
-/>
+        <StatCard
+          title="Today's Visitors"
+          value={stats.todayVisitors || 0}
+          icon={<Calendar size={28} />}
+          gradient="from-yellow-500 to-orange-500"
+        />
       </div>
 
       {/* ================= PDF TABLE ================= */}
@@ -171,15 +170,9 @@ export default function AdminDashboard() {
               {stats.pdfData?.length > 0 ? (
                 stats.pdfData.map((pdf, index) => (
                   <tr key={index} className="border-b hover:bg-gray-50 transition">
-                    <td className="p-4 font-semibold text-gray-700">
-                      {pdf.name}
-                    </td>
-                    <td className="p-4 text-yellow-600 font-bold">
-                      {pdf.preview || 0}
-                    </td>
-                    <td className="p-4 text-red-600 font-bold">
-                      {pdf.download || 0}
-                    </td>
+                    <td className="p-4 font-semibold text-gray-700">{pdf.name}</td>
+                    <td className="p-4 text-yellow-600 font-bold">{pdf.preview || 0}</td>
+                    <td className="p-4 text-red-600 font-bold">{pdf.download || 0}</td>
                   </tr>
                 ))
               ) : (
@@ -214,14 +207,10 @@ export default function AdminDashboard() {
               {feedbacks?.length > 0 ? (
                 feedbacks.map((fb) => (
                   <tr key={fb._id} className="border-b hover:bg-gray-50 transition">
-                    <td className="p-4 font-semibold text-gray-700">
-                      {fb.name}
-                    </td>
+                    <td className="p-4 font-semibold text-gray-700">{fb.name}</td>
                     <td className="p-4 text-gray-600">{fb.email}</td>
                     <td className="p-4 text-gray-700">{fb.message}</td>
-                    <td className="p-4 text-gray-500">
-                      {new Date(fb.createdAt).toLocaleString("hi-IN")}
-                    </td>
+                    <td className="p-4 text-gray-500">{new Date(fb.createdAt).toLocaleString("hi-IN")}</td>
                   </tr>
                 ))
               ) : (
@@ -240,7 +229,6 @@ export default function AdminDashboard() {
 }
 
 /* ================= STAT CARD COMPONENT ================= */
-
 function StatCard({ title, value, icon, gradient }) {
   return (
     <div className="relative overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
