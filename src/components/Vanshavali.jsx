@@ -244,6 +244,9 @@ const handleDownload = async () => {
       return;
     }
 
+    // ✅ Increment vanshawali count
+    await fetch("/api/track-vanshawali", { method: "POST" });
+    
     // Show message if it was a free download
     if (data.freeRemaining !== undefined) {
       toast(`आपके पास अभी ${data.freeRemaining} मुफ़्त (FREE!) डाउनलोड बाकी हैं।`, {

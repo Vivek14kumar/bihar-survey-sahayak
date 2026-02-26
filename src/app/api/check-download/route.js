@@ -8,7 +8,7 @@ export async function POST(req) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
   let user = await collection.findOne({ ip });
 
-  const MAX_FREE = 3;
+  const MAX_FREE = 2;
 
   // 🆕 Scenario 1: Brand New User
   if (!user) {
