@@ -360,7 +360,7 @@ const handleSecureAction = async (actionType) => {
     // 2. Gatekeeper Logic
     if (!data.allowed) {
       // Limit reached: Ask for payment, then execute
-      toast.error("मुफ़्त सीमा समाप्त! कृपया असीमित उपयोग के लिए भुगतान करें।");
+      //toast.error("मुफ़्त सीमा समाप्त! कृपया असीमित उपयोग के लिए भुगतान करें।");
       openRazorpay(executeAction);
     } else {
       // Access granted: Show remaining free count if applicable
@@ -390,39 +390,57 @@ const handleSecureAction = async (actionType) => {
   
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 no-print-bg">
-      <div className="flex justify-center gap-4 mb-6 print:hidden">
-        {/* Print Button */}
-        <button
-          onClick={() => {
-    if (validateForm()) {
-      handleSecureAction("print");
-    }
-  }}
-          disabled={isPrinting}
-          className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
-        >
-          {isPrinting ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <Printer className="w-5 h-5" />
-          )}
-          {isPrinting ? "Preparing..." : "Print Prapatra-2"}
-        </button>
-        
-        {/* Download Button */}
-        <button
-          onClick={() => handleSecureAction("download")}
-          disabled={isDownloading}
-          className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
-        >
-          {isDownloading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <Download className="w-5 h-5" />
-          )}
-          <span>{isDownloading ? "Downloading..." : "Download PDF"}</span>
-        </button>
-      </div>
+      <div className="flex justify-center gap-4 mb-6 print:hidden flex-wrap">
+  
+  {/* ================= PRINT BUTTON (PAID) ================= */}
+  <button
+    onClick={() => handleSecureAction("print")}
+    disabled={isPrinting}
+    className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50 shadow-md"
+  >
+    <span className="flex items-center gap-2 text-base font-semibold">
+      {isPrinting ? (
+        <Loader2 className="w-5 h-5 animate-spin" />
+      ) : (
+        <Printer className="w-5 h-5" />
+      )}
+      {isPrinting
+        ? "Preparing..."
+        : "Print PDF Without Watermark – ₹5"}
+    </span>
+
+    {!isPrinting && (
+      <span className="text-xs opacity-90">
+        बिना वॉटरमार्क PDF प्रिंट करें – ₹5
+      </span>
+    )}
+  </button>
+
+  {/* ================= DOWNLOAD BUTTON (PAID) ================= */}
+  <button
+    onClick={() => handleSecureAction("download")}
+    disabled={isDownloading}
+    className="mt-6 bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+  >
+    <span className="flex items-center gap-2 text-sm font-semibold md:text-base">
+      {isDownloading ? (
+        <Loader2 className="w-5 h-5 animate-spin" />
+      ) : (
+        <Download className="w-5 h-5" />
+      )}
+      {isDownloading
+        ? "Downloading..."
+        : "Download PDF Without Watermark – ₹5"}
+    </span>
+
+    {!isDownloading && (
+      <span className="text-xs opacity-90">
+        बिना वॉटरमार्क PDF डाउनलोड करें – ₹5
+      </span>
+    )}
+  </button>
+
+</div>
 
       <div className="w-full overflow-x-auto print:overflow-visible  ">
         <div ref={contentRef} className=" relative max-md:min-w-[1000px] mx-auto bg-white shadow-2xl print:shadow-none print:m-0 page-container p-4 md:p-6 lg:p-8 border border-gray-200 print:border-none w-full">
@@ -694,35 +712,57 @@ const handleSecureAction = async (actionType) => {
         </div>
       </div>
       
-      <div className="flex justify-center gap-4 mb-6 print:hidden">
-        {/* Print Button */}
-        <button
-          onClick={handlePrint}
-          disabled={isPrinting}
-          className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
-        >
-          {isPrinting ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <Printer className="w-5 h-5" />
-          )}
-          {isPrinting ? "Preparing..." : "Print Prapatra-2"}
-        </button>
-        
-        {/* Download Button */}
-        <button
-          onClick={handleDownloadPDF}
-          disabled={isDownloading}
-          className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
-        >
-          {isDownloading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <Download className="w-5 h-5" />
-          )}
-          <span>{isDownloading ? "Downloading..." : "Download PDF"}</span>
-        </button>
-      </div>
+      <div className="flex justify-center gap-4 mb-6 print:hidden flex-wrap">
+  
+  {/* ================= PRINT BUTTON (PAID) ================= */}
+  <button
+    onClick={() => handleSecureAction("print")}
+    disabled={isPrinting}
+    className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50 shadow-md"
+  >
+    <span className="flex items-center gap-2 text-base font-semibold">
+      {isPrinting ? (
+        <Loader2 className="w-5 h-5 animate-spin" />
+      ) : (
+        <Printer className="w-5 h-5" />
+      )}
+      {isPrinting
+        ? "Preparing..."
+        : "Print PDF Without Watermark – ₹5"}
+    </span>
+
+    {!isPrinting && (
+      <span className="text-xs opacity-90">
+        बिना वॉटरमार्क PDF प्रिंट करें – ₹5
+      </span>
+    )}
+  </button>
+
+  {/* ================= DOWNLOAD BUTTON (PAID) ================= */}
+  <button
+    onClick={() => handleSecureAction("download")}
+    disabled={isDownloading}
+    className="mt-6 bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+  >
+    <span className="flex items-center gap-2 text-sm font-semibold md:text-base">
+      {isDownloading ? (
+        <Loader2 className="w-5 h-5 animate-spin" />
+      ) : (
+        <Download className="w-5 h-5" />
+      )}
+      {isDownloading
+        ? "Downloading..."
+        : "Download PDF Without Watermark – ₹5"}
+    </span>
+
+    {!isDownloading && (
+      <span className="text-xs opacity-90">
+        बिना वॉटरमार्क PDF डाउनलोड करें – ₹5
+      </span>
+    )}
+  </button>
+
+</div>
       <style jsx global>{`
   @page { 
     size: A4 landscape; 

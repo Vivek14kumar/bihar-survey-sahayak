@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Plus, Trash2, Users, UserPlus, Edit3, CircleCheckBig  } from "lucide-react";
+import { Plus, Trash2, Users, UserPlus, Edit3, CircleCheckBig, Download, IndianRupee  } from "lucide-react";
 import AutoFamilyTreePDF from "./TreePDF";
 import { pdf } from "@react-pdf/renderer";
 import FamilyTreePreview from "@/components/FamilyTreePreviewWrapper";
@@ -253,7 +253,7 @@ const handleDownload = async () => {
     const data = await res.json();
 
     if (!data.allowed) {
-      toast.error("मुफ़्त डाउनलोड खत्म हो गया। कृपया भुगतान करें।", { icon: "💳" });
+      //toast.error("मुफ़्त डाउनलोड खत्म हो गया। कृपया भुगतान करें।", { icon: "💳" });
       openRazorpay();
       return;
     }
@@ -484,11 +484,18 @@ const handleDownload = async () => {
             <FamilyTreePreview data={treeData}  />
 
             <button
-              onClick={handleDownload}
-              className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-xl font-semibold transition"
-            >
-              PDF डाउनलोड करें
-            </button>
+  onClick={handleDownload}
+  className="w-full mt-4 bg-sky-400 hover:bg-sky-700 text-white p-4 rounded-xl font-semibold transition flex flex-col items-center gap-1"
+>
+  <span className="flex items-center gap-2 text-lg">
+    <Download size={20} />
+    Download PDF Without Watermark - ₹ 10
+  </span>
+
+  <span className="text-sm font-normal opacity-90">
+    बिना वॉटरमार्क PDF डाउनलोड करें – ₹10
+  </span>
+</button>
           </div>
         )}
       </div>

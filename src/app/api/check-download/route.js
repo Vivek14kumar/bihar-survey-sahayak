@@ -1,4 +1,4 @@
-import clientPromise from "@/lib/mongodb";
+/*import clientPromise from "@/lib/mongodb";
 
 export async function POST(req) {
   const { type } = await req.json(); // "vanshavali" or "prapatra2"
@@ -55,5 +55,39 @@ export async function POST(req) {
   }
 
   // ❌ Scenario 4: Limit Reached
+  return Response.json({ allowed: false });
+}*/
+
+import clientPromise from "@/lib/mongodb";
+
+export async function POST(req) {
+  const { type } = await req.json();
+  const client = await clientPromise;
+  const db = client.db("analyticsDB");
+  const collection = db.collection("downloadLimits");
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+  let user = await collection.findOne({ ip });
+
+  // 1. If user doesn't exist, they definitely have 0 credits
+  if (!user) {
+    await collection.insertOne({
+      ip,
+      credits: 0,
+      updatedAt: new Date(),
+    });
+    return Response.json({ allowed: false });
+  }
+
+  // 2. Check for Paid Credits only
+  if (user.credits > 0) {
+    await collection.updateOne(
+      { ip },
+      { $inc: { credits: -1 }, $set: { updatedAt: new Date() } }
+    );
+    return Response.json({ allowed: true, isPaid: true });
+  }
+
+  // 3. No credits = No download
   return Response.json({ allowed: false });
 }
