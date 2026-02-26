@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Plus, Trash2, Users, UserPlus, Edit3 } from "lucide-react";
+import { Plus, Trash2, Users, UserPlus, Edit3, CircleCheckBig  } from "lucide-react";
 import AutoFamilyTreePDF from "./TreePDF";
 import { pdf } from "@react-pdf/renderer";
 import FamilyTreePreview from "./FamilyTreePreview";
@@ -153,45 +153,77 @@ export default function Vanshavali() {
 
   // ---------- Razorpay ----------
   const openRazorpay = async () => {
-    if (!razorpayLoaded) {
-      alert("Payment system loading… please try again.");
-      return;
-    }
+  // 1️⃣ Check if Razorpay is loaded
+  if (!window.Razorpay) {
+    alert("Payment system loading… please try again.");
+    return;
+  }
 
-    // Create order on backend
+  try {
+    // 2️⃣ Create order on backend
     const orderRes = await fetch("/api/create-razorpay-order", { method: "POST" });
+    if (!orderRes.ok) throw new Error("Failed to create order");
+
     const orderData = await orderRes.json();
 
+    // 3️⃣ Razorpay options
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY, // your Razorpay key
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY, // frontend key
       amount: orderData.amount,
       currency: "INR",
       name: "Vanshavali PDF",
       description: "Payment for PDF download",
-      prefill: {
-        name: "Customer",       // default name
-        contact: "9876543210",  // default mobile number
-      },
-      readonly: {
-  name: false,
-  contact: false,
-},
       order_id: orderData.id,
-      handler: async function (response) {
-  await fetch("/api/verify-payment", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(response),
-  });
 
-  generatePDF();
-},
-      theme: { color: "#437ee3" },
+      // ✅ Prefill user info
+      prefill: {
+        name: "Customer Name",
+        contact: "9876543210",
+        email: "customer@example.com", // add email for reliability
+      },
+
+      // ✅ Force Razorpay to use our prefill instead of cached values
+      readonly: {
+        name: false,
+        contact: false,
+        email: false,
+      },
+
+      theme: { color: "#2f78f6" },
+
+      // 4️⃣ Handler after successful payment
+      handler: async function (response) {
+        try {
+          await fetch("/api/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response),
+          });
+
+          // ✅ Generate PDF only after successful verification
+          generatePDF();
+        } catch (err) {
+          console.error("Payment verification failed", err);
+          alert("Payment verification failed. Please contact support.");
+        }
+      },
+
+      modal: {
+        escape: true,
+        ondismiss: function () {
+          console.log("Payment popup closed by user");
+        },
+      },
     };
 
+    // 5️⃣ Open Razorpay modal
     const rzp = new window.Razorpay(options);
     rzp.open();
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong while initiating payment. Please try again.");
+  }
+};
 
   /*const trackVanshawaliDownload = async () => {
     await fetch("/api/track-vanshawali", { method: "POST" });
@@ -202,48 +234,34 @@ export default function Vanshavali() {
 
 const handleDownload = async () => {
   try {
-    // 1️⃣ Check download eligibility
-    const res = await fetch("/api/check-download", {
-      method: "POST",
-    });
+    const res = await fetch("/api/check-download", { method: "POST" });
     const data = await res.json();
 
-    let downloadType = "free";
-
     if (!data.allowed) {
-      // User exceeded free downloads → open payment
-      downloadType = "paid";
-      toast(`मुफ़्त डाउनलोड खत्म हो गया। कृपया भुगतान करें।`, { 
-        icon: "💳", 
-        duration: 5000 
-      });
+      toast.error("मुफ़्त डाउनलोड खत्म हो गया। कृपया भुगतान करें।", { icon: "💳" });
       openRazorpay();
-      return; // stop free PDF generation until payment succeeds
+      return;
     }
 
-    // 2️⃣ Show remaining free downloads
-    if (data.remaining > 0) {
-      toast.success(`आपके पास अभी ${data.remaining} मुफ्त डाउनलोड बाकी हैं।`);
+    // Show message if it was a free download
+    if (data.freeRemaining !== undefined) {
+      toast(`आपके पास अभी ${data.freeRemaining} मुफ़्त (FREE!) डाउनलोड बाकी हैं।`, {
+        icon: <CircleCheckBig size={20} className="text-green-600" />,
+        duration: 4000,
+        style: {
+          border: '1px solid #4f46e5',
+          padding: '10px',
+          color: '#96dc26',
+        },
+      });
     }
 
-    // 3️⃣ Generate the PDF
+    // Trigger PDF Generation
     generatePDF();
 
-    // 4️⃣ Track the download in DB
-    await fetch("/api/track-vanshawali", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: downloadType, // "free" or "paid"
-        timestamp: new Date().toISOString(),
-        // Optional: add userId or PDF info
-        // userId: currentUser?.id,
-        // pdfName: "Vanshawali_2026.pdf",
-      }),
-    });
   } catch (err) {
     console.error("Download error:", err);
-    toast.error("डाउनलोड में समस्या हुई, कृपया पुनः प्रयास करें।");
+    toast.error("तकनीकी समस्या, कृपया पुनः प्रयास करें।");
   }
 };
 
