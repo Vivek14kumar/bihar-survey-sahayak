@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Plus, Trash2, Users, UserPlus, Edit3, CircleCheckBig  } from "lucide-react";
 import AutoFamilyTreePDF from "./TreePDF";
 import { pdf } from "@react-pdf/renderer";
-import FamilyTreePreview from "./FamilyTreePreview";
+import FamilyTreePreview from "@/components/FamilyTreePreviewWrapper";
+
 import toast from "react-hot-toast";
 
 const RELATIONS = ["स्वयं", "पुत्र", "पुत्री", "पत्नी", "मृतक"];
