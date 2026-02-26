@@ -5,6 +5,7 @@ import { useReactToPrint } from "react-to-print";
 import * as htmlToImage from 'html-to-image';
 import jsPDF from 'jspdf';
 import { Download, Printer, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function LandscapePage() {
   const [todayDate, setTodayDate] = useState("");
@@ -284,6 +285,95 @@ const selectSuggestion = (selectedWord) => {
   }
 };
 
+// 1. Add these states at the top of your component
+const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+
+// 2. Load Razorpay script on mount
+useEffect(() => {
+  const script = document.createElement("script");
+  script.src = "https://checkout.razorpay.com/v1/checkout.js";
+  script.async = true;
+  script.onload = () => setRazorpayLoaded(true);
+  document.body.appendChild(script);
+}, []);
+
+// 3. The Reusable Payment Function
+const openRazorpay = async (callbackAction) => {
+  if (!window.Razorpay) {
+    alert("भुगतान सिस्टम लोड हो रहा है, कृपया प्रतीक्षा करें।");
+    return;
+  }
+
+  try {
+    const orderRes = await fetch("/api/create-razorpay-order", { 
+      method: "POST",
+      body: JSON.stringify({ type: "prapatra2" }) // Pass type here
+    });
+    const orderData = await orderRes.json();
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+      amount: orderData.amount,
+      currency: "INR",
+      name: "Bihar Survey Tool",
+      description: "Prapatra-2 Premium Download",
+      order_id: orderData.id,
+      handler: async function (response) {
+        await fetch("/api/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(response),
+        });
+        // Execute the action (Print or Download) after payment
+        callbackAction();
+      },
+      theme: { color: "#4f46e5" },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    console.error(err);
+    alert("त्रुटि: भुगतान शुरू नहीं हो सका।");
+  }
+};
+
+// 4. The Unified Gatekeeper for Print/Download
+const handleSecureAction = async (actionType) => {
+  if (!validateForm()) return;
+
+  try {
+    // 1. Check limit by sending the specific form type
+    const res = await fetch("/api/check-download", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "prapatra2" }) 
+    });
+    
+    const data = await res.json();
+
+    const executeAction = () => {
+      if (actionType === "print") handlePrint();
+      if (actionType === "download") handleDownloadPDF();
+    };
+
+    // 2. Gatekeeper Logic
+    if (!data.allowed) {
+      // Limit reached: Ask for payment, then execute
+      toast.error("मुफ़्त सीमा समाप्त! कृपया असीमित उपयोग के लिए भुगतान करें।");
+      openRazorpay(executeAction);
+    } else {
+      // Access granted: Show remaining free count if applicable
+      if (data.freeRemaining !== undefined) {
+        toast.success(`सफलता! आपके पास ${data.freeRemaining} मुफ़्त डाउनलोड बाकी हैं।`);
+      }
+      executeAction();
+    }
+  } catch (err) {
+    console.error("System Error:", err);
+    toast.error("सर्वर से संपर्क नहीं हो सका।");
+  }
+};
   const handlePrint = useReactToPrint({
     contentRef,
     documentTitle: `Prapatra-2_${todayDate}`,
@@ -305,7 +395,7 @@ const selectSuggestion = (selectedWord) => {
         <button
           onClick={() => {
     if (validateForm()) {
-      handlePrint();
+      handleSecureAction("print");
     }
   }}
           disabled={isPrinting}
@@ -321,7 +411,7 @@ const selectSuggestion = (selectedWord) => {
         
         {/* Download Button */}
         <button
-          onClick={handleDownloadPDF}
+          onClick={() => handleSecureAction("download")}
           disabled={isDownloading}
           className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
         >

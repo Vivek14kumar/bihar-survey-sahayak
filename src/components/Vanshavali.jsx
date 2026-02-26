@@ -135,22 +135,29 @@ export default function Vanshavali() {
   }, [members]);
 
   const trackVanshawaliDownload = async () => {
-    try {
-      const res = await fetch("/api/check-download", { method: "POST" });
-      const data = await res.json();
+  try {
+    // We send the "type" so the backend knows to check 'freeUsedVanshavali'
+    const res = await fetch("/api/check-download", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "vanshavali" }) 
+    });
+    
+    const data = await res.json();
 
-      if (!data.allowed) {
-        // Free limit reached → open payment
-        openRazorpay();
-        return false;
-      }
-
-      return true;
-    } catch (err) {
-      console.error("Error checking download:", err);
+    if (!data.allowed) {
+      // Free limit reached → open payment
+      openRazorpay();
       return false;
     }
-  };
+
+    // Access granted (either free or paid)
+    return true;
+  } catch (err) {
+    console.error("Error checking download:", err);
+    return false;
+  }
+};
 
   // ---------- Razorpay ----------
   const openRazorpay = async () => {
@@ -162,7 +169,10 @@ export default function Vanshavali() {
 
   try {
     // 2️⃣ Create order on backend
-    const orderRes = await fetch("/api/create-razorpay-order", { method: "POST" });
+    const orderRes = await fetch("/api/create-razorpay-order", { 
+      method: "POST",
+      body: JSON.stringify({ type: "vanshavali" }) // Pass type here
+    });
     if (!orderRes.ok) throw new Error("Failed to create order");
 
     const orderData = await orderRes.json();
@@ -235,7 +245,11 @@ export default function Vanshavali() {
 
 const handleDownload = async () => {
   try {
-    const res = await fetch("/api/check-download", { method: "POST" });
+    const res = await fetch("/api/check-download", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "vanshavali" }) 
+    });
     const data = await res.json();
 
     if (!data.allowed) {

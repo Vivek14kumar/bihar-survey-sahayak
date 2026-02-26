@@ -1,6 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 
 export async function POST(req) {
+  const { type } = await req.json(); // "vanshavali" or "prapatra2"
   const client = await clientPromise;
   const db = client.db("analyticsDB");
   const collection = db.collection("downloadLimits");
@@ -9,43 +10,48 @@ export async function POST(req) {
   let user = await collection.findOne({ ip });
 
   const MAX_FREE = 2;
+  
+  // Define which field to check based on type
+  const freeField = type === "vanshavali" ? "freeUsedVanshavali" : "freeUsedPrapatra";
 
   // 🆕 Scenario 1: Brand New User
   if (!user) {
-    await collection.insertOne({
+    const newUser = {
       ip,
-      freeUsed: 1,
+      freeUsedVanshavali: type === "vanshavali" ? 1 : 0,
+      freeUsedPrapatra: type === "prapatra2" ? 1 : 0,
       credits: 0,
       updatedAt: new Date(),
-    });
+    };
+    await collection.insertOne(newUser);
 
     return Response.json({
       allowed: true,
-      freeRemaining: MAX_FREE - 1, // Will return 2
+      freeRemaining: MAX_FREE - 1,
     });
   }
 
-  // ✅ Scenario 2: Existing User with Free Downloads left
-  if (user.freeUsed < MAX_FREE) {
-    const newUsedCount = user.freeUsed + 1;
-    await collection.updateOne(
-      { ip },
-      { $inc: { freeUsed: 1 }, $set: { updatedAt: new Date() } }
-    );
-
-    return Response.json({
-      allowed: true,
-      freeRemaining: MAX_FREE - newUsedCount, // Returns 1 or 0
-    });
-  }
-
-  // ✅ Scenario 3: Paid Credits
+  // ✅ Scenario 2: Paid Credits (Check first to give priority to paid users)
   if (user.credits > 0) {
     await collection.updateOne(
       { ip },
       { $inc: { credits: -1 }, $set: { updatedAt: new Date() } }
     );
     return Response.json({ allowed: true, isPaid: true });
+  }
+
+  // ✅ Scenario 3: Free Downloads left for specific type
+  const currentUsed = user[freeField] || 0;
+  if (currentUsed < MAX_FREE) {
+    await collection.updateOne(
+      { ip },
+      { $inc: { [freeField]: 1 }, $set: { updatedAt: new Date() } }
+    );
+
+    return Response.json({
+      allowed: true,
+      freeRemaining: MAX_FREE - (currentUsed + 1),
+    });
   }
 
   // ❌ Scenario 4: Limit Reached
