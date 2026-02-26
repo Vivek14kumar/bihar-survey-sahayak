@@ -168,6 +168,10 @@ export default function Vanshavali() {
       currency: "INR",
       name: "Vanshavali PDF",
       description: "Payment for PDF download",
+      prefill: {
+        name: "Customer",       // default name
+        contact: "9876543210",  // default mobile number
+      },
       order_id: orderData.id,
       handler: async function (response) {
   await fetch("/api/verify-payment", {
