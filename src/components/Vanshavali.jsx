@@ -172,6 +172,10 @@ export default function Vanshavali() {
         name: "Customer",       // default name
         contact: "9876543210",  // default mobile number
       },
+      readonly: {
+  name: false,
+  contact: false,
+},
       order_id: orderData.id,
       handler: async function (response) {
   await fetch("/api/verify-payment", {
