@@ -15,7 +15,7 @@ export default function FamilyTreePreview({ data }) {
       try {
         setLoading(true);
         // Generate the PDF Blob directly
-        const blob = await pdf(<AutoFamilyTreePDF data={data} />).toBlob();
+        const blob = await pdf(<AutoFamilyTreePDF data={data} isPreview={true} />).toBlob();
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);
         setLoading(false);
@@ -37,13 +37,6 @@ export default function FamilyTreePreview({ data }) {
   return (
     <div className="relative w-full border border-gray-300 rounded-lg overflow-hidden bg-gray-50 shadow-inner">
       
-      {/* 1. THE WATERMARK (Crucial for Trust/Payment) */}
-      <div className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden">
-        <div className="rotate-[-35deg] text-3xl md:text-7xl font-bold text-black opacity-10 select-none whitespace-nowrap">
-          BIHAR SURVEY SAHAYAK - PREVIEW
-        </div>
-      </div>
-
       {/* 2. LOADING STATE */}
       {loading && (
         <div className="flex flex-col items-center justify-center p-20 bg-white">
@@ -70,7 +63,7 @@ export default function FamilyTreePreview({ data }) {
                 onClick={() => window.open(pdfUrl, '_blank')}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all transform active:scale-95"
               >
-                👁️ वंशावली का प्रीव्यू देखें
+                👁️ वंशावली का प्रीव्यू (Preview) देखें
               </button>
             </div>
           </object>

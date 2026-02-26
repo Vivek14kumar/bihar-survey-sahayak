@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
     fontFamily: "Hindi",
     fontSize: 9,
     padding: 20,
+    position: "relative",
   },
 
   title: {
@@ -142,6 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 15,
     textDecoration: "underline",
+    zIndex: 10,
   },
 
   node: {
@@ -152,18 +154,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 5,
+    backgroundColor: "white", // Important: node sits above watermark
+    zIndex: 5,
   },
 
   vLine: {
     position: "absolute",
     width: 1,
     backgroundColor: "black",
+    zIndex: 2,
   },
 
   hLine: {
     position: "absolute",
     height: 1,
     backgroundColor: "black",
+    zIndex: 2,
   },
 
   footer: {
@@ -173,18 +179,42 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 8,
     color: "gray",
+    zIndex: 10,
+  },
+
+  /* FULL PAGE WATERMARK */
+  watermarkContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 50,
+    opacity: 0.1, // Adjust transparency as needed
+    zIndex: -1,   // Background layer
+  },
+  watermarkText: {
+    fontSize: 35,
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 40,
   },
 });
 
 /* ---------------- MAIN COMPONENT ---------------- */
 
-export default function AutoFamilyTreePDF({ data }) {
+export default function AutoFamilyTreePDF({ data, isPreview = false }) {
 
   // 🔒 SAFETY CHECK
   if (!data || typeof data !== "object") {
     return (
       <Document>
-        <Page size="A4">
+        <Page size="A4" orientation="landscape">
           <Text>डेटा उपलब्ध नहीं है</Text>
         </Page>
       </Document>
@@ -195,9 +225,25 @@ export default function AutoFamilyTreePDF({ data }) {
   const positionedNodes = calculatePositions(levels);
   const lines = buildLines(positionedNodes);
 
+  // Watermark text rows
+  const watermarkLabel = "BIHAR SURVEY SAHAYAK BIHAR SURVEY SAHAYAK BIHAR SURVEY SAHAYAK";
+
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
+        
+        {/* REPEATED WATERMARK */}
+        {isPreview && (
+          <View style={styles.watermarkContainer} fixed>
+            <Text style={styles.watermarkText}>{watermarkLabel}</Text>
+            <Text style={styles.watermarkText}>{watermarkLabel}</Text>
+            <Text style={styles.watermarkText}>{watermarkLabel}</Text>
+            <Text style={styles.watermarkText}>{watermarkLabel}</Text>
+            <Text style={styles.watermarkText}>{watermarkLabel}</Text>
+            <Text style={styles.watermarkText}>{watermarkLabel}</Text>
+          </View>
+        )}
+
         <Text style={styles.title}>
           वंशवृक्ष तालिका (स्व-घोषणा)
         </Text>

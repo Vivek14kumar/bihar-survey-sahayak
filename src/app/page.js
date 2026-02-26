@@ -4,6 +4,7 @@ import Vanshavali from "@/components/Vanshavali";
 import { ShieldCheck, FileText, Languages, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import FAQClient from "./faq/FAQClient";
+import VanshawaliTutorial from "@/components/VanshawaliTutorial";
 
 export default function Home() {
   return (
@@ -100,6 +101,17 @@ export default function Home() {
 
       {/* ================= TOOL ================= */}
       <section id="tool" className="max-w-6xl mx-auto mt-28 px-4 sm:px-6 md:px-12">
+        {/* Tutorial Video */}
+  <motion.div
+    initial={{ opacity: 0, y: 60 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.7 }}
+    viewport={{ once: true }}
+    className="bg-white rounded-3xl shadow-2xl p-2 sm:p-2 mb-10"
+  >
+    <VanshawaliTutorial />
+  </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}

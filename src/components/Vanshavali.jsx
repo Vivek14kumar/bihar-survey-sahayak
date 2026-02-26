@@ -37,7 +37,7 @@ export default function Vanshavali() {
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = "bihar_vanshavali.pdf";
+  link.download = `Vanshavali_${treeData.name || "Bihar_Survey"}.pdf`;
   link.click();
 
   URL.revokeObjectURL(url);
