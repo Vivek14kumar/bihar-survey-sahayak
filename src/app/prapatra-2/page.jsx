@@ -13,6 +13,8 @@ export default function LandscapePage() {
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const [showWatermark, setShowWatermark] = useState(true);
+
   const debounceRef = useRef(null);
   const cacheRef = useRef({});
 
@@ -24,6 +26,18 @@ export default function LandscapePage() {
   const validateForm = () => {
   const entry = entries[0];
   const missingFields = [];
+  
+  const executeAction = () => {
+  if (actionType === "print") {
+    setShowWatermark(false); // Remove watermark for paid
+    handlePrint();
+  }
+
+  if (actionType === "download") {
+    setShowWatermark(false); // Remove watermark for paid
+    handleDownloadPDF();
+  }
+};
 
   // 1. Check Header Fields
   const headerLabels = {
@@ -361,6 +375,7 @@ const handleSecureAction = async (actionType) => {
     if (!data.allowed) {
       // Limit reached: Ask for payment, then execute
       //toast.error("मुफ़्त सीमा समाप्त! कृपया असीमित उपयोग के लिए भुगतान करें।");
+      setShowWatermark(true); // Free version → show watermark
       openRazorpay(executeAction);
     } else {
       // Access granted: Show remaining free count if applicable
@@ -441,10 +456,22 @@ const handleSecureAction = async (actionType) => {
   </button>
 
 </div>
-
       <div className="w-full overflow-x-auto print:overflow-visible  ">
         <div ref={contentRef} className=" relative max-md:min-w-[1000px] mx-auto bg-white shadow-2xl print:shadow-none print:m-0 page-container p-4 md:p-6 lg:p-8 border border-gray-200 print:border-none w-full">
-          
+          {showWatermark && (
+            <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
+              <div className="w-full h-full flex flex-wrap justify-center items-center gap-16 rotate-[-30deg] opacity-10 select-none">
+                {Array.from({ length: 40 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className="text-4xl font-extrabold text-gray-600 whitespace-nowrap"
+                  >
+                    BIHAR SURVEY SAHAYAK
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           <header className="text-center underline mb-2">
             <p className="font-bold text-lg text-black">प्रपत्र-2</p>
             <p className="text-sm">(देखें नियम-6 उप नियम-(1))</p>
