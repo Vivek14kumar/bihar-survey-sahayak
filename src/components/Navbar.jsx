@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   Home,
@@ -21,11 +21,43 @@ export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const [formOpen, setFormOpen] = useState(false);
+
+  const [bottomFormOpen, setBottomFormOpen] = useState(false);
+  const bottomDropdownRef = useRef(null);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setFormOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+  function handleClickOutside(event) {
+    if (
+      bottomDropdownRef.current &&
+      !bottomDropdownRef.current.contains(event.target)
+    ) {
+      setBottomFormOpen(false);
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
   const mobileNavItems = [
     { name: "होम", href: "/", icon: <Home size={20} /> },
     { name: "वंशावली", href: "/#tool", icon: <Users size={20} /> },
     { name: "Prapatra Pdf", href: "/pdf", icon: <FileText size={20} /> },
-    { name: "Prapatra-2", href: "/prapatra-2", icon: <Form  size={20} /> },
+    { name: "Prapatra-2 भरे", href: "/prapatra-2", icon: <Form size={20} /> },
+    { name: "शपथ पत्र/Shapath Patra", href: "/shapath-patra", icon: <FileText size={20} /> },
     { name: "About", href: "/about", icon: <User  size={20} /> },
     { name: "Privacy", href: "/privacy-policy", icon: <ShieldCheck size={20} /> },
     { name: "Terms", href: "/terms-and-conditions", icon: <FileWarning size={20} /> },
@@ -36,7 +68,7 @@ export default function Navbar() {
     <>
       {/* ================= DESKTOP HEADER ================= */}
       <header className="hidden md:block sticky top-0 z-50 backdrop-blur-xl bg-white/70 border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center no-print">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <Image
@@ -53,9 +85,46 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <nav className="flex items-center gap-8 text-sm font-medium text-slate-700">
+          <nav className="flex items-center gap-8 text-sm font-medium text-slate-700 no-print">
             <Link href="/" className="hover:text-indigo-600 transition">होम / Home</Link>
-            <Link href="/prapatra-2" className="hover:text-indigo-600 transition">Prapatra-2 भरे </Link>
+            <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setFormOpen(!formOpen)}
+              className="hover:text-indigo-600 transition flex items-center gap-1"
+            >
+              प्रपत्र भरे /Form
+            </button>
+
+            {formOpen && (
+              <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-xl border border-slate-200 py-2 z-50">
+
+                <Link
+                  href="/prapatra-2"
+                  onClick={() => setFormOpen(false)}
+                  className={`block px-4 py-2 text-sm transition ${
+                    pathname === "/prapatra-2"
+                      ? "bg-indigo-50 text-indigo-600 font-semibold"
+                      : "hover:bg-slate-100"
+                  }`}
+                >
+                  Prapatra-2 भरे
+                </Link>
+                
+                <Link
+                  href="/shapath-patra"
+                  onClick={() => setFormOpen(false)}
+                  className={`block px-4 py-2 text-sm transition ${
+                    pathname === "/shapath-patra"
+                      ? "bg-indigo-50 text-indigo-600 font-semibold"
+                      : "hover:bg-slate-100"
+                  }`}
+                >
+                  शपथ पत्र/Shapath Patra
+                </Link>
+                
+              </div>
+            )}
+          </div>
             <Link href="/pdf" className="hover:text-indigo-600 transition">Prapatra pdf and Forms</Link>
             <Link href="/about" className="hover:text-indigo-600 transition">About</Link>
             <Link href="/privacy-policy" className="hover:text-indigo-600 transition">Privacy</Link>
@@ -132,13 +201,52 @@ export default function Navbar() {
             <Users size={20} />
             <span className="mt-1">वंशावली</span>
           </Link>
-          <Link
-            href="/prapatra-2"
-            className="flex flex-col items-center text-xs px-2 py-1 text-slate-600"
+          <div
+            className="relative flex flex-col items-center text-xs px-2 py-1"
+            ref={bottomDropdownRef}
           >
-            <Form size={20} />
-            <span className="mt-1">प्रपत्र-2 भरे</span>
-          </Link>
+            <button
+              onClick={() => setBottomFormOpen(!bottomFormOpen)}
+              className={`flex flex-col items-center ${
+                pathname === "/prapatra-2" || pathname === "/shapath-patra"
+                  ? "text-indigo-600"
+                  : "text-slate-600"
+              }`}
+            >
+              <Form size={20} />
+              <span className="mt-1">प्रपत्र भरे / Forms</span>
+            </button>
+            
+            {bottomFormOpen && (
+              <div className="absolute bottom-14 bg-white shadow-xl rounded-xl w-44 border border-slate-200 py-2">
+
+                <Link
+                  href="/prapatra-2"
+                  onClick={() => setBottomFormOpen(false)}
+                  className={`block px-4 py-2 text-sm ${
+                    pathname === "/prapatra-2"
+                      ? "bg-indigo-50 text-indigo-600 font-semibold"
+                      : "hover:bg-slate-100"
+                  }`}
+                >
+                  Prapatra-2 भरे
+                </Link>
+                
+                <Link
+                  href="/shapath-patra"
+                  onClick={() => setBottomFormOpen(false)}
+                  className={`block px-4 py-2 text-sm ${
+                    pathname === "/shapath-patra"
+                      ? "bg-indigo-50 text-indigo-600 font-semibold"
+                      : "hover:bg-slate-100"
+                  }`}
+                >
+                  शपथ पत्र/Shapath Patra
+                </Link>
+                
+              </div>
+            )}
+          </div>
           <Link
             href="/pdf"
             className="flex flex-col items-center text-xs px-2 py-1 text-slate-600"

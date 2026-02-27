@@ -23,6 +23,7 @@ export async function GET() {
     prapatra2Printed: 0,
     vanshawaliPaid: 0,
     prapatra2Paid: 0,
+    affidavitPaid: 0,
     totalRevenue: 0,
     pageViews: 0,
     uniqueVisitors: 0,
@@ -37,6 +38,7 @@ export async function GET() {
     totals.prapatra2Printed += day.prapatra2Printed || 0;
     totals.vanshawaliPaid += day.vanshawaliPaid || 0;
     totals.prapatra2Paid += day.prapatra2Paid || 0;
+    totals.affidavitPaid += day.affidavitPaid || 0;
     totals.totalRevenue += day.totalRevenue || 0;
 
     totals.pageViews += day.pageViews || 0;

@@ -354,10 +354,27 @@ const openRazorpay = async (callbackAction) => {
 
 // 4. The Unified Gatekeeper for Print/Download
 const handleSecureAction = async (actionType) => {
+
+  // 1️⃣ Validate form first
   if (!validateForm()) return;
 
+  // 2️⃣ Review Confirmation
+  const confirmReview = window.confirm(
+    "कृपया आगे बढ़ने से पहले फॉर्म को ध्यान से देख लें।\n\nक्या आपने सभी जानकारी सही से भर दी है?"
+  );
+
+  if (!confirmReview) return;
+
+  // 3️⃣ Legal Responsibility Confirmation
+  const confirmResponsibility = window.confirm(
+    "मैंने फॉर्म को ध्यान से देख लिया है।\n\nयदि कोई जानकारी गलत है तो उसकी पूरी जिम्मेदारी मेरी होगी।\n\nक्या आप आगे बढ़ना चाहते हैं?"
+  );
+
+  if (!confirmResponsibility) return;
+
   try {
-    // 1. Check limit by sending the specific form type
+
+    // 4️⃣ Check limit by sending the specific form type
     const res = await fetch("/api/check-download", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -371,19 +388,23 @@ const handleSecureAction = async (actionType) => {
       if (actionType === "download") handleDownloadPDF();
     };
 
-    // 2. Gatekeeper Logic
+    // 5️⃣ Gatekeeper Logic
     if (!data.allowed) {
-      // Limit reached: Ask for payment, then execute
-      //toast.error("मुफ़्त सीमा समाप्त! कृपया असीमित उपयोग के लिए भुगतान करें।");
-      setShowWatermark(true); // Free version → show watermark
+
+      // Free limit finished → payment required
+      setShowWatermark(true);
       openRazorpay(executeAction);
+
     } else {
-      // Access granted: Show remaining free count if applicable
+
+      // Free access granted
       if (data.freeRemaining !== undefined) {
         toast.success(`सफलता! आपके पास ${data.freeRemaining} मुफ़्त डाउनलोड बाकी हैं।`);
       }
+
       executeAction();
     }
+
   } catch (err) {
     console.error("System Error:", err);
     toast.error("सर्वर से संपर्क नहीं हो सका।");
@@ -430,7 +451,7 @@ const handleSecureAction = async (actionType) => {
       </span>
     )}
   </button>
-
+    
   {/* ================= DOWNLOAD BUTTON (PAID) ================= */}
   <button
     onClick={() => handleSecureAction("download")}

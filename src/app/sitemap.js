@@ -20,6 +20,12 @@ export default function sitemap() {
       priority: 0.9,
     },
     {
+      url: "https://biharsurveysahayak.online/shapath-patra",
+      lastModified: today,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: "https://biharsurveysahayak.online/pdf",
       lastModified: today,
       changeFrequency: "monthly",

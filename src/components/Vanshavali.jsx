@@ -211,6 +211,11 @@ export default function Vanshavali() {
             body: JSON.stringify(response),
           });
 
+          // 2️⃣ Track vanshavali paid download
+            await fetch("/api/track-vanshawali", {
+              method: "POST",
+            });
+
           // ✅ Generate PDF only after successful verification
           generatePDF();
         } catch (err) {
@@ -241,9 +246,26 @@ export default function Vanshavali() {
   };*/
 
   // ---------- PDF Download ----------
+  const handleDownload = () => {
+    // 1️⃣ Validate Form First
 
+  // 2️⃣ First Confirmation (Review Form)
+  const confirmReview = window.confirm(
+    "Payment करने से पहले कृपया वंशावली (PREVIEW) को ध्यान से देख लें।\n\nक्या आपने सभी जानकारी सही से भर दी है?"
+  );
 
-const handleDownload = async () => {
+  if (!confirmReview) return;
+
+  // 3️⃣ Legal Responsibility Confirmation
+  const confirmResponsibility = window.confirm(
+    "मैंने वंशावली को ध्यान से देख लिया है।\n\nयदि कोई जानकारी गलत है तो उसकी पूरी जिम्मेदारी मेरी होगी।\n\nक्या आप डाउनलोड जारी रखना चाहते हैं?"
+  );
+
+  if (!confirmResponsibility) return;
+  openRazorpay();
+};
+
+/*const handleDownload = async () => {
   try {
     const res = await fetch("/api/check-download", { 
       method: "POST",
@@ -253,7 +275,7 @@ const handleDownload = async () => {
     const data = await res.json();
 
     if (!data.allowed) {
-      //toast.error("मुफ़्त डाउनलोड खत्म हो गया। कृपया भुगतान करें।", { icon: "💳" });
+      toast.error("मुफ़्त डाउनलोड खत्म हो गया। कृपया भुगतान करें।", { icon: "💳" });
       openRazorpay();
       return;
     }
@@ -281,7 +303,7 @@ const handleDownload = async () => {
     console.error("Download error:", err);
     toast.error("तकनीकी समस्या, कृपया पुनः प्रयास करें।");
   }
-};
+};*/
 
   // ---------- Add / Edit Member ----------
   const handleAddMember = () => {
