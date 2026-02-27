@@ -370,26 +370,6 @@ const handlePaidPrint = async () => {
           </div>
         </div>
       </div>
-          {/* Print Button */}
-      <div className="w-full max-w-4xl flex justify-center mt-2 print:hidden">
-        <button 
-          onClick={handlePaidPrint}
-          className="flex flex-col items-center justify-center gap-1 px-10 py-4 
-                     bg-gradient-to-r from-blue-700 to-indigo-700 
-                     text-white rounded-xl shadow-xl 
-                     hover:scale-105 hover:shadow-2xl 
-                     transition-all duration-300 font-bold text-lg"
-        >
-          <div className="flex items-center gap-3">
-            <Printer size={22} />
-            <span>Print Without Watermark ₹3</span>
-          </div>
-          
-          <span className="text-xs opacity-90 font-medium">
-            बिना वॉटरमार्क PDF प्रिंट करें – ₹3
-          </span>
-        </button>
-      </div>
       <style jsx global>{`
   @page { 
     size: A4 portrait; 

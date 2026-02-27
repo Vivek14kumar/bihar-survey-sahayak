@@ -52,7 +52,7 @@ export default function FamilyTreePreview({ data }) {
           <object
             data={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
             type="application/pdf"
-            className="w-full h-[500px] md:h-[700px] border-none pointer-events-none"
+            className="w-full h-[500px] md:h-[700px] border-none md:pointer-events-none"
           >
           
           {/* Invisible Overlay to Block Interaction */}
