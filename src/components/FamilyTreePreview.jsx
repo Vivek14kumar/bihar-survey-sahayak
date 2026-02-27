@@ -57,9 +57,9 @@ export default function FamilyTreePreview({ data }) {
           
           {/* Invisible Overlay to Block Interaction */}
           <div
-            className="absolute inset-0 z-10"
-            onContextMenu={(e) => e.preventDefault()}
-          />
+  className="hidden md:block absolute inset-0 z-10"
+  onContextMenu={(e) => e.preventDefault()}
+/>
             {/* FALLBACK: If the browser refuses to embed, show a "Trust Button" */}
             <div className="p-8 text-center bg-white border-2 border-dashed border-blue-200 m-4 rounded-xl">
               <p className="text-gray-700 mb-4 font-medium">
