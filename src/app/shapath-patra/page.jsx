@@ -121,24 +121,8 @@ const openRazorpay = async (callbackAction) => {
 };
 const handlePaidPrint = async () => {
 
-  // 1️⃣ Validate form
   if (!validateForm()) return;
 
-  // 2️⃣ First Confirmation
-  const confirmReview = window.confirm(
-    "Payment करने से पहले कृपया फॉर्म को ध्यान से देख लें।\n\nक्या आपने सभी जानकारी सही से भर दी है?"
-  );
-
-  if (!confirmReview) return;
-
-  // 3️⃣ Second Legal Confirmation
-  const confirmResponsibility = window.confirm(
-    "मैंने फॉर्म को ध्यान से देख लिया है।\n\nयदि कोई जानकारी गलत है तो उसकी पूरी जिम्मेदारी मेरी होगी।\n\nक्या आप आगे बढ़ना चाहते हैं?"
-  );
-
-  if (!confirmResponsibility) return;
-
-  // 4️⃣ Execute payment
   const executePrint = async () => {
     window.print();
 
