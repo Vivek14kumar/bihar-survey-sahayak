@@ -35,7 +35,7 @@ export default function FamilyTreePreview({ data }) {
   if (!data) return <div className="p-4 text-red-600 text-center">डेटा उपलब्ध नहीं है</div>;
 
   return (
-    <div className="relative w-full border border-gray-300 rounded-lg overflow-hidden bg-gray-50 shadow-inner">
+    <div className="relative w-full border border-gray-300 rounded-lg overflow-hidden bg-gray-50 shadow-inner select-none" onContextMenu={(e) => e.preventDefault()}>
       
       {/* 2. LOADING STATE */}
       {loading && (
@@ -47,13 +47,19 @@ export default function FamilyTreePreview({ data }) {
 
       {/* 3. MOBILE & DESKTOP: THE SMART EMBED */}
       {!loading && pdfUrl && (
-        <div className="w-full">
-          {/* We use an <object> tag which is the most compatible way for Mobile Chrome/Safari */}
+          <div className="relative w-full">
+          {/* PDF */}
           <object
             data={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
             type="application/pdf"
-            className="w-full h-[500px] md:h-[700px] border-none"
+            className="w-full h-[500px] md:h-[700px] border-none pointer-events-none"
           >
+          
+          {/* Invisible Overlay to Block Interaction */}
+          <div
+            className="absolute inset-0 z-10"
+            onContextMenu={(e) => e.preventDefault()}
+          />
             {/* FALLBACK: If the browser refuses to embed, show a "Trust Button" */}
             <div className="p-8 text-center bg-white border-2 border-dashed border-blue-200 m-4 rounded-xl">
               <p className="text-gray-700 mb-4 font-medium">
