@@ -16,7 +16,7 @@ export async function POST(req) {
     } else if (type === "vanshavali") {
       amount = 10 * 100; // ₹10
     }else if (type === "affidavit") {
-      amount = 1 * 100; // ✅ ₹3 per document
+      amount = 3 * 100; // ✅ ₹3 per document
     } else {
       return Response.json({ error: "Invalid type" }, { status: 400 });
     }
