@@ -24,36 +24,36 @@ export default function ParimarjanAffidavit() {
   });
 
   const validateForm = () => {
-  const requiredFields = [
-    { key: "name", label: "नाम" },
-    { key: "fatherName", label: "पिता/पति का नाम" },
-    { key: "mauja", label: "मौजा" },
-    { key: "anchal", label: "अंचल" },
-    { key: "district", label: "जिला" },
-    { key: "footerName", label: "शपथ कर्त्ता का नाम" },
-    { key: "mobile", label: "मोबाइल नंबर" },
-  ];
+    const requiredFields = [
+      { key: "name", label: "नाम" },
+      { key: "fatherName", label: "पिता/पति का नाम" },
+      { key: "mauja", label: "मौजा" },
+      { key: "anchal", label: "अंचल" },
+      { key: "district", label: "जिला" },
+      { key: "footerName", label: "शपथ कर्त्ता का नाम" },
+      { key: "mobile", label: "मोबाइल नंबर" },
+    ];
 
-  for (let field of requiredFields) {
-    if (!formData[field.key] || formData[field.key].trim() === "") {
-      alert(`${field.label} भरना अनिवार्य है।`);
+    for (let field of requiredFields) {
+      if (!formData[field.key] || formData[field.key].trim() === "") {
+        alert(`${field.label} भरना अनिवार्य है।`);
+        return false;
+      }
+    }
+
+    // Mobile validation
+    if (!/^[6-9]\d{9}$/.test(formData.mobile)) {
+      alert("सही 10 अंकों का मोबाइल नंबर दर्ज करें।");
       return false;
     }
-  }
 
-  // Mobile validation
-  if (!/^[6-9]\d{9}$/.test(formData.mobile)) {
-    alert("सही 10 अंकों का मोबाइल नंबर दर्ज करें।");
-    return false;
-  }
-
-  return true;
-};
+    return true;
+  };
 
   // Handle Responsiveness: Scaling for mobile view
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 850) { // Max-width 4xl is approx 896px
+      if (window.innerWidth < 850) {
         const newScale = window.innerWidth / 950;
         setScale(newScale);
       } else {
@@ -66,62 +66,61 @@ export default function ParimarjanAffidavit() {
   }, []);
 
   useEffect(() => {
-  const script = document.createElement("script");
-  script.src = "https://checkout.razorpay.com/v1/checkout.js";
-  script.async = true;
-  script.onload = () => setRazorpayLoaded(true);
-  document.body.appendChild(script);
-}, []);
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => setRazorpayLoaded(true);
+    document.body.appendChild(script);
+  }, []);
 
-const openRazorpay = async (callbackAction) => {
-  if (!window.Razorpay) {
-    alert("भुगतान प्रणाली लोड हो रही है...");
-    return;
-  }
+  const openRazorpay = async (callbackAction) => {
+    if (!window.Razorpay) {
+      alert("भुगतान प्रणाली लोड हो रही है...");
+      return;
+    }
 
-  try {
-    const orderRes = await fetch("/api/create-razorpay-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "affidavit" })
-    });
+    try {
+      const orderRes = await fetch("/api/create-razorpay-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "affidavit" })
+      });
 
-    const orderData = await orderRes.json();
+      const orderData = await orderRes.json();
 
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-      amount: orderData.amount,
-      currency: "INR",
-      name: "Bihar Survey Sahayak",
-      description: "Affidavit Premium Print ₹3",
-      order_id: orderData.id,
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+        amount: orderData.amount,
+        currency: "INR",
+        name: "Bihar Survey Sahayak",
+        description: "Affidavit Premium Print ₹3",
+        order_id: orderData.id,
 
-      handler: async function (response) {
+        handler: async function (response) {
+          await fetch("/api/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response),
+          });
 
-        // OPTIONAL but recommended
-        await fetch("/api/verify-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(response),
-        });
+          setShowWatermark(false); 
+          callbackAction();
+        },
 
-        setShowWatermark(false); // Remove watermark
-        callbackAction();
-      },
+        theme: { color: "#1d4ed8" },
+      };
 
-      theme: { color: "#1d4ed8" },
-    };
+      const rzp = new window.Razorpay(options);
+      rzp.open();
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    } catch (err) {
+      alert("भुगतान प्रारंभ नहीं हो सका।");
+    }
+  };
 
-  } catch (err) {
-    alert("भुगतान प्रारंभ नहीं हो सका।");
-  }
-};
-const handlePaidPrint = async () => {
+  const handlePaidPrint = async () => {
 
-  /*if (!validateForm()) return;
+  if (!validateForm()) return;
 
   const executePrint = async () => {
     window.print();
@@ -133,9 +132,9 @@ const handlePaidPrint = async () => {
     });
   };
 
-  openRazorpay(executePrint);*/
-  window.print
+  openRazorpay(executePrint);
 };
+
   // 2. HINDI TRANSLITERATION LOGIC
   const fetchSuggestions = async (word) => {
     if (!word || word.length < 2) return;
@@ -201,11 +200,7 @@ const handlePaidPrint = async () => {
       <div className="w-full max-w-4xl flex justify-center mb-6 print:hidden">
         <button 
           onClick={handlePaidPrint}
-          className="flex flex-col items-center justify-center gap-1 px-10 py-4 
-                     bg-gradient-to-r from-blue-700 to-indigo-700 
-                     text-white rounded-xl shadow-xl 
-                     hover:scale-105 hover:shadow-2xl 
-                     transition-all duration-300 font-bold text-lg"
+          className="flex flex-col items-center justify-center gap-1 px-10 py-4 bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-xl shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 font-bold text-lg"
         >
           <div className="flex items-center gap-3">
             <Printer size={22} />
@@ -220,24 +215,22 @@ const handlePaidPrint = async () => {
 
       {/* Affidavit Document Wrapper */}
       <div 
-        className="origin-top transition-transform duration-300 ease-in-out shadow-2xl print:shadow-none"
+        className="origin-top transition-transform duration-300 ease-in-out shadow-2xl print:shadow-none print:transform-none"
         style={{ transform: `scale(${scale})` }}
       >
-        <div className="max-w-4xl w-[210mm] mx-auto p-12 bg-white border border-gray-300  relative min-h-[297mm] print:border-none print:p-8">
+        <div className="max-w-4xl w-[210mm] mx-auto p-12 bg-white border border-gray-300 relative min-h-[297mm] print:border-none print:p-8">
           {showWatermark && (
-  <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden opacity-10">
-    <div className="grid grid-cols-3 gap-16 w-full h-full place-items-center rotate-[-30deg]">
-      {Array.from({ length: 60 }).map((_, i) => (
-        <span
-          key={i}
-          className="text-3xl font-extrabold text-gray-500 whitespace-nowrap"
-        >
-          BIHAR SURVEY SAHAYAK
-        </span>
-      ))}
-    </div>
-  </div>
-)}
+            <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden opacity-10">
+              <div className="grid grid-cols-3 gap-16 w-full h-full place-items-center rotate-[-30deg]">
+                {Array.from({ length: 60 }).map((_, i) => (
+                  <span key={i} className="text-3xl font-extrabold text-gray-500 whitespace-nowrap">
+                    BIHAR SURVEY SAHAYAK
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {/* Suggestion Dropdown */}
           {suggestions.length > 0 && currentField && (
             <div className="fixed bg-white border-2 border-blue-600 rounded shadow-2xl z-[9999] min-w-[150px] top-[20%] left-1/2 -translate-x-1/2">
@@ -250,12 +243,10 @@ const handlePaidPrint = async () => {
             </div>
           )}
 
-          {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-2xl font-bold underline mb-2">स्व-अभिप्रमाणित शपथ पत्र</h1>
           </div>
 
-          {/* Main Body */}
           <div className="text-black">
             <p className="indent-10 text-justify px-8">
               मैं <input 
@@ -286,14 +277,16 @@ const handlePaidPrint = async () => {
               थाना नं०- <input 
                 className="border-b border-dotted border-black outline-none w-24 text-center bg-transparent px-1 font-bold placeholder:text-sm"
                 value={formData.thanaNo}
+                type="number"
                 onChange={(e) => setFormData({...formData, thanaNo: e.target.value})}
                 placeholder="थाना नं०"
               />  
               हल्का- <input 
                 className="border-b border-dotted border-black outline-none w-40 text-center bg-transparent px-1 font-bold placeholder:text-sm"
                 value={formData.halka}
+                type="number"
                 onFocus={() => setCurrentField('halka')}
-                onChange={(e) => handleInputChange('halka', e.target.value)}
+                onChange={(e) => setFormData({...formData,halka: e.target.value})}
                 onKeyDown={handleKeyDown}
                 placeholder="हल्का नं०"
               /> 
@@ -318,7 +311,7 @@ const handlePaidPrint = async () => {
               का निवासी हूँ। राजस्व एवं भूमि सुधार विभाग द्वारा डिजिटाईज्ड कर ऑनलाइन उपलब्ध कराए गए मेरी जमाबंदी जिला 
               <input className="border-b border-dotted border-black outline-none w-32 text-center font-bold placeholder:text-sm" placeholder="जिला लिखें" value={formData.regDistrict} onFocus={() => setCurrentField('regDistrict')} onChange={(e) => handleInputChange('regDistrict', e.target.value)} onKeyDown={handleKeyDown} />
               <br /> अंचल <input className="border-b border-dotted border-black outline-none w-34 text-center font-bold placeholder:text-sm" placeholder="अंचल लिखें " value={formData.regAnchal} onFocus={() => setCurrentField('regAnchal')} onChange={(e) => handleInputChange('regAnchal', e.target.value)} onKeyDown={handleKeyDown} />
-              हल्का <input className="border-b border-dotted border-black outline-none w-14 text-center font-bold placeholder:text-sm" placeholder="हल्का न० " value={formData.regHalka} onFocus={() => setCurrentField('regHalka')} onChange={(e) => handleInputChange('regHalka', e.target.value)} onKeyDown={handleKeyDown} />
+              हल्का <input className="border-b border-dotted border-black outline-none w-14 text-center font-bold placeholder:text-sm" placeholder="हल्का न० " type="number" value={formData.regHalka} onFocus={() => setCurrentField('regHalka')} onChange={(e) => setFormData({...formData, regHalka: e.target.value})} />
               मौजा <input className="border-b border-dotted border-black outline-none w-42 text-center font-bold placeholder:text-sm" placeholder="मौजा " value={formData.regMauja} onFocus={() => setCurrentField('regMauja')} onChange={(e) => handleInputChange('regMauja', e.target.value)} onKeyDown={handleKeyDown} />
               थाना न० <input className="border-b border-dotted border-black outline-none w-24 text-center font-bold placeholder:text-sm" placeholder="थाना न० " value={formData.regThana} onChange={(e) => setFormData({...formData, regThana: e.target.value})} />
               में कुछ अशुद्धियाँ भॉल्यूम संख्या <input className="border-b border-dotted border-black outline-none w-20 text-center font-bold placeholder:text-sm" placeholder="लिखें" value={formData.volumeNo} onChange={(e) => setFormData({...formData, volumeNo: e.target.value})} />
@@ -332,14 +325,13 @@ const handlePaidPrint = async () => {
                 शपथ पूर्वक बयान करता हूँ कि मेरे द्वारा परिमार्जनप्लस के माध्यम से जमाबंदी ऑनलाइन
                 करने हेतु दी गई विवरणी सही है तथा उक्त जमीन पर मेरा स्वामित्व है।
               </p>
-              <p className='font-bold text-lg pl-4  px-8 indent-16'>
+              <p className='font-bold text-lg pl-4 px-8 indent-16'>
                 अगर भविष्य में जाँच / सत्यापन / शिकायत के क्रम में प्रमाणित होता है कि मेरे द्वारा
                 गलत विवरणी दी गई है तो मेरे ऊपर विधि सम्मत कानूनी कार्रवाई की जा सकती है।
               </p>
             </div>
           </div>
 
-          {/* Footer / Signatures */}
           <div className="mt-24 flex flex-col items-end px-10">
             <div className="text-left space-y-4 w-90">
               <p className="flex items-center">
@@ -363,68 +355,43 @@ const handlePaidPrint = async () => {
                   onChange={(e) => setFormData({...formData, mobile: e.target.value})}
                 />
               </p>
-              <div className=" ">
-                <div className="w-48 "></div>
+              <div className="mt-4">
                 <p className="font-bold text-lg">हस्ताक्षर :-</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-          {/* Print Button */}
-      <div className="w-full max-w-4xl flex justify-center mt-2 print:hidden">
-        <button 
-          onClick={handlePaidPrint}
-          className="flex flex-col items-center justify-center gap-1 px-10 py-4 
-                     bg-gradient-to-r from-blue-700 to-indigo-700 
-                     text-white rounded-xl shadow-xl 
-                     hover:scale-105 hover:shadow-2xl 
-                     transition-all duration-300 font-bold text-lg"
-        >
-          <div className="flex items-center gap-3">
-            <Printer size={22} />
-            <span>Print Without Watermark ₹3</span>
-          </div>
-          
-          <span className="text-xs opacity-90 font-medium">
-            बिना वॉटरमार्क PDF प्रिंट करें – ₹3
-          </span>
-        </button>
-      </div>
+
       <style jsx global>{`
-  @page { 
-    size: A4 portrait; 
-    margin: 10mm; 
-  }
+        @page { 
+          size: A4 portrait; 
+          margin: 10mm; 
+        }
 
-  @media print {
-    body { 
-      background: white !important; 
-    }
-
-    .no-print {
-      display: none !important;
-    }
-
-    .no-print-bg { 
-      background: none !important; 
-      padding: 0 !important; 
-    }
-
-    .origin-top { 
-      transform: scale(1) !important; 
-      width: 100% !important; 
-    }
-
-    .shadow-2xl { 
-      box-shadow: none !important; 
-    }
-
-    input::placeholder { 
-      color: transparent; 
-    }
-  }
-`}</style>
+        @media print {
+          body { 
+            background: white !important; 
+          }
+          .print:hidden { 
+            display: none !important; 
+          }
+          .no-print-bg { 
+            background: none !important; 
+            padding: 0 !important; 
+          }
+          .origin-top { 
+            transform: scale(1) !important; 
+            width: 100% !important; 
+          }
+          .shadow-2xl { 
+            box-shadow: none !important; 
+          }
+          input::placeholder { 
+            color: transparent; 
+          }
+        }
+      `}</style>
     </div>
   );
 }
