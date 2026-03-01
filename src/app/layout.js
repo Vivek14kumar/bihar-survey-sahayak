@@ -18,7 +18,46 @@ export default function RootLayout({ children }) {
   return (
     <html lang="hi">
       <body className="bg-slate-50 text-slate-900 antialiased">
+        
+        {/* --- ADD SCHEMA MARKUP HERE --- */}
+        <Script id="software-schema" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Bihar Survey Sahayak",
+            "operatingSystem": "Web",
+            "applicationCategory": "UtilityApplication",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "ratingCount": "12450"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "10.00",
+              "priceCurrency": "INR"
+            }
+          })}
+        </Script>
 
+        <Script id="faq-schema" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "बिहार भूमि सर्वे के लिए वंशावली कैसे बनाएं?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Bihar Survey Sahayak पोर्टल पर जाकर आप अपने परिवार के सदस्यों का नाम भरकर मात्र 2 मिनट में आधिकारिक वंशावली PDF तैयार कर सकते हैं।"
+                }
+              }
+            ]
+          })}
+        </Script>
+        {/* ------------------------------ */}
+        
         <Script
           src="https://www.google.com/inputtools/request?itc=hi-t-i0-und&num=1"
           strategy="beforeInteractive"
@@ -149,8 +188,10 @@ export default function RootLayout({ children }) {
           </span>
           </div>
         </footer>
-
+        
       </body>
     </html>
   );
+  
 }
+

@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
 
 /* ---------------- MAIN COMPONENT ---------------- */
 
-export default function AutoFamilyTreePDF({ data, isPreview = false }) {
+export default function AutoFamilyTreePDF({ data, isPreview = false, formatType = "survey" }) {
 
   // 🔒 SAFETY CHECK
   if (!data || typeof data !== "object") {
@@ -245,7 +245,7 @@ export default function AutoFamilyTreePDF({ data, isPreview = false }) {
         )}
 
         <Text style={styles.title}>
-          वंशवृक्ष तालिका (स्व-घोषणा)
+          {formatType === "survey" ? "वंशवृक्ष तालिका (स्व-घोषणा)" : "वंशवृक्ष"}
         </Text>
 
         {/* Lines */}
@@ -282,9 +282,11 @@ export default function AutoFamilyTreePDF({ data, isPreview = false }) {
           </View>
         ))}
 
-        <Text style={styles.footer}>
-          यह वंशावली स्व-घोषणा पर आधारित है। यह सरकारी प्रमाण-पत्र नहीं है।
-        </Text>
+        {formatType === "survey" && (
+          <Text style={styles.footer}>
+            यह वंशावली स्व-घोषणा पर आधारित है। यह सरकारी प्रमाण-पत्र नहीं है।
+          </Text>
+        )}
       </Page>
     </Document>
   );

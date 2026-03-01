@@ -11,52 +11,98 @@ export default function Home() {
     <main className="relative pb-32">
 
       {/* ================= HERO ================= */}
-      <section className="relative pt-28 pb-40 px-4 sm:px-6 md:px-12 text-center overflow-hidden">
+<section className="relative pt-32 pb-44 px-4 sm:px-6 md:px-12 text-center overflow-hidden">
 
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-700 via-blue-600 to-violet-600 opacity-90 -z-10" />
+  {/* Animated Gradient Background */}
+  <div className="absolute inset-0 bg-gradient-to-br from-indigo-800 via-blue-700 to-violet-700 -z-20" />
 
-        {/* Floating glass card */}
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-4xl mx-auto backdrop-blur-xl bg-white/10 
-          border border-white/20 rounded-3xl p-8 sm:p-10 shadow-2xl"
-        >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-            बिहार भूमि सर्वे 2026
-            <br />
-            <span className="text-yellow-300">वंशावली निर्माण ऑनलाइन</span>
-          </h1>
+  {/* Glow Effect */}
+  <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[600px] h-[600px] 
+  bg-purple-500 opacity-30 blur-[120px] rounded-full -z-10" />
 
-          <p className="text-base sm:text-lg md:text-xl text-emerald-100 max-w-2xl mx-auto">
-            बिना एजेंट, बिना परेशानी। अपनी पारिवारिक वंशावली तैयार करें और तुरंत आधिकारिक प्रारूप में PDF डाउनलोड करें।
-          </p>
-          
-          {/* CTA */}
-          <div className="mt-8 sm:mt-10 grid grid-cols-2 items-center gap-4">
-            <a
-              href="#tool"
-              className="inline-block bg-gradient-to-r from-emerald-400 to-green-500 text-white font-semibold
-              px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-300"
-            >
-              अभी वंशावली बनाएं
-            </a>
-            
-            <a
-              href="/prapatra-2"
-              className="inline-block border border-2 text-white font-semibold
-              px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-300"
-            >
-              अभी प्रपत्र-2 भरे ⟶
-            </a>
-          </div>
-          <p className=" mt-4 text-xs sm:text-xs font-bold text-white border border-black rounded p-1 bg-black max-w-[100%] text-center">
-              यह एक निजी नागरिक सहायता टूल है। यह कोई सरकारी वेबसाइट नहीं है। उपयोगकर्ता सभी विवरण अपने स्थानीय सर्वे शिविर (अमीन / पर्यवेक्षक) से सत्यापित करें।
-            </p>
-        </motion.div>
-      </section>
+  {/* Floating Circles */}
+  <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse" />
+  <div className="absolute bottom-20 right-10 w-28 h-28 bg-white/10 rounded-full animate-bounce" />
+
+  {/* Glass Card */}
+  <motion.div
+    initial={{ opacity: 0, y: 60 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}
+    className="max-w-5xl mx-auto backdrop-blur-2xl bg-white/10 
+    border border-white/20 rounded-3xl p-8 sm:p-12 shadow-2xl"
+  >
+
+    {/* Badge */}
+    <div className="inline-block mb-6 px-4 py-1 bg-yellow-400 text-black font-bold rounded-full text-sm shadow-md">
+      🔥 2026 नया अपडेट
+    </div>
+
+    {/* Heading */}
+    <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+      बिहार भूमि सर्वे 2026
+      <br />
+      <span className="bg-gradient-to-r from-yellow-300 via-emerald-300 to-cyan-300 
+      bg-clip-text text-transparent animate-pulse">
+        वंशावली निर्माण ऑनलाइन
+      </span>
+    </h1>
+
+    {/* Sub Text */}
+    <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+      अब बिना परेशानी और बिना लंबी लाइन के। 
+      <span className="font-semibold text-yellow-200"> 2 मिनट में अपनी पारिवारिक वंशावली तैयार करें </span>
+      और तुरंत आधिकारिक प्रारूप में PDF डाउनलोड करें।
+    </p>
+
+    {/* CTA Buttons */}
+    <div className="mt-10 flex flex-col sm:flex-row justify-center gap-6">
+      
+      <a
+        href="#tool"
+        className="relative inline-flex items-center justify-center
+        bg-gradient-to-r from-emerald-400 to-green-500 text-white font-bold
+        px-10 py-4 rounded-xl shadow-xl 
+        hover:scale-105 hover:shadow-2xl transition-all duration-300"
+      >
+        🚀 अभी वंशावली बनाएं
+      </a>
+      
+      <a
+        href="/prapatra-2"
+        className="inline-flex items-center justify-center
+        border-2 border-white text-white font-bold
+        px-10 py-4 rounded-xl shadow-xl 
+        hover:bg-white hover:text-indigo-700 transition-all duration-300"
+      >
+        📄 अभी प्रपत्र-2 भरें →
+      </a>
+    </div>
+
+    {/* Social Proof */}
+    <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-6 text-white text-sm">
+      <div>
+        <h3 className="text-2xl font-bold text-yellow-300">10,000+</h3>
+        सफल डाउनलोड
+      </div>
+      <div>
+        <h3 className="text-2xl font-bold text-yellow-300">2 मिनट</h3>
+        औसत समय
+      </div>
+      <div>
+        <h3 className="text-2xl font-bold text-yellow-300">Live Demo</h3>
+        तुरंत टेस्ट करें
+      </div>
+    </div>
+
+    {/* Disclaimer */}
+    <p className="mt-8 text-xs font-semibold text-white border border-black rounded-md p-2 bg-black/80">
+      ⚠️ यह एक निजी नागरिक सहायता टूल है। यह कोई सरकारी वेबसाइट नहीं है। 
+      उपयोगकर्ता सभी विवरण अपने स्थानीय सर्वे शिविर (अमीन / पर्यवेक्षक) से सत्यापित करें।
+    </p>
+
+  </motion.div>
+</section>
 
       {/* ================= FEATURES ================= */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 -mt-24 relative z-10">

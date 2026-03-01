@@ -17,6 +17,7 @@ export default function Vanshavali() {
   const [relation, setRelation] = useState("स्वयं");
   const [editId, setEditId] = useState(null);
 
+  const [formatType, setFormatType] = useState("survey"); // 'survey' or 'blank'
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
   const [suggestions, setSuggestions] = useState([]);
@@ -30,7 +31,7 @@ export default function Vanshavali() {
   if (!treeData) return;
 
   const blob = await pdf(
-    <AutoFamilyTreePDF data={treeData} />
+    <AutoFamilyTreePDF data={treeData} formatType={formatType} />
   ).toBlob();
 
   const url = URL.createObjectURL(blob);
@@ -244,7 +245,7 @@ export default function Vanshavali() {
   /*const trackVanshawaliDownload = async () => {
     await fetch("/api/track-vanshawali", { method: "POST" });
   };*/
-
+  
   // ---------- PDF Download ----------
   const handleDownload = () => {
     // 1️⃣ Validate Form First
@@ -419,15 +420,80 @@ export default function Vanshavali() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-emerald-50 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
 
-        {/* HEADER */}
-        <div className="bg-gradient-to-r from-indigo-600 to-emerald-600 text-white p-6 rounded-3xl shadow-xl mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <Users size={32} />
-            <h1 className="text-2xl sm:text-3xl font-bold">
-              बिहार भूमि सर्वेक्षण वंशावली
-            </h1>
-          </div>
-        </div>
+        {/* HEADER - SEO Optimized */}
+<header className="bg-gradient-to-r from-indigo-700 via-blue-600 to-emerald-600 text-white p-6 sm:p-8 rounded-3xl shadow-2xl mb-8 relative overflow-hidden">
+  
+  {/* Subtle Background Pattern for Professional Look */}
+  <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
+    <Users size={120} />
+  </div>
+
+  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+      <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md inline-flex self-start">
+        <Users size={32} className="text-yellow-300" />
+      </div>
+      
+      <div>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+          बिहार भूमि सर्वेक्षण वंशावली <span className="text-yellow-300">2026</span> एवं सादा वंशावली
+        </h1>
+        <h2 className="text-sm sm:text-base font-medium text-emerald-50 mt-1 flex items-center gap-2">
+          Online Vanshawali Maker & Family Tree Generator for Bihar Land Survey & Affidavit/Blank
+        </h2>
+      </div>
+    </div>
+
+    {/* Live Status Badge (Good for SEO & Trust) */}
+    <div className="hidden lg:flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm">
+      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+      <span className="text-xs font-semibold uppercase tracking-wider">Official 2026 Format</span>
+    </div>
+  </div>
+</header>
+
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+  {/* Option 1: Survey Format */}
+  <div 
+    onClick={() => setFormatType("survey")}
+    className={`p-5 rounded-2xl border-2 cursor-pointer transition-all shadow-sm flex items-start gap-4 ${
+      formatType === 'survey' ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200' : 'border-gray-200 bg-white hover:border-indigo-300'
+    }`}
+  >
+    <div className={`mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center ${formatType === 'survey' ? 'border-indigo-600' : 'border-gray-300'}`}>
+      {formatType === 'survey' && <div className="w-3 h-3 bg-indigo-600 rounded-full" />}
+    </div>
+    <div>
+      <h3 className="font-bold text-indigo-900 text-lg">
+        सर्वे वंशावली <span className="text-sm font-normal text-indigo-700 block md:inline">(Survey Format)</span>
+      </h3>
+      <p className="text-sm text-gray-600 mt-1">
+        स्व-घोषणा (Self-Declaration) के साथ। बिहार भूमि सर्वे 2026 के लिए सबसे उपयुक्त।
+      </p>
+    </div>
+  </div>
+
+  {/* Option 2: Blank Format */}
+  <div 
+    onClick={() => setFormatType("blank")}
+    className={`p-5 rounded-2xl border-2 cursor-pointer transition-all shadow-sm flex items-start gap-4 ${
+      formatType === 'blank' ? 'border-emerald-600 bg-emerald-50 ring-2 ring-emerald-200' : 'border-gray-200 bg-white hover:border-emerald-300'
+    }`}
+  >
+    <div className={`mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center ${formatType === 'blank' ? 'border-emerald-600' : 'border-gray-300'}`}>
+      {formatType === 'blank' && <div className="w-3 h-3 bg-emerald-600 rounded-full" />}
+    </div>
+    <div>
+      <h3 className="font-bold text-emerald-900 text-lg">
+        सादा वंशावली <span className="text-sm font-normal text-emerald-700 block md:inline">(Affidavit/Blank)</span>
+      </h3>
+      <p className="text-sm text-gray-600 mt-1">
+        बिना किसी टेक्स्ट के। कोर्ट शपथ-पत्र (Affidavit) और नोटरी कार्य के लिए उपयुक्त।
+      </p>
+    </div>
+  </div>
+</div>
+
 
         {/* FORM */}
         <div className="bg-white shadow-xl rounded-3xl p-6 mb-6">
@@ -503,7 +569,7 @@ export default function Vanshavali() {
         {/* PDF */}
         {treeData && (
           <div className="bg-white p-6 rounded-3xl shadow-xl">
-            <FamilyTreePreview data={treeData}  />
+            <FamilyTreePreview data={treeData} formatType={formatType} />
 
             <button
   onClick={handleDownload}

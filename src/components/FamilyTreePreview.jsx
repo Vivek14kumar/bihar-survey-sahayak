@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { pdf } from "@react-pdf/renderer";
 import AutoFamilyTreePDF from "./TreePDF";
 
-export default function FamilyTreePreview({ data }) {
+export default function FamilyTreePreview({ data, formatType }) {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +15,7 @@ export default function FamilyTreePreview({ data }) {
       try {
         setLoading(true);
         // Generate the PDF Blob directly
-        const blob = await pdf(<AutoFamilyTreePDF data={data} isPreview={true} />).toBlob();
+        const blob = await pdf(<AutoFamilyTreePDF data={data} isPreview={true} formatType={formatType}/>).toBlob();
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);
         setLoading(false);
@@ -30,7 +30,7 @@ export default function FamilyTreePreview({ data }) {
     return () => {
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
     };
-  }, [data]);
+  }, [data, formatType]);
 
   if (!data) return <div className="p-4 text-red-600 text-center">डेटा उपलब्ध नहीं है</div>;
 
