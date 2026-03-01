@@ -50,6 +50,36 @@ export default function ParimarjanAffidavit() {
     return true;
   };
 
+  useEffect(() => {
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+  };
+
+  const handleKeyDown = (e) => {
+    // Disable Ctrl+C, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P
+    if (
+      (e.ctrlKey && ["c", "u", "s", "a", "p"].includes(e.key.toLowerCase())) ||
+      (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i")
+    ) {
+      e.preventDefault();
+    }
+  };
+
+  const handleCopy = (e) => {
+    e.preventDefault();
+  };
+
+  document.addEventListener("contextmenu", handleContextMenu);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("copy", handleCopy);
+
+  return () => {
+    document.removeEventListener("contextmenu", handleContextMenu);
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("copy", handleCopy);
+  };
+}, []);
+
   // Handle Responsiveness: Scaling for mobile view
   useEffect(() => {
     const handleResize = () => {
@@ -390,6 +420,9 @@ export default function ParimarjanAffidavit() {
           input::placeholder { 
             color: transparent; 
           }
+            .affidavit-area {
+  user-select: none;
+}
         }
       `}</style>
     </div>

@@ -301,7 +301,35 @@ const selectSuggestion = (selectedWord) => {
 
 // 1. Add these states at the top of your component
 const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+useEffect(() => {
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+  };
 
+  const handleKeyDown = (e) => {
+    // Disable Ctrl+C, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P
+    if (
+      (e.ctrlKey && ["c", "u", "s", "a", "p"].includes(e.key.toLowerCase())) ||
+      (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i")
+    ) {
+      e.preventDefault();
+    }
+  };
+
+  const handleCopy = (e) => {
+    e.preventDefault();
+  };
+
+  document.addEventListener("contextmenu", handleContextMenu);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("copy", handleCopy);
+
+  return () => {
+    document.removeEventListener("contextmenu", handleContextMenu);
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("copy", handleCopy);
+  };
+}, []);
 // 2. Load Razorpay script on mount
 useEffect(() => {
   const script = document.createElement("script");
