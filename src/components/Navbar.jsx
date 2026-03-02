@@ -44,8 +44,7 @@ export default function Navbar() {
     { name: "होम", href: "/", icon: <Home size={20} /> },
     { name: "वंशावली", href: "/#tool", icon: <Users size={20} /> },
     { name: "Prapatra Pdf", href: "/pdf", icon: <FileText size={20} /> },
-    { name: "Prapatra-2 भरे", href: "/prapatra-2", icon: <Form size={20} /> },
-    { name: "शपथ पत्र/Shapath Patra", href: "/shapath-patra", icon: <FileText size={20} /> },
+    { name: "प्रपत्र भरे / Form Fill", href: "/forms", icon: <Form size={20} /> },
     { name: "About", href: "/about", icon: <User  size={20} /> },
     { name: "Privacy", href: "/privacy-policy", icon: <ShieldCheck size={20} /> },
     { name: "Terms", href: "/terms-and-conditions", icon: <FileWarning size={20} /> },
@@ -70,17 +69,8 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <nav className="flex items-center gap-8 text-sm font-medium text-slate-700">
             <Link href="/" className="hover:text-indigo-600 transition">होम / Home</Link>
-            <div className="relative" ref={dropdownRef}>
-              <button onClick={() => setFormOpen(!formOpen)} className="hover:text-indigo-600 transition flex items-center gap-1">
-                प्रपत्र भरे /Form
-              </button>
-              {formOpen && (
-                <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-xl border border-slate-200 py-2 z-50">
-                  <Link href="/prapatra-2" onClick={() => setFormOpen(false)} className="block px-4 py-2 text-sm hover:bg-slate-100">Prapatra-2 भरे</Link>
-                  <Link href="/shapath-patra" onClick={() => setFormOpen(false)} className="block px-4 py-2 text-sm hover:bg-slate-100">शपथ पत्र/Shapath Patra</Link>
-                </div>
-              )}
-            </div>
+            <Link href="/forms" className="hover:text-indigo-600 transition">प्रपत्र भरे /Form Fill</Link>
+            
             <Link href="/pdf" className="hover:text-indigo-600 transition">Prapatra pdf</Link>
             <Link href="/about" className="hover:text-indigo-600 transition">About</Link>
             <Link href="/contact" className="hover:text-indigo-600 transition">Contact</Link>
@@ -125,18 +115,10 @@ export default function Navbar() {
             <Users size={20} />
             <span className="mt-1">वंशावली</span>
           </Link>
-          <div className="relative flex flex-col items-center text-xs px-2 py-1" ref={bottomDropdownRef}>
-            <button onClick={() => setBottomFormOpen(!bottomFormOpen)} className="flex flex-col items-center text-slate-600">
-              <Form size={20} />
-              <span className="mt-1">प्रपत्र भरे</span>
-            </button>
-            {bottomFormOpen && (
-              <div className="absolute bottom-14 bg-white shadow-xl rounded-xl w-44 border border-slate-200 py-2">
-                <Link href="/prapatra-2" onClick={() => setBottomFormOpen(false)} className="block px-4 py-2 text-sm">Prapatra-2 भरे</Link>
-                <Link href="/shapath-patra" onClick={() => setBottomFormOpen(false)} className="block px-4 py-2 text-sm">शपथ पत्र</Link>
-              </div>
-            )}
-          </div>
+          <Link href="/forms" className="hover:text-indigo-600 transition">
+            <Form size={20} />
+            <span className="mt-1">प्रपत्र भरे</span>
+          </Link>
           <Link href="/pdf" className="flex flex-col items-center text-xs px-2 py-1 text-slate-600">
             <FileText size={20} />
             <span className="mt-1">Prapatra</span>
