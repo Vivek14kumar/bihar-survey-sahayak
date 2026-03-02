@@ -26,6 +26,18 @@ export default function sitemap() {
       priority: 0.9,
     },
     {
+      url: "https://biharsurveysahayak.online/objection-letter",
+      lastModified: today,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: "https://biharsurveysahayak.online/forms",
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: "https://biharsurveysahayak.online/pdf",
       lastModified: today,
       changeFrequency: "monthly",
