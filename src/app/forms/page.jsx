@@ -25,6 +25,12 @@ export default function FormsPage() {
       image: "/forms/objections.jpg"
     },
     {
+      title: "जमाबन्दी रद्दकरन पत्र ",
+      description: "जमाबन्दी के रद्दकरन हेतु याचिका पत्र ",
+      link: "/cancellation-jamabandhi",
+      image: "/forms/cancellation-jama.jpg"
+    },
+    {
       title: "वंशावली",
       description: "परिवार वृक्ष / वंश सूची तैयार करें",
       link: "/#tool",
