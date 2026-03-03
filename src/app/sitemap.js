@@ -1,77 +1,70 @@
 export default function sitemap() {
-  const today = new Date();
   return [
     {
       url: "https://biharsurveysahayak.online",
-      lastModified: today,
+      lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1.0,
     },
     {
       url: "https://biharsurveysahayak.online/bihar-survey",
-      lastModified: today,
+      lastModified: new Date("2025-03-01"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: "https://biharsurveysahayak.online/prapatra-2",
-      lastModified: today,
+      lastModified: new Date("2025-03-01"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: "https://biharsurveysahayak.online/shapath-patra",
-      lastModified: today,
+      lastModified: new Date("2025-03-01"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: "https://biharsurveysahayak.online/objection-letter",
-      lastModified: today,
+      lastModified: new Date("2025-03-01"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: "https://biharsurveysahayak.online/cancellation-jamabandhi",
-      lastModified: today,
+      lastModified: new Date("2025-03-01"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: "https://biharsurveysahayak.online/forms",
-      lastModified: today,
+      lastModified: new Date("2025-02-25"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: "https://biharsurveysahayak.online/pdf",
-      lastModified: today,
+      lastModified: new Date("2025-02-25"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: "https://biharsurveysahayak.online/privacy-policy",
-      lastModified: today,
+      lastModified: new Date("2025-02-20"),
       changeFrequency: "yearly",
-      priority: 0.5,
+      priority: 0.4,
     },
     {
       url: "https://biharsurveysahayak.online/terms-and-conditions",
-      lastModified: today,
+      lastModified: new Date("2025-02-20"),
       changeFrequency: "yearly",
-      priority: 0.5,
+      priority: 0.4,
     },
     {
       url: "https://biharsurveysahayak.online/disclaimer",
-      lastModified: today,
+      lastModified: new Date("2025-02-20"),
       changeFrequency: "yearly",
-      priority: 0.5,
-    },
-    {
-      url: "https://biharsurveysahayak.online/#tool",
-      lastModified: today,
-      changeFrequency: "weekly",
-      priority: 0.7,
+      priority: 0.4,
     },
   ];
 }
