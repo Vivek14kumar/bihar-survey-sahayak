@@ -32,6 +32,12 @@ export default function sitemap() {
       priority: 0.9,
     },
     {
+      url: "https://biharsurveysahayak.online/cancellation-jamabandhi",
+      lastModified: today,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: "https://biharsurveysahayak.online/forms",
       lastModified: today,
       changeFrequency: "monthly",
