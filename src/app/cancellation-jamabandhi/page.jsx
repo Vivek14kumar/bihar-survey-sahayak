@@ -324,7 +324,7 @@ export default function CancellationJamabandhi() {
         >
           <div className="flex items-center gap-3">
             <Printer size={22} />
-            <span>Print Objection Letter ₹3</span>
+            <span>Print Letter ₹3</span>
           </div>
           <span className="text-xs opacity-90">बिना वॉटरमार्क PDF प्रिंट करें – ₹3</span>
         </button>
@@ -585,7 +585,7 @@ export default function CancellationJamabandhi() {
         >
           <div className="flex items-center gap-3">
             <Printer size={22} />
-            <span>Print Objection Letter ₹3</span>
+            <span>Print Letter ₹3</span>
           </div>
         </button>
       </div>

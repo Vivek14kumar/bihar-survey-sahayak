@@ -16,25 +16,25 @@ export default function FormsPage() {
       title: "शपथ-पत्र",
       description: "घोषणा हेतु शपथ पत्र तैयार करें",
       link: "/shapath-patra",
-      image: "/forms/shapaths.jpg"
+      image: "/forms/shapaths.jpeg"
     },
     {
       title: "आपत्ति पत्र",
       description: "सर्वे आपत्ति दर्ज करने हेतु आवेदन",
       link: "/objection-letter",
-      image: "/forms/objections.jpg"
+      image: "/forms/objections.jpeg"
     },
     {
       title: "जमाबन्दी रद्दकरन पत्र ",
       description: "जमाबन्दी के रद्दकरन हेतु याचिका पत्र ",
       link: "/cancellation-jamabandhi",
-      image: "/forms/cancellation-jama.jpg"
+      image: "/forms/cancellation-jama.jpeg"
     },
     {
       title: "वंशावली",
       description: "परिवार वृक्ष / वंश सूची तैयार करें",
       link: "/#tool",
-      image: "/forms/familytree.jpg"
+      image: "/forms/familytree.jpeg"
     }
   ];
 
