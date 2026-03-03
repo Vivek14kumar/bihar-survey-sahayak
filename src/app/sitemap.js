@@ -49,6 +49,18 @@ export default function sitemap() {
       priority: 0.8,
     },
     {
+      url: "https://biharsurveysahayak.online/pdf-toolkit",
+      lastModified: new Date("2025-02-25"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://biharsurveysahayak.online/parimarjan-help",
+      lastModified: new Date("2025-02-25"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: "https://biharsurveysahayak.online/privacy-policy",
       lastModified: new Date("2025-02-20"),
       changeFrequency: "yearly",
