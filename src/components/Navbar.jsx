@@ -83,7 +83,11 @@ export default function Navbar() {
         <div className="flex items-center justify-between px-4 py-3">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/images/logo.png" alt="Logo" width={35} height={35} priority />
-            <p className="font-black text-sm text-slate-900">Sahayak</p>
+            <div>
+              <p className="font-black text-slate-900 leading-none">Bihar Survey Sahayak</p>
+              <p className="text-[8px] font-bold text-indigo-600 uppercase tracking-widest mt-1">बिहार सर्वेक्षण सहायक</p>
+            </div>
+            
           </Link>
           
           <button 
