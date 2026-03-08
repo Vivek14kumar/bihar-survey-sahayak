@@ -19,6 +19,12 @@ export default function sitemap() {
       priority: 0.9,
     },
     {
+      url: "https://biharsurveysahayak.online/batwara-application-bihar",
+      lastModified: new Date("2025-03-01"),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: "https://biharsurveysahayak.online/shapath-patra",
       lastModified: new Date("2025-03-01"),
       changeFrequency: "weekly",

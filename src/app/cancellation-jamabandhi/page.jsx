@@ -213,10 +213,10 @@ export default function CancellationJamabandhi() {
     if (!secondConfirm) return;
     const executePrint = async () => {
       window.print();
-      await fetch("/api/track-cancellation-jamabandhi", {
+      await fetch("/api/cancellation-jamabandhi", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "objection_letter" }),
+        body: JSON.stringify({ type: "cancellationJama" }),
       });
     };
     openRazorpay(executePrint);

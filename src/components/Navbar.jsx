@@ -15,7 +15,8 @@ import {
   Mail,
   Binary,
   LifeBuoy,
-  Stamp // Icon for Shapath Patra
+  Stamp ,// Icon for Shapath Patra
+  Grid
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -27,7 +28,7 @@ export default function Navbar() {
   // Define all routes for central management
   const navLinks = [
     { name: "होम", href: "/", icon: <Home size={18} /> },
-    { name: "शपथ पत्र", href: "/shapath-patra", icon: <Stamp size={18} /> },
+    { name: "बंटवारा पत्र", href: "/batwara-application-bihar", icon: <Grid size={18} /> },
     { name: "PDF टूलकिट", href: "/pdf-toolkit", icon: <Binary size={18} /> },
     { name: "प्रपत्र भरे (Forms)", href: "/forms", icon: <FileSpreadsheet size={18} /> },
     { name: "परिमार्जन हेल्प", href: "/parimarjan-help", icon: <LifeBuoy size={18} /> },
@@ -145,9 +146,9 @@ export default function Navbar() {
             <span className="text-[10px] font-black uppercase">प्रपत्र</span>
           </Link>
 
-          <Link href="/shapath-patra" className={`flex flex-col items-center gap-1 ${pathname === '/shapath-patra' ? 'text-indigo-600' : 'text-slate-400'}`}>
-            <Stamp size={20} />
-            <span className="text-[10px] font-black uppercase">शपथ पत्र</span>
+          <Link href="/shapath-patra" className={`flex flex-col items-center gap-1 ${pathname === '/batwara-application-bihar' ? 'text-indigo-600' : 'text-slate-400'}`}>
+            <Grid size={20} />
+            <span className="text-[10px] font-black uppercase">बंटवारा पत्र</span>
           </Link>
         </div>
       </nav>

@@ -17,7 +17,13 @@ export async function POST(req) {
       amount = 10 * 100; // ₹10
     }else if (type === "affidavit") {
       amount = 3 * 100; // ✅ ₹3 per document
-    } else {
+    }else if (type === "objectionLetter") {
+      amount = 3 * 100; // ✅ ₹3 per document
+    }else if (type === "cancellationJama") {
+      amount = 3 * 100; // ✅ ₹3 per document
+    }else if (type === "batwara") {
+      amount = 20 * 100; // ✅ ₹3 per document
+    }  else {
       return Response.json({ error: "Invalid type" }, { status: 400 });
     }
 

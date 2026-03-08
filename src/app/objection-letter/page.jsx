@@ -148,7 +148,7 @@ export default function ObjectionLetter() {
       const orderRes = await fetch("/api/create-razorpay-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "objection_letter" })
+        body: JSON.stringify({ type: "objectionLetter" })
       });
 
       const orderData = await orderRes.json();

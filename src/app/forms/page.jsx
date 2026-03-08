@@ -13,6 +13,12 @@ export default function FormsPage() {
       image: "/forms/prapatra2.jpeg"
     },
     {
+      title: "पारिवारिक भूमि बंटवारा",
+      description: "आपसी सहमति से पारिवारिक भूमि बंटवारा",
+      link: "/batwara-application-bihar",
+      image: "/forms/batwara.jpeg"
+    },
+    {
       title: "शपथ-पत्र",
       description: "घोषणा हेतु शपथ पत्र तैयार करें",
       link: "/shapath-patra",
