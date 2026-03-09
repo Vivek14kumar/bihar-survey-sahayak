@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-  /*user-select: none;*/
+  user-select: none;
 }
 
 @media print {
