@@ -146,7 +146,7 @@ export default function Navbar() {
             <span className="text-[10px] font-black uppercase">प्रपत्र</span>
           </Link>
 
-          <Link href="/shapath-patra" className={`flex flex-col items-center gap-1 ${pathname === '/batwara-application-bihar' ? 'text-indigo-600' : 'text-slate-400'}`}>
+          <Link href="/batwara-application-bihar" className={`flex flex-col items-center gap-1 ${pathname === '/batwara-application-bihar' ? 'text-indigo-600' : 'text-slate-400'}`}>
             <Grid size={20} />
             <span className="text-[10px] font-black uppercase">बंटवारा पत्र</span>
           </Link>
