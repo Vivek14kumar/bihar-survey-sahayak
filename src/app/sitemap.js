@@ -1,88 +1,135 @@
 export default function sitemap() {
+
+  const baseUrl = "https://biharsurveysahayak.online";
+
+  const blogPosts = [
+    "prapatra-2-kaise-bhare",
+    "bihar-survey-vanshavali-kaise-banaye",
+    "bihar-survey-objection-application",
+    "bihar-survey-parimarjan-process",
+    "bihar-survey-required-documents",
+    "bihar-jamin-batwara-application",
+    "jamabandi-cancellation-application",
+    "bihar-survey-shapath-patra",
+    "bihar-survey-status-check",
+    "bihar-co-karmchari-hartal"
+  ];
+
+  const blogUrls = blogPosts.map((slug) => ({
+    url: `${baseUrl}/blog/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.8
+  }));
+
   return [
+
     {
-      url: "https://biharsurveysahayak.online",
+      url: baseUrl,
       lastModified: new Date(),
       changeFrequency: "daily",
-      priority: 1.0,
+      priority: 1.0
     },
+
     {
-      url: "https://biharsurveysahayak.online/bihar-survey",
-      lastModified: new Date("2025-03-01"),
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9
+    },
+
+    {
+      url: `${baseUrl}/bihar-survey`,
+      lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.9
     },
+
     {
-      url: "https://biharsurveysahayak.online/prapatra-2",
-      lastModified: new Date("2025-03-01"),
+      url: `${baseUrl}/prapatra-2`,
+      lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.9
     },
+
     {
-      url: "https://biharsurveysahayak.online/batwara-application-bihar",
-      lastModified: new Date("2025-03-01"),
+      url: `${baseUrl}/batwara-application-bihar`,
+      lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.9
     },
+
     {
-      url: "https://biharsurveysahayak.online/shapath-patra",
-      lastModified: new Date("2025-03-01"),
+      url: `${baseUrl}/shapath-patra`,
+      lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.9
     },
+
     {
-      url: "https://biharsurveysahayak.online/objection-letter",
-      lastModified: new Date("2025-03-01"),
+      url: `${baseUrl}/objection-letter`,
+      lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.9
     },
+
     {
-      url: "https://biharsurveysahayak.online/cancellation-jamabandhi",
-      lastModified: new Date("2025-03-01"),
+      url: `${baseUrl}/cancellation-jamabandhi`,
+      lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.9
     },
+
     {
-      url: "https://biharsurveysahayak.online/forms",
-      lastModified: new Date("2025-02-25"),
+      url: `${baseUrl}/forms`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85
+    },
+
+    {
+      url: `${baseUrl}/pdf`,
+      lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.8
     },
+
     {
-      url: "https://biharsurveysahayak.online/pdf",
-      lastModified: new Date("2025-02-25"),
+      url: `${baseUrl}/pdf-toolkit`,
+      lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.8
     },
+
     {
-      url: "https://biharsurveysahayak.online/pdf-toolkit",
-      lastModified: new Date("2025-02-25"),
-      changeFrequency: "monthly",
-      priority: 0.8,
+      url: `${baseUrl}/parimarjan-help`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85
     },
+
+    ...blogUrls,
+
     {
-      url: "https://biharsurveysahayak.online/parimarjan-help",
-      lastModified: new Date("2025-02-25"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: "https://biharsurveysahayak.online/privacy-policy",
-      lastModified: new Date("2025-02-20"),
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: new Date(),
       changeFrequency: "yearly",
-      priority: 0.4,
+      priority: 0.4
     },
+
     {
-      url: "https://biharsurveysahayak.online/terms-and-conditions",
-      lastModified: new Date("2025-02-20"),
+      url: `${baseUrl}/terms-and-conditions`,
+      lastModified: new Date(),
       changeFrequency: "yearly",
-      priority: 0.4,
+      priority: 0.4
     },
+
     {
-      url: "https://biharsurveysahayak.online/disclaimer",
-      lastModified: new Date("2025-02-20"),
+      url: `${baseUrl}/disclaimer`,
+      lastModified: new Date(),
       changeFrequency: "yearly",
-      priority: 0.4,
-    },
+      priority: 0.4
+    }
+
   ];
 }

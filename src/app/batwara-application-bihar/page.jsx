@@ -525,12 +525,20 @@ useEffect(() => {
   // 2. Update state so the UI hides the watermark
   setShowWatermark(false); 
 
+   // पेमेंट सफल होने पर
+
+          await fetch("/api/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response),
+          });
+
   // 3. Start background tasks (don't "await" them if they aren't critical for the print)
-  fetch("/api/verify-payment", {
+  /*fetch("/api/verify-payment", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(response),
-  });
+  });*/
 
   fetch("/api/batwara", {
     method: "POST",
