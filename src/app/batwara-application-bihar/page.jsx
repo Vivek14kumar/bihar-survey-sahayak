@@ -57,6 +57,7 @@ const HindiInput = ({ label, name, value, onChange, placeholder, isTextarea = fa
   
   const cacheRef = useRef({});
   const debounceRef = useRef(null);
+  
 
   useEffect(() => { setLocalText(value || ''); }, [value]);
 
@@ -191,6 +192,7 @@ export default function LegalPanchnama() {
   
   const documentRef = useRef(null);
   const [scale, setScale] = useState(1);
+  const observerRef = useRef(null);
 
   const [commonData, setCommonData] = useState({
     date: getTodayHindiDate(), place: '', moolRaiyat: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
@@ -230,37 +232,38 @@ export default function LegalPanchnama() {
     document.body.appendChild(script);
   }, []);
   
-  // 🛡️ DOM Protection: कोई F12 से वाटरमार्क नहीं हटा पाएगा 🛡️
-  useEffect(() => {
-    if (!showWatermark) return; // अगर पैसे दे दिए हैं, तो सुरक्षा की ज़रूरत नहीं
+  // 🛡️ DOM Protection: Updated to prevent false positives during payment
+useEffect(() => {
+  // If watermark is already disabled (paid), don't start the observer at all
+  if (!showWatermark) {
+    if (observerRef.current) observerRef.current.disconnect();
+    return;
+  }
 
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        // 1. अगर किसी ने वाटरमार्क वाले div को Delete (Remove) कर दिया
-        if (mutation.type === 'childList') {
-          for (const node of mutation.removedNodes) {
-            if (node.id === 'watermark-layer') {
-              alert("⚠️ सुरक्षा चेतावनी: वाटरमार्क हटाने का प्रयास न करें। आपका फॉर्म रीसेट किया जा रहा है।");
-              window.location.reload(); // पेज रीलोड करके सज़ा दें
-            }
-          }
-        }
-        // 2. अगर किसी ने CSS में display:none या opacity:0 करके छिपाने की कोशिश की
-        if (mutation.type === 'attributes' && mutation.target.id === 'watermark-layer') {
-          const target = mutation.target;
-          if (target.style.display === 'none' || target.style.opacity === '0' || target.style.visibility === 'hidden') {
-            alert("⚠️ सुरक्षा चेतावनी: वाटरमार्क छिपाना वर्जित है।");
-            window.location.reload();
-          }
-        }
+  const observer = new MutationObserver((mutations) => {
+    // Crucial: Check showWatermark again inside the callback
+    if (!showWatermark) return; 
+
+    for (const mutation of mutations) {
+      const isRemoval = mutation.type === 'childList' && 
+                        Array.from(mutation.removedNodes).some(node => node.id === 'watermark-layer');
+      
+      const isStyleChange = mutation.type === 'attributes' && 
+                            mutation.target.id === 'watermark-layer';
+
+      if (isRemoval || isStyleChange) {
+        // Double check state one last time before crashing the page
+        alert("⚠️ सुरक्षा चेतावनी: वाटरमार्क के साथ छेड़छाड़ वर्जित है।");
+        window.location.reload();
       }
-    });
+    }
+  });
 
-    // पूरी वेबसाइट की निगरानी करें
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  observerRef.current = observer;
 
-    return () => observer.disconnect();
-  }, [showWatermark]);
+  return () => observer.disconnect();
+}, [showWatermark]); // Effect responds to the state change
   
   const docOptions = [
     { key: 'aadhaar', label: 'आधार कार्ड की छायाप्रति (Photocopy)' },
@@ -513,26 +516,35 @@ export default function LegalPanchnama() {
         description: "Premium Print (No Watermark)",
         order_id: orderData.id,
         handler: async function (response) {
-          // पेमेंट सफल होने पर
-          await fetch("/api/verify-payment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
-          });
-          
-          setShowWatermark(false); // ⚡ वाटरमार्क हटा दें
-          
-          // पेमेंट के बाद बैकएंड एनालिटिक्स अपडेट करें (जो आपने MongoDB वाला कोड दिया था)
-          await fetch("/api/batwara", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ type: "batwara" })
-          });
+  // 1. Kill the observer instance directly via Ref
+  if (observerRef.current) {
+    observerRef.current.disconnect();
+    observerRef.current = null; // Clear it out
+  }
 
-          // वाटरमार्क हटने के बाद ऑटोमैटिक प्रिंट खोल दें
-          setTimeout(() => { callbackAction(); }, 500); 
-        },
-        theme: { color: "#16a34a" }, // हरा रंग
+  // 2. Update state so the UI hides the watermark
+  setShowWatermark(false); 
+
+  // 3. Start background tasks (don't "await" them if they aren't critical for the print)
+  fetch("/api/verify-payment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(response),
+  });
+
+  fetch("/api/batwara", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: "batwara" })
+  });
+
+  // 4. Wait for React to finish the DOM update
+  // 1000ms is the "Sweet Spot" for mobile browsers in Bihar (slower CPUs)
+  setTimeout(() => { 
+    callbackAction(); 
+  }, 1000); 
+},
+        theme: { color: "#1d4ed8" }, // हरा रंग
       };
 
       const rzp = new window.Razorpay(options);
@@ -645,7 +657,7 @@ export default function LegalPanchnama() {
   };
 
   // 🛡️ DOM Protection: कोई F12 से वाटरमार्क नहीं हटा पाएगा 🛡️
-  useEffect(() => {
+  /*useEffect(() => {
     if (!showWatermark) return; 
 
     const observer = new MutationObserver((mutations) => {
@@ -653,7 +665,7 @@ export default function LegalPanchnama() {
         // 1. अगर किसी ने वाटरमार्क वाले div को Delete (Remove) कर दिया
         if (mutation.type === 'childList') {
           for (const node of mutation.removedNodes) {
-            if (node.id === 'watermark-layer') {
+            if (node.id === 'watermark-layer' && showWatermark === true) {
               alert("⚠️ सुरक्षा चेतावनी: वाटरमार्क हटाने का प्रयास न करें। आपका फॉर्म रीसेट किया जा रहा है।");
               window.location.reload(); 
             }
@@ -679,7 +691,7 @@ export default function LegalPanchnama() {
     observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 
     return () => observer.disconnect();
-  }, [showWatermark]);
+  }, [showWatermark]);*/
   
   const hasTotalPropertyData = totalPlots.some(p => p.khata || p.khesra || p.rakbaAcre || p.rakbaDecimal);
 
@@ -908,7 +920,61 @@ export default function LegalPanchnama() {
             ))}
           </div>
         </div>
+          <div className="visible lg:invisible sticky bottom-0 z-20 bg-white  rounded-3xl shadow-[0_-4px_14px_rgba(0,0,0,0.08)] px-3 py-3">
 
+  <div className="grid grid-cols-2 gap-3">
+
+    {/* PREMIUM BUTTON */}
+    <button
+      onClick={() => openRazorpay(handlePrint)}
+      disabled={isDownloading}
+      className="relative flex flex-col items-center justify-center gap-1 
+      bg-gradient-to-r from-yellow-400 to-amber-500 text-black 
+      py-3 rounded-3xl font-bold text-[13px] 
+      hover:from-yellow-500 hover:to-amber-600 
+      shadow-[0_6px_16px_rgba(234,179,8,0.45)] 
+      transition disabled:bg-gray-400"
+    >
+      {/* Shape badge */}
+      <span className="absolute -top-2 right-2 text-[12px] bg-black text-white px-2 py-[2px] rounded-full">
+        ₹20
+      </span>
+
+      <Crown size={18} />
+      <span>प्रीमियम</span>
+      <span className="text-xs font-semibold">Print Without Watermark</span>
+    </button>
+
+
+    {/* FREE BUTTON */}
+    <button
+      onClick={async () => {
+        if (!validateForm()) return;
+
+        try {
+          fetch("/api/batwara", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "batwara", isFree: true })
+          });
+        } catch (e) {}
+
+        handlePrint();
+      }}
+      disabled={isDownloading}
+      className="flex flex-col items-center justify-center gap-1 
+      bg-green-200 border border-green-300 text-gray-800 
+      py-3 rounded-3xl font-bold text-[13px] 
+      hover:bg-green-300 transition"
+    >
+      <Printer size={18} />
+      <span>फ्री प्रिंट</span>
+      <span className="text-xs font-semibold">Free (With Watermark)</span>
+    </button>
+
+  </div>
+
+</div>
           
       </div>
 
