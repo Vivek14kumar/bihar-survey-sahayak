@@ -16,7 +16,8 @@ import {
   Binary,
   LifeBuoy,
   Stamp ,// Icon for Shapath Patra
-  Grid
+  Grid,
+  BookOpen
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -33,6 +34,7 @@ export default function Navbar() {
     { name: "प्रपत्र भरे (Forms)", href: "/forms", icon: <FileSpreadsheet size={18} /> },
     { name: "परिमार्जन हेल्प", href: "/parimarjan-help", icon: <LifeBuoy size={18} /> },
     { name: "PDF डाउनलोड", href: "/pdf", icon: <FileText size={18} /> },
+    { name: "ब्लॉग / खबरें", href: "/blog", icon: <BookOpen size={18}  /> },
   ];
 
   const secondaryLinks = [
