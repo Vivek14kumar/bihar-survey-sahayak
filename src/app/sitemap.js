@@ -1,4 +1,4 @@
-import { locations } from "@/data/locations";
+import { locations } from "@/app/data/locations";
 
 export default function sitemap() {
 
