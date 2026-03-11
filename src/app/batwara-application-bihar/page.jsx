@@ -1034,7 +1034,7 @@ useEffect(() => {
                 zIndex: 9999,
                 pointerEvents: 'none',
                 // 🚀 जादू: यह SVG वॉलपेपर की तरह पूरे पेज पर अनंत तक रिपीट होगा 🚀
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='450' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='38' font-weight='900' font-family='Arial, sans-serif' fill='rgba(220, 38, 38, 0.11)' text-anchor='middle' transform='rotate(-40, 225, 225)'%3EBIHARSURVEYSAHAYAK.ONLINE%3C/text%3E%3C/svg%3E")`,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='450' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='38' font-weight='900' font-family='Arial, sans-serif' fill='rgba(54, 40, 40, 0.11)' text-anchor='middle' transform='rotate(-40, 225, 225)'%3Eबिहार सर्वे सहायक बिहारसर्वेसहायक %3C/text%3E%3C/svg%3E")`,
                 backgroundRepeat: 'repeat',
               }}>
               </div>
