@@ -18,10 +18,12 @@ import {
 
 export async function generateStaticParams() {
 
-  return locations.map((loc) => ({
-    district: loc.district,
-    block: loc.block
-  }));
+  return locations.flatMap((loc) =>
+    loc.blocks.map((block) => ({
+      district: loc.district,
+      block: block
+    }))
+  );
 
 }
 
@@ -46,8 +48,8 @@ export default async function SurveyPage({ params }) {
   const { district, block } = await params;
 
   const validBlock = locations.find(
-    (l) => l.district === district && l.block === block
-  );
+  (l) => l.district === district && l.blocks.includes(block)
+);
 
   if (!validBlock) {
     notFound();
@@ -143,7 +145,7 @@ export default async function SurveyPage({ params }) {
       </section>
 
       {/* Share Section */}
-      <div className="mt-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-10 text-center text-white shadow-2xl">
+      <div className="mt-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-10 py-4 text-center text-white shadow-2xl">
         <h2 className="text-3xl font-bold mb-4">
           प्रखंड के अन्य लोगों की मदद करें!
         </h2>

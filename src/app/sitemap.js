@@ -25,10 +25,10 @@ export default function sitemap() {
   }));
 
 
-  /* ---------------- DISTRICT PAGES ---------------- */
-
+    /* ---------------- DISTRICT PAGES ---------------- */
+  
   const districts = [...new Set(locations.map(l => l.district))];
-
+  
   const districtUrls = districts.map((district) => ({
     url: `${baseUrl}/survey/${district}`,
     lastModified: new Date(),
@@ -37,14 +37,16 @@ export default function sitemap() {
   }));
 
 
-  /* ---------------- BLOCK PAGES ---------------- */
+    /* ---------------- BLOCK PAGES ---------------- */
 
-  const blockUrls = locations.map((loc) => ({
-    url: `${baseUrl}/survey/${loc.district}/${loc.block}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.8
-  }));
+  const blockUrls = locations.flatMap((loc) =>
+    loc.blocks.map((block) => ({
+      url: `${baseUrl}/survey/${loc.district}/${block}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8
+    }))
+  );
 
 
   return [

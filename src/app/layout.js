@@ -123,6 +123,14 @@ export default function RootLayout({ children }) {
                 </li>
                 <li>
                   <a
+                    href="/contact"
+                    className="hover:text-white transition"
+                  >
+                    Contact
+                  </a>
+                </li>
+                <li>
+                  <a
                     href="/privacy-policy"
                     className="hover:text-white transition"
                   >
