@@ -97,7 +97,7 @@ export default function Home() {
 
     {/* Disclaimer */}
     <p className="mt-8 text-xs font-semibold text-white border border-black rounded-md p-2 bg-black/80">
-      ⚠️ यह एक निजी नागरिक सहायता टूल है। यह कोई सरकारी वेबसाइट नहीं है। 
+       यह एक निजी नागरिक सहायता टूल है। यह कोई सरकारी वेबसाइट नहीं है। 
       उपयोगकर्ता सभी विवरण अपने स्थानीय सर्वे शिविर (अमीन / पर्यवेक्षक) से सत्यापित करें।
     </p>
 

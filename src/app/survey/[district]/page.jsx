@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { locations } from "@/app/data/locations";
 import ShareButton from "@/components/ShareButton";
+import { notFound } from "next/navigation";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
 import { 
   FileText, 
@@ -14,8 +16,36 @@ import {
   Info
 } from "lucide-react";
 
+
+export async function generateStaticParams() {
+  const districts = [...new Set(locations.map(l => l.district))];
+
+  return districts.map((district) => ({
+    district
+  }));
+}
+
+export async function generateMetadata({ params }) {
+
+  const { district } = await params;
+
+  const districtName =
+    district.charAt(0).toUpperCase() + district.slice(1);
+
+  return {
+    title: `बिहार सर्वे फॉर्म – ${districtName} जिला | प्रपत्र-2, वंशावली, आपत्ति आवेदन`,
+    description: `${districtName} जिला के लिए बिहार भूमि सर्वे फॉर्म ऑनलाइन बनाएं – प्रपत्र-2, वंशावली, शपथ पत्र, आपत्ति आवेदन।`
+  };
+
+}
+
 export default async function DistrictPage({ params }) {
   const { district } = await params;
+  const districts = [...new Set(locations.map(l => l.district))];
+
+if (!districts.includes(district)) {
+  notFound();
+}
   const districtName = district.charAt(0).toUpperCase() + district.slice(1);
 
   const tools = [
@@ -29,6 +59,9 @@ export default async function DistrictPage({ params }) {
     { name: "PDF Tools", url: "/pdf-toolkit", icon: <FileArchive className="text-indigo-600" />, color: "bg-indigo-50", desc: "दस्तावेजों को कंप्रेस या मर्ज करने के लिए।" },
   ];
 
+  const blocks = locations.filter(
+  (loc) => loc.district === district
+);
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 font-sans">
       

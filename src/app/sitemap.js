@@ -1,3 +1,5 @@
+import { locations } from "@/data/locations";
+
 export default function sitemap() {
 
   const baseUrl = "https://biharsurveysahayak.online";
@@ -21,6 +23,29 @@ export default function sitemap() {
     changeFrequency: "weekly",
     priority: 0.8
   }));
+
+
+  /* ---------------- DISTRICT PAGES ---------------- */
+
+  const districts = [...new Set(locations.map(l => l.district))];
+
+  const districtUrls = districts.map((district) => ({
+    url: `${baseUrl}/survey/${district}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.85
+  }));
+
+
+  /* ---------------- BLOCK PAGES ---------------- */
+
+  const blockUrls = locations.map((loc) => ({
+    url: `${baseUrl}/survey/${loc.district}/${loc.block}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.8
+  }));
+
 
   return [
 
@@ -109,6 +134,8 @@ export default function sitemap() {
     },
 
     ...blogUrls,
+    ...districtUrls,
+    ...blockUrls,
 
     {
       url: `${baseUrl}/privacy-policy`,

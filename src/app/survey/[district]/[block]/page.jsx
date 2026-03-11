@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { locations } from "@/app/data/locations";
 import ShareButton from "@/components/ShareButton";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
 import { 
@@ -13,8 +15,43 @@ import {
   ClipboardList
 } from "lucide-react";
 
+
+export async function generateStaticParams() {
+
+  return locations.map((loc) => ({
+    district: loc.district,
+    block: loc.block
+  }));
+
+}
+
+export async function generateMetadata({ params }) {
+
+  const { district, block } = await params;
+
+  const districtName =
+    district.charAt(0).toUpperCase() + district.slice(1);
+
+  const blockName =
+    block.charAt(0).toUpperCase() + block.slice(1);
+
+  return {
+    title: `सर्वे फॉर्म ${blockName} (${districtName}) | प्रपत्र-2, वंशावली, आपत्ति आवेदन`,
+    description: `${blockName} प्रखंड (${districtName}) के लिए बिहार भूमि सर्वे फॉर्म ऑनलाइन बनाएं – प्रपत्र-2, वंशावली, शपथ पत्र, आपत्ति आवेदन।`
+  };
+
+}
+
 export default async function SurveyPage({ params }) {
   const { district, block } = await params;
+
+  const validBlock = locations.find(
+    (l) => l.district === district && l.block === block
+  );
+
+  if (!validBlock) {
+    notFound();
+  }
 
   const districtName = district.charAt(0).toUpperCase() + district.slice(1);
   const blockName = block.charAt(0).toUpperCase() + block.slice(1);
