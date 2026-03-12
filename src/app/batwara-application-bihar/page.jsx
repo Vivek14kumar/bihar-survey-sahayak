@@ -943,10 +943,10 @@ useEffect(() => {
       shadow-[0_6px_16px_rgba(234,179,8,0.45)] 
       transition disabled:bg-gray-400"
     >
-      {/* Shape badge */}
+      {/* Shape badge 
       <span className="absolute -top-2 right-2 text-[12px] bg-black text-white px-2 py-[2px] rounded-full">
         ₹20
-      </span>
+      </span>*/}
 
       <Crown size={18} />
       <span>प्रीमियम</span>
@@ -1255,10 +1255,10 @@ useEffect(() => {
       shadow-[0_6px_16px_rgba(234,179,8,0.45)] 
       transition disabled:bg-gray-400"
     >
-      {/* Shape badge */}
+      {/* Shape badge 
       <span className="absolute -top-2 right-2 text-[12px] bg-black text-white px-2 py-[2px] rounded-full">
         ₹20
-      </span>
+      </span>*/}
 
       <Crown size={18} />
       <span>प्रीमियम</span>

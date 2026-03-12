@@ -11,77 +11,83 @@ import {
 } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 
+export const metadata = {
+  title: "बिहार सर्वे जानकारी | Bihar Survey Guide",
+  description:
+    "बिहार भूमि सर्वे से जुड़ी सभी जानकारी – प्रपत्र-2, वंशावली, आपत्ति आवेदन, परिमार्जन और जरूरी दस्तावेज।"
+};
+
 const featuredPost = {
   title: "बिहार सर्वे प्रपत्र-2 कैसे भरें (पूरा गाइड)",
-  slug: "prapatra-2-kaise-bhare",
+  slug: "bihar-survey-prapatra-2-kaise-bhare",
   desc: "प्रपत्र-2 बिहार भूमि सर्वे का सबसे महत्वपूर्ण फॉर्म है। इस गाइड में आप सीखेंगे कि इसे सही तरीके से कैसे भरें।",
   icon: FileText
 };
 
 const posts = [
   {
-    title: "डिजिटल वंशावली कैसे बनाएं",
-    slug: "bihar-survey-vanshavali-kaise-banaye",
-    desc: "परिवार की पूरी वंशावली बनाएं और तुरंत PDF डाउनलोड करें।",
-    icon: TreePine,
-    tag: "वंशावली"
-  },
-  {
-    title: "सर्वे आपत्ति आवेदन कैसे करें",
-    slug: "bihar-survey-objection-application",
-    desc: "अगर सर्वे में नाम या जमीन की जानकारी गलत हो जाए तो सुधार कैसे करें।",
-    icon: AlertTriangle,
-    tag: "आपत्ति आवेदन"
-  },
-  {
-    title: "परिमार्जन प्रक्रिया",
-    slug: "bihar-survey-parimarjan-process",
-    desc: "सर्वे रिकॉर्ड में गलती सुधारने की पूरी प्रक्रिया समझें।",
-    icon: PenLine,
-    tag: "परिमार्जन"
-  },
-  {
-    title: "सर्वे के लिए जरूरी दस्तावेज",
-    slug: "bihar-survey-required-documents",
-    desc: "बिहार सर्वे में किन-किन दस्तावेजों की जरूरत पड़ती है।",
-    icon: Files,
-    tag: "दस्तावेज"
-  },
-  {
-    title: "जमीन बंटवारा आवेदन कैसे करें",
-    slug: "bihar-jamin-batwara-application",
-    desc: "परिवार की जमीन का कानूनी बंटवारा करने के लिए आवेदन कैसे करें।",
-    icon: FileText,
-    tag: "बंटवारा"
-  },
-  {
-    title: "जमाबंदी रद्द करने का आवेदन",
-    slug: "jamabandi-cancellation-application",
-    desc: "अगर जमीन गलत व्यक्ति के नाम हो गई है तो उसे रद्द कैसे करें।",
-    icon: AlertTriangle,
-    tag: "जमाबंदी"
-  },
-  {
-    title: "बिहार सर्वे शपथ पत्र कैसे बनाएं",
-    slug: "bihar-survey-shapath-patra",
-    desc: "सर्वे में शपथ पत्र कब जरूरी होता है और इसे कैसे बनाएं।",
-    icon: FileText,
-    tag: "शपथ पत्र"
-  },
-  {
-    title: "बिहार सर्वे स्टेटस कैसे देखें",
-    slug: "bihar-survey-status-check",
-    desc: "अपने सर्वे आवेदन का स्टेटस ऑनलाइन कैसे चेक करें।",
-    icon: Files,
-    tag: "सर्वे स्टेटस"
-  },
-  {
-    title: "CO और कर्मचारी हड़ताल से सर्वे कार्य पर असर",
-    slug: "bihar-co-karmchari-hartal",
-    desc: "जानिए CO ऑफिस हड़ताल का जमीन सर्वे और आवेदन पर क्या असर पड़ता है।",
-    icon: AlertTriangle,
-    tag: "ताजा खबर"
-  }
+  title: "अगर बिहार सर्वे में प्रपत्र-2 नहीं भरा तो क्या होगा",
+  slug: "prapatra-2-na-bhare-to-kya-hoga",
+  desc: "अगर किसी रैयत ने सर्वे के समय प्रपत्र-2 नहीं भरा तो भविष्य में क्या समस्या हो सकती है।",
+  icon: AlertTriangle,
+  tag: "महत्वपूर्ण"
+},
+{
+  title: "बिहार सर्वे में नाम गलत हो जाए तो सुधार कैसे करें",
+  slug: "bihar-survey-name-correction",
+  desc: "सर्वे रिकॉर्ड में नाम या जानकारी गलत हो जाए तो उसे कैसे सही कराएं।",
+  icon: PenLine,
+  tag: "नाम सुधार"
+},
+{
+  title: "बिहार सर्वे 2027 तक चलेगा – नया अपडेट",
+  slug: "bihar-survey-2027-update",
+  desc: "भूमि सर्वे की समय सीमा को लेकर नया अपडेट और रैयतों के लिए जरूरी जानकारी।",
+  icon: FileText,
+  tag: "नया अपडेट"
+},
+{
+  title: "बिहार सर्वे में जमीन विवाद हो जाए तो क्या करें",
+  slug: "bihar-survey-jamin-vivad",
+  desc: "अगर सर्वे के दौरान जमीन पर विवाद हो जाए तो उसका समाधान कैसे करें।",
+  icon: AlertTriangle,
+  tag: "जमीन विवाद"
+},
+{
+  title: "खाता और खेसरा नंबर क्या होता है",
+  slug: "bihar-survey-khata-khesra",
+  desc: "जमीन रिकॉर्ड में खाता और खेसरा नंबर का क्या महत्व होता है।",
+  icon: FileText,
+  tag: "जमीन जानकारी"
+},
+{
+  title: "बिहार सर्वे के लिए ऑनलाइन फॉर्म कैसे बनाएं",
+  slug: "bihar-survey-online-form",
+  desc: "ऑनलाइन टूल की मदद से सर्वे फॉर्म कैसे बनाएं और PDF डाउनलोड करें।",
+  icon: PenLine,
+  tag: "ऑनलाइन फॉर्म"
+},
+{
+  title: "बिहार सर्वे के दौरान जमीन बंटवारा प्रक्रिया",
+  slug: "bihar-survey-batwara-process",
+  desc: "अगर जमीन संयुक्त है तो सर्वे के दौरान बंटवारा कैसे करें।",
+  icon: FileText,
+  tag: "बंटवारा"
+},
+{
+  title: "बिहार सर्वे में आपत्ति कैसे दर्ज करें",
+  slug: "bihar-survey-aapatti-process",
+  desc: "अगर सर्वे रिकॉर्ड में गलती हो जाए तो आपत्ति आवेदन कैसे दें।",
+  icon: AlertTriangle,
+  tag: "आपत्ति"
+},
+{
+  title: "बिहार भूमि सर्वे में रैयतों के लिए जरूरी जानकारी",
+  slug: "bihar-survey-raiayat-guide",
+  desc: "भूमि सर्वे के दौरान रैयतों को किन बातों का ध्यान रखना चाहिए।",
+  icon: FileText,
+  tag: "रैयत गाइड"
+}
 ];
 
 const hotTopics = [
@@ -92,7 +98,11 @@ const hotTopics = [
   "बिहार सर्वे में कौन-कौन से दस्तावेज चाहिए",
   "बिहार जमीन बंटवारा आवेदन",
   "जमाबंदी रद्द करने का आवेदन",
-  "बिहार सर्वे शपथ पत्र"
+  "बिहार सर्वे शपथ पत्र",
+  "बिहार सर्वे 2027 अपडेट",
+  "प्रपत्र-2 नहीं भरा तो क्या होगा",
+  "बिहार सर्वे में नाम सुधार",
+  "खाता खेसरा क्या होता है"
 ];
 
 export default function BlogPage() {
