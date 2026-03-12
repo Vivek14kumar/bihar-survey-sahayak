@@ -284,7 +284,7 @@ export default function AutoFamilyTreePDF({ data, isPreview = false, formatType 
 
         {formatType === "survey" && (
           <Text style={styles.footer}>
-            यह वंशावली स्व-घोषणा पर आधारित है। यह सरकारी प्रमाण-पत्र नहीं है।
+            यह वंशावली स्व-घोषणा पर आधारित है। 
           </Text>
         )}
       </Page>
