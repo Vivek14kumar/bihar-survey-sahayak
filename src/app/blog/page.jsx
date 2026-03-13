@@ -87,6 +87,13 @@ const posts = [
   desc: "भूमि सर्वे के दौरान रैयतों को किन बातों का ध्यान रखना चाहिए।",
   icon: FileText,
   tag: "रैयत गाइड"
+},
+{
+  title:"सरकार का बड़ा फैसला: अब अंचलाधिकारी (CO) का काम भी संभालेंगे BDO",
+  slug:"bdo-will-handle-co-work-update",
+  des:"अब BDO के पास भी CO के बराबर की शक्तियां (Powers) होंगी। वे मुख्य रूप से ये काम करेंगे",
+  icon: AlertTriangle,
+  tag: "महत्वपूर्ण"
 }
 ];
 
