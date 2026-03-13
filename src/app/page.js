@@ -5,6 +5,7 @@ import { ShieldCheck, FileText, Languages, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import FAQClient from "./faq/FAQClient";
 import VanshawaliTutorial from "@/components/VanshawaliTutorial";
+import CompactQuickLinks from "@/components/QuickLinksFooter";
 
 export default function Home() {
   return (
@@ -167,6 +168,11 @@ export default function Home() {
         >
           <Vanshavali />
         </motion.div>
+      </section>
+
+      {/*=====================Quick Links============*/}
+      <section className="p-10">
+        <CompactQuickLinks/>
       </section>
 
       {/* ================= TRUST ================= */}
