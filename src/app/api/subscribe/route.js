@@ -1,42 +1,41 @@
-// app/api/subscribe/route.js
-import clientPromise from "../../lib/mongodb"; // Update this path to where your connection file is
+import { NextResponse } from "next/server";
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+// FIX 1: Using the "@" alias is much safer! It always points to the root of your project.
+import clientPromise from "@/lib/mongodb"; 
 
+// FIX 2: Using the App Router syntax (export async function POST)
+export async function POST(req) {
   try {
-    const subscription = req.body;
+    const subscription = await req.json();
 
     if (!subscription || !subscription.endpoint) {
-      return res.status(400).json({ error: "Invalid subscription object" });
+      return NextResponse.json({ error: "Invalid subscription object" }, { status: 400 });
     }
 
-    // 1. Connect to MongoDB
+    // Connect to MongoDB
     const client = await clientPromise;
-    const db = client.db("bihar_survey_db"); // Replace with your actual database name
+    const db = client.db("bihar_survey_db"); // Change to your actual DB name if different
     const collection = db.collection("subscribers");
 
-    // 2. Check if user is already subscribed (prevent duplicates)
+    // Check if user is already subscribed
     const existingSub = await collection.findOne({ 
       "subscription.endpoint": subscription.endpoint 
     });
 
     if (existingSub) {
-      return res.status(200).json({ message: "User is already subscribed." });
+      return NextResponse.json({ message: "User is already subscribed." }, { status: 200 });
     }
 
-    // 3. Save new subscription
+    // Save new subscription
     await collection.insertOne({ 
       subscription: subscription,
       createdAt: new Date()
     });
 
-    res.status(201).json({ message: "Subscription saved successfully!" });
+    return NextResponse.json({ message: "Subscription saved successfully!" }, { status: 201 });
     
   } catch (error) {
     console.error("Database error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
