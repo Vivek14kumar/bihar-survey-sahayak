@@ -11,7 +11,8 @@ export const metadata = {
   title: "वंशावली निर्माण ऑनलाइन | Bihar Land Survey Helper | Vanshavali Maker 2026",
   description:
     "Prepare your Vanshavali safely for Bihar Land Survey 2026. Generate official format PDF instantly without login.",
-  keywords:
+  manifest: "/manifest.json",
+    keywords:
     " Bihar Bhumi, bihar bhumi,Vanshavali, Vanshwali, vanshavali maker, Bihar, Bihar Land Survey 2026,Bihar Bhumi Survey 2026, Vanshavali Maker, Bihar Survey PDF, Bihar Land Record Helper, DCLR Vanshawali Certificate",
 };
 
