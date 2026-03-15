@@ -2,18 +2,19 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import webpush from "web-push";
 
-// Configure VAPID keys
-webpush.setVapidDetails(
-  'mailto:viktechzweb@gmail.com', // Change to your actual email
-  process.env.NEXT_PUBLIC_VAPID_KEY,
-  process.env.PRIVATE_VAPID_KEY
-);
-
 export async function POST(req) {
   try {
-    const { title, message, slug, adminToken } = await req.json();
+    // FIX: Moved the configuration INSIDE the function!
+    webpush.setVapidDetails(
+      'mailto:your-email@example.com', // Make sure to put your real email here
+      process.env.NEXT_PUBLIC_VAPID_KEY,
+      process.env.PRIVATE_VAPID_KEY
+    );
 
-    // Security Check: Ensure only you can trigger this
+    const body = await req.json();
+    const { title, message, slug, adminToken } = body;
+
+    // Security Check
     if (adminToken !== process.env.ADMIN_SECRET_TOKEN) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -25,19 +26,23 @@ export async function POST(req) {
     // Fetch all saved subscriptions
     const subscribers = await collection.find({}).toArray();
 
+    if (subscribers.length === 0) {
+      return NextResponse.json({ message: "No subscribers found." }, { status: 200 });
+    }
+
     const payload = JSON.stringify({
       title: title,
       body: message,
-      url: `/blog/${slug}` // Opens the blog when clicked
+      url: `/blog/${slug}` 
     });
 
-    // Send notifications and handle users who have unsubscribed/cleared data
+    // Send notifications 
     const notifications = subscribers.map(async (sub) => {
       try {
         await webpush.sendNotification(sub.subscription, payload);
       } catch (err) {
-        // If the browser subscription is no longer valid (HTTP 410), delete it from DB
-        if (err.statusCode === 410) {
+        // If the browser subscription is dead, delete it from DB
+        if (err.statusCode === 410 || err.statusCode === 404) {
           await collection.deleteOne({ _id: sub._id });
         }
       }
