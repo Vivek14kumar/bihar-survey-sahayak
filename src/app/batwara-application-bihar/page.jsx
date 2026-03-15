@@ -751,7 +751,7 @@ useEffect(() => {
             <h3 className="font-bold text-blue-900 text-lg">कुल पैतृक संपत्ति (Total Property)</h3>
           </div>
           {/* ⚡ इसे 'ऐच्छिक' से बदलकर 'अनिवार्य' कर दिया गया है ⚡ */}
-          <p className="text-xs text-blue-700 mb-4 font-medium">वह पूरी ज़मीन जिसका आप लोग बँटवारा कर रहे हैं, उसका विवरण यहाँ डालें। (यह भरना अनिवार्य है)</p>
+          <p className="text-xs text-blue-700 mb-4 font-medium">यह पूरी ज़मीन जिसका आप लोग बँटवारा कर रहे हैं, उसका विवरण यहाँ डालें। (यह भरना अनिवार्य है)</p>
           
           {totalPlots.map((plot, index) => (
              <div key={plot.id} className="p-3 rounded mt-3   relative">

@@ -1,23 +1,13 @@
 import { locations } from "@/app/data/locations";
+import { posts } from "@/app/data/posts";
 
 export default function sitemap() {
 
   const baseUrl = "https://biharsurveysahayak.online";
 
-  const blogPosts = [
-    "prapatra-2-kaise-bhare",
-    "bihar-survey-vanshavali-kaise-banaye",
-    "bihar-survey-objection-application",
-    "bihar-survey-parimarjan-process",
-    "bihar-survey-required-documents",
-    "bihar-jamin-batwara-application",
-    "jamabandi-cancellation-application",
-    "bihar-survey-shapath-patra",
-    "bihar-survey-status-check",
-    "bihar-co-karmchari-hartal"
-  ];
+    /* ---------------- BLOG PAGES ---------------- */
 
-  const blogUrls = blogPosts.map((slug) => ({
+  const blogUrls = Object.keys(posts).map((slug) => ({
     url: `${baseUrl}/blog/${slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly",
