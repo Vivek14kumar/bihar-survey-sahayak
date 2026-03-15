@@ -1,5 +1,5 @@
 import { locations } from "@/app/data/locations";
-import { posts } from "@/app/data/posts";
+import { postSlugs } from "@/app/data/postSlugs";
 
 export default function sitemap() {
 
@@ -7,13 +7,12 @@ export default function sitemap() {
 
     /* ---------------- BLOG PAGES ---------------- */
 
-  const blogUrls = Object.keys(posts).map((slug) => ({
+  const blogUrls = postSlugs.map((slug) => ({
     url: `${baseUrl}/blog/${slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly",
     priority: 0.8
   }));
-
 
     /* ---------------- DISTRICT PAGES ---------------- */
   

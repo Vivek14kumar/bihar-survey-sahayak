@@ -1,0 +1,20 @@
+export const postSlugs = [
+  "bihar-survey-prapatra-2-kaise-bhare",
+  "bihar-survey-2027-update",
+  "prapatra-2-na-bhare-to-kya-hoga",
+  "bihar-survey-name-correction",
+  "bihar-survey-document-checklist",
+  "bihar-survey-jamin-vivad",
+  "bihar-survey-khata-khesra",
+  "bihar-survey-online-form",
+  "bihar-survey-batwara-process",
+  "bihar-survey-aapatti-process",
+  "bihar-survey-raiayat-guide",
+  "bdo-will-handle-co-work-update",
+  "parimarjan-plus-time-limit-update",
+  "fake-land-documents-strict-action-bihar",
+  "bihar-survey-drone-mapping",
+  "bihar-survey-prapatra-3-guide",
+  "bihar-survey-land-dispute",
+  "bihar-survey-khatian-check"
+];
