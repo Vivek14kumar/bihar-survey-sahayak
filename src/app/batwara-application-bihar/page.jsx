@@ -751,7 +751,7 @@ useEffect(() => {
             <h3 className="font-bold text-blue-900 text-lg">कुल पैतृक संपत्ति (Total Property)</h3>
           </div>
           {/* ⚡ इसे 'ऐच्छिक' से बदलकर 'अनिवार्य' कर दिया गया है ⚡ */}
-          <p className="text-xs text-blue-700 mb-4 font-medium">यह पूरी ज़मीन जिसका आप लोग बँटवारा कर रहे हैं, उसका विवरण यहाँ डालें। (यह भरना अनिवार्य है)</p>
+          <p className="text-xs text-blue-700 mb-4 font-medium">वह पूरी ज़मीन जिसका आप लोग बँटवारा कर रहे हैं, उसका विवरण यहाँ डालें। (यह भरना अनिवार्य है)</p>
           
           {totalPlots.map((plot, index) => (
              <div key={plot.id} className="p-3 rounded mt-3   relative">
@@ -1086,7 +1086,7 @@ useEffect(() => {
             {hasTotalPropertyData && (
               <div style={{ marginBottom: '35px', pageBreakInside: 'avoid' }}>
                 <h3 style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '19px', borderBottom: '2px solid #333', paddingBottom: '5px' }}>2. कुल पैतृक संपत्ति का पूर्ण विवरण:</h3>
-                <p style={{ marginBottom: '15px', fontSize: '15px' }}>वह संपूर्ण पैतृक संपत्ति जिसका वर्तमान में बँटवारा किया जा रहा है, उसका विवरण निम्नलिखित है:</p>
+                <p style={{ marginBottom: '15px', fontSize: '15px' }}>यह संपूर्ण पैतृक संपत्ति जिसका वर्तमान में बँटवारा किया जा रहा है, उसका विवरण निम्नलिखित है:</p>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', border: '2px solid #555' }}>
                   <thead>
                     <tr>
