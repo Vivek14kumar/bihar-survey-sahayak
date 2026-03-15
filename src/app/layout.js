@@ -4,6 +4,7 @@ import VisitTracker from "@/components/VisitTracker";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
 import MobilePopup from "@/components/MobilePopup";
+import SubscribePopup from "@/components/SubscribePopup";
 import { Toaster } from "react-hot-toast";
 
 export const metadata = {
@@ -76,6 +77,8 @@ export default function RootLayout({ children }) {
           <Toaster position="top-right" reverseOrder={false} />
           {children}
           <MobilePopup /> {/* Pop-up will appear only on mobile */}
+          {/* The Smart Popup */}
+          <SubscribePopup />
         </main>
 
         {/* FOOTER */}

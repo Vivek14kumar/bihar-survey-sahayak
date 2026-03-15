@@ -9,7 +9,12 @@ import {
   Mail,
   Printer,
   IndianRupee,
+  Send,
+  Bell
 } from "lucide-react";
+
+// Import your blogs object! (Adjust the path if you saved it elsewhere)
+import { posts } from "@/app/data/posts"; 
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -25,6 +30,12 @@ export default function AdminDashboard() {
 
   const [feedbacks, setFeedbacks] = useState([]);
 
+  // ====== PUSH NOTIFICATION STATE ======
+  // Default to the first post in your object
+  const [selectedSlug, setSelectedSlug] = useState(Object.keys(posts)[0]); 
+  const [adminToken, setAdminToken] = useState("");
+  const [isSending, setIsSending] = useState(false);
+
   useEffect(() => {
     fetch("/api/get-analytics")
       .then((res) => res.json())
@@ -34,6 +45,39 @@ export default function AdminDashboard() {
       .then((res) => res.json())
       .then((data) => setFeedbacks(data));
   }, []);
+
+  // ====== SEND NOTIFICATION LOGIC ======
+  const handleSendNotification = async () => {
+    if (!adminToken) return alert("Please enter the Admin Password!");
+    
+    setIsSending(true);
+    const selectedPost = posts[selectedSlug];
+    
+    try {
+      const res = await fetch("/api/notify-all", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: selectedPost.title,
+          // Cut the message off at 100 characters so it fits on mobile screens
+          message: selectedPost.intro.substring(0, 100) + "...", 
+          slug: selectedSlug,
+          adminToken: adminToken,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("✅ " + data.message);
+        setAdminToken(""); // Clear the password field after sending for safety
+      } else {
+        alert("❌ Error: " + data.error);
+      }
+    } catch (err) {
+      alert("❌ Request failed! Check your network or server logs.");
+    }
+    setIsSending(false);
+  };
 
   /* ================= Conversion Rate ================= */
   const totalCreated =
@@ -51,13 +95,76 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6 md:p-10">
       
       {/* ================= HEADER ================= */}
-      <div className="mb-10">
-        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-          Admin Revenue & Analytics Dashboard
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Monitor revenue, PDF activity & user feedback
-        </p>
+      <div className="mb-10 flex justify-between items-end flex-wrap gap-4">
+        <div>
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Admin Revenue & Analytics
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Monitor revenue, PDF activity & notify users
+          </p>
+        </div>
+      </div>
+
+      {/* ================= PUSH NOTIFICATION PANEL ================= */}
+      <div className="bg-white/80 backdrop-blur-lg p-6 rounded-3xl shadow-xl border border-gray-200 mb-10">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+          <Bell className="text-blue-500" size={26} /> Send Push Notification
+        </h2>
+        
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+          
+          {/* Inputs Section */}
+          <div className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Select Blog Post</label>
+              <select 
+                className="w-full border-gray-300 border p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm"
+                value={selectedSlug}
+                onChange={(e) => setSelectedSlug(e.target.value)}
+              >
+                {Object.keys(posts).map(slug => (
+                  <option key={slug} value={slug}>{posts[slug].title}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Admin Password</label>
+              <input 
+                type="password" 
+                placeholder="Enter ADMIN_SECRET_TOKEN" 
+                value={adminToken}
+                onChange={(e) => setAdminToken(e.target.value)}
+                className="w-full border-gray-300 border p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm"
+              />
+            </div>
+          </div>
+
+          {/* Live Preview & Send Button Section */}
+          <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-inner h-full flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider flex items-center gap-2">
+                <Eye size={14}/> Live Preview
+              </h3>
+              <p className="font-bold text-gray-800 mb-2 leading-snug text-lg">📢 {posts[selectedSlug].title}</p>
+              <p className="text-sm text-gray-600 line-clamp-2">{posts[selectedSlug].intro}</p>
+            </div>
+            
+            <button 
+              onClick={handleSendNotification}
+              disabled={isSending}
+              className={`mt-6 w-full py-3.5 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition-all ${
+                isSending 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:-translate-y-0.5'
+              }`}
+            >
+              <Send size={20} className={isSending ? "animate-pulse" : ""} />
+              {isSending ? "Broadcasting to all users..." : "Broadcast Notification"}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* ================= TOP STATS ================= */}
