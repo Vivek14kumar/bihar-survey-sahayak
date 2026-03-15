@@ -94,6 +94,13 @@ const posts = [
   des:"अब BDO के पास भी CO के बराबर की शक्तियां (Powers) होंगी। वे मुख्य रूप से ये काम करेंगे",
   icon: AlertTriangle,
   tag: "महत्वपूर्ण"
+},
+{
+  title:"बड़ी राहत! सरकार ने तय की 'परिमार्जन प्लस' की समय-सीमा",
+  slug:"parimarjan-plus-time-limit-update",
+  des:"जानिए कितने दिन में सुधरेगा जमीन का कागज",
+  icon: AlertTriangle,
+  tag: "महत्वपूर्ण"
 }
 ];
 
