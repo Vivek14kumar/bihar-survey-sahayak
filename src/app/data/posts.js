@@ -5,7 +5,10 @@ import {
   AlertTriangle,
   PenLine,
   Files,
-  CheckCircle
+  CheckCircle,
+  Users,
+  FileSearch,
+  Map
 } from "lucide-react";
 
 export const posts = {
@@ -725,5 +728,5 @@ export const posts = {
     text: "परिमार्जन प्लस में सुधार कैसे करें",
     link: "/parimarjan-help"
   }
-},
+}
 };
