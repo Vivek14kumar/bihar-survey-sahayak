@@ -101,6 +101,13 @@ const posts = [
   des:"जानिए कितने दिन में सुधरेगा जमीन का कागज",
   icon: AlertTriangle,
   tag: "महत्वपूर्ण"
+},
+{
+  title:"सावधान! जमीन के फर्जी कागज लगाए तो सीधे FIR, होगी 7 साल की जेल!",
+  slug:"fake-land-documents-strict-action-bihar",
+  des:"बिहार में भूमि सर्वे और दाखिल-खारिज (Mutation) के दौरान कई लोग जाली केवाला या फर्जी खतियान लगा देते है",
+  icon: AlertTriangle,
+  tag: "महत्वपूर्ण"
 }
 ];
 
