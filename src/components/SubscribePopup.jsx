@@ -7,29 +7,22 @@ export default function SubscribePopup() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // 1. Check local storage for the date they dismissed it
     const dismissedTime = localStorage.getItem("surveyPopupDismissedDate");
     const isAlreadySubscribed = localStorage.getItem("surveySubscribed");
 
-    // If we already know they subscribed, stop right here.
     if (isAlreadySubscribed === "true") return;
 
-    // 2. If they dismissed it, check if 1 day has passed
     let shouldShow = true;
     if (dismissedTime) {
-      // Calculate days passed since they clicked "No Thanks"
       const daysPassed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
-      
-      // If it has been LESS than 1 day, keep the popup hidden
       if (daysPassed < 1) {
         shouldShow = false; 
       }
     }
 
-    if (!shouldShow) return; // Exit if we shouldn't show it yet
+    if (!shouldShow) return;
 
     async function checkSubscription() {
-      // 3. Double-check the actual browser PushManager just to be 100% sure
       if ("serviceWorker" in navigator && "PushManager" in window) {
         try {
           const register = await navigator.serviceWorker.getRegistration();
@@ -48,9 +41,7 @@ export default function SubscribePopup() {
     }
 
     checkSubscription().then((isSubscribed) => {
-      // 4. If they are NOT subscribed and it has been more than 1 day
       if (!isSubscribed) {
-        // Wait 5 seconds so they can see your website first
         const timer = setTimeout(() => {
           setIsOpen(true);
         }, 9000);
@@ -60,16 +51,15 @@ export default function SubscribePopup() {
     });
   }, []);
 
-  // When they click the "X" or "No thanks"
   const handleClose = () => {
-    // Save the exact timestamp of right now
     localStorage.setItem("surveyPopupDismissedDate", Date.now().toString());
     setIsOpen(false);
   };
 
-  // When they click inside the subscribe area
-  const handleSubscribeClick = () => {
+  // NEW: This runs exactly when the SubscribeButton finishes its job!
+  const handleSuccessfulSubscription = () => {
     localStorage.setItem("surveySubscribed", "true");
+    setIsOpen(false); // Hides the popup automatically!
   };
 
   if (!isOpen) return null;
@@ -77,10 +67,8 @@ export default function SubscribePopup() {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
       
-      {/* POPUP BOX */}
       <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full relative overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200">
         
-        {/* Close Button */}
         <button 
           onClick={handleClose}
           className="absolute top-4 right-4 text-white hover:text-slate-200 bg-black/20 hover:bg-black/40 p-2 rounded-full transition z-10"
@@ -88,7 +76,6 @@ export default function SubscribePopup() {
           <X size={20} />
         </button>
 
-        {/* Top Decoration */}
         <div className="bg-gradient-to-r from-indigo-600 to-blue-600 p-8 text-center relative overflow-hidden">
           <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
           <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-20 h-20 bg-white/10 rounded-full blur-lg"></div>
@@ -104,7 +91,6 @@ export default function SubscribePopup() {
           </p>
         </div>
 
-        {/* Content */}
         <div className="p-8 text-center bg-slate-50">
           
           <div className="mb-6 space-y-2">
@@ -117,9 +103,9 @@ export default function SubscribePopup() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div onClick={handleSubscribeClick} className="w-full">
-               <SubscribeButton />
-            </div>
+            
+            {/* FIXED: Removed the div wrapper and added the onSuccess prop */}
+            <SubscribeButton onSuccess={handleSuccessfulSubscription} />
 
             <button 
               onClick={handleClose}
