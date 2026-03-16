@@ -16,5 +16,9 @@ export const postSlugs = [
   "bihar-survey-drone-mapping",
   "bihar-survey-prapatra-3-guide",
   "bihar-survey-land-dispute",
-  "bihar-survey-khatian-check"
+  "bihar-survey-khatian-check",
+  "biharbhumi-portal-9-online-services",
+  "bihar-jamabandi-check-online",
+  "lpc-online-apply-bihar",
+  "parimarjan-online-process-bihar"
 ];
