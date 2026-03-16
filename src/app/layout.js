@@ -2,6 +2,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import VisitTracker from "@/components/VisitTracker";
 import Script from "next/script";
+import Link from "next/link"; // Added Next.js Link
 import { Analytics } from "@vercel/analytics/next"
 import MobilePopup from "@/components/MobilePopup";
 import SubscribePopup from "@/components/SubscribePopup";
@@ -12,8 +13,17 @@ export const metadata = {
   description:
     "Prepare your Vanshavali safely for Bihar Land Survey 2026. Generate official format PDF instantly without login.",
   manifest: "/manifest.json",
-    keywords:
-    " Bihar Bhumi, bihar bhumi,Vanshavali, Vanshwali, vanshavali maker, Bihar, Bihar Land Survey 2026,Bihar Bhumi Survey 2026, Vanshavali Maker, Bihar Survey PDF, Bihar Land Record Helper, DCLR Vanshawali Certificate",
+  // Fixed: Keywords should be an array in Next.js App Router
+  keywords: [
+    "Bihar Bhumi", 
+    "Vanshavali", 
+    "vanshavali maker", 
+    "Bihar Land Survey 2026",
+    "Bihar Bhumi Survey 2026", 
+    "Bihar Survey PDF", 
+    "Bihar Land Record Helper", 
+    "DCLR Vanshawali Certificate"
+  ],
 };
 
 export default function RootLayout({ children }) {
@@ -60,9 +70,10 @@ export default function RootLayout({ children }) {
         </Script>
         {/* ------------------------------ */}
         
+        {/* Fixed: Changed to lazyOnload to prevent render-blocking */}
         <Script
           src="https://www.google.com/inputtools/request?itc=hi-t-i0-und&num=1"
-          strategy="beforeInteractive"
+          strategy="lazyOnload" 
         />
         
         {/* 🔥 TRACK VISIT */}
@@ -77,8 +88,7 @@ export default function RootLayout({ children }) {
         <main className="min-h-screen">
           <Toaster position="top-right" reverseOrder={false} />
           {children}
-          <MobilePopup /> {/* Pop-up will appear only on mobile */}
-          {/* The Smart Popup */}
+          {/*<MobilePopup />*/} 
           <SubscribePopup />
         </main>
 
@@ -116,70 +126,31 @@ export default function RootLayout({ children }) {
               <h4 className="font-semibold text-white mb-4">
                 Legal
               </h4>
+              {/* Fixed: Replaced <a> tags with Next.js <Link> tags for instant routing */}
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a
-                    href="/about"
-                    className="hover:text-white transition"
-                  >
-                    About
-                  </a>
+                  <Link href="/about" className="hover:text-white transition">About</Link>
                 </li>
                 <li>
-                  <a
-                    href="/contact"
-                    className="hover:text-white transition"
-                  >
-                    Contact
-                  </a>
+                  <Link href="/contact" className="hover:text-white transition">Contact</Link>
                 </li>
                 <li>
-                  <a
-                    href="/privacy-policy"
-                    className="hover:text-white transition"
-                  >
-                    Privacy Policy
-                  </a>
+                  <Link href="/privacy-policy" className="hover:text-white transition">Privacy Policy</Link>
                 </li>
                 <li>
-                  <a
-                    href="/terms-and-conditions"
-                    className="hover:text-white transition"
-                  >
-                    Terms & Conditions
-                  </a>
+                  <Link href="/terms-and-conditions" className="hover:text-white transition">Terms & Conditions</Link>
                 </li>
                 <li>
-                  <a
-                    href="/disclaimer"
-                    className="hover:text-white transition"
-                  >
-                    Disclaimer
-                  </a>
+                  <Link href="/disclaimer" className="hover:text-white transition">Disclaimer</Link>
                 </li>
                 <li>
-                  <a
-                    href="/feedback"
-                    className="hover:text-white transition"
-                  >
-                    Feedback
-                  </a>
+                  <Link href="/feedback" className="hover:text-white transition">Feedback</Link>
                 </li>
                 <li>
-                  <a
-                    href="/faq"
-                    className="hover:text-white transition"
-                  >
-                    FAQ
-                  </a>
+                  <Link href="/faq" className="hover:text-white transition">FAQ</Link>
                 </li>
                 <li>
-                  <a
-                    href="/refund"
-                    className="hover:text-white transition"
-                  >
-                    Refund
-                  </a>
+                  <Link href="/refund" className="hover:text-white transition">Refund</Link>
                 </li>
               </ul>
             </div>
@@ -200,10 +171,7 @@ export default function RootLayout({ children }) {
           </span>
           </div>
         </footer>
-        
       </body>
     </html>
   );
-  
 }
-

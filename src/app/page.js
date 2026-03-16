@@ -66,7 +66,7 @@ export default function Home() {
         px-10 py-4 rounded-xl shadow-xl 
         hover:scale-105 hover:shadow-2xl transition-all duration-300"
       >
-        🚀 अभी वंशावली बनाएं
+        अभी वंशावली बनाएं
       </a>
       
       <a
@@ -76,7 +76,7 @@ export default function Home() {
         px-10 py-4 rounded-xl shadow-xl 
         hover:bg-white hover:text-indigo-700 transition-all duration-300"
       >
-        📄 अभी प्रपत्र-2 भरें →
+        अभी प्रपत्र-2 भरें →
       </a>
     </div>
 

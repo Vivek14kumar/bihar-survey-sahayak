@@ -54,6 +54,44 @@ export default function sitemap() {
       priority: 0.9
     },
 
+    /* ---------------- NEW INFORMATIVE & TOOL PAGES ---------------- */
+    {
+      url: `${baseUrl}/bihar-bhumi-jankari`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+    {
+      url: `${baseUrl}/register-2-online`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+    {
+      url: `${baseUrl}/land-records-khatiyan`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+    {
+      url: `${baseUrl}/official-portal-guide`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+    {
+      url: `${baseUrl}/property-registration-details`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+    {
+      url: `${baseUrl}/bihar-bhumi-survey-online`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+    
     {
       url: `${baseUrl}/bihar-survey`,
       lastModified: new Date(),
