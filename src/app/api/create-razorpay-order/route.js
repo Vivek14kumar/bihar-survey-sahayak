@@ -22,7 +22,7 @@ export async function POST(req) {
     }else if (type === "cancellationJama") {
       amount = 3 * 100; // ✅ ₹3 per document
     }else if (type === "batwara") {
-      amount = 39 * 100; // ✅ ₹39 per document
+      amount = 29 * 100; // ✅ ₹29 per document
     }  else {
       return Response.json({ error: "Invalid type" }, { status: 400 });
     }
