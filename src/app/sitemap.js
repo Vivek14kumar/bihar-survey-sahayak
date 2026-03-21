@@ -105,6 +105,13 @@ export default function sitemap() {
       changeFrequency: "weekly",
       priority: 0.9
     },
+    
+    {
+      url: `${baseUrl}/prapatra-3(1)`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
 
     {
       url: `${baseUrl}/batwara-application-bihar`,
@@ -122,6 +129,20 @@ export default function sitemap() {
 
     {
       url: `${baseUrl}/objection-letter`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+    
+    {
+      url: `${baseUrl}/death-certificate-declaration`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+
+    {
+      url: `${baseUrl}/death-certificate-affidavit`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9

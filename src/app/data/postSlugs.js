@@ -20,5 +20,8 @@ export const postSlugs = [
   "biharbhumi-portal-9-online-services",
   "bihar-jamabandi-check-online",
   "lpc-online-apply-bihar",
-  "parimarjan-online-process-bihar"
+  "parimarjan-online-process-bihar",
+  "request-offline-land-documents-online-bihar",
+  "co-mutation-approval-without-hearing-appeal-process",
+  "martyred-soldiers-land-allotment-bihar"
 ];

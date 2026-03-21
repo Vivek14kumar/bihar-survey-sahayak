@@ -13,6 +13,12 @@ export default function FormsPage() {
       image: "/forms/prapatra2.jpeg"
     },
     {
+      title: "प्रपत्र-3 (1)",
+      description: "जमीन सर्वे हेतु आवश्यक फॉर्म",
+      link: "/prapatra-3(1)",
+      image: "/forms/prapatra3.jpeg"
+    },
+    {
       title: "पारिवारिक भूमि बंटवारा",
       description: "आपसी सहमति से पारिवारिक भूमि बंटवारा",
       link: "/batwara-application-bihar",
@@ -41,7 +47,19 @@ export default function FormsPage() {
       description: "परिवार वृक्ष / वंश सूची तैयार करें",
       link: "/#tool",
       image: "/forms/familytree.jpeg"
-    }
+    },
+    {
+      title: "श्रीमान कार्यपालक दंडाधिकारी",
+      description: "मृत्यु प्रमाण पत्र उपलब्ध न होने पर (Court/कोर्ट सत्यापन)",
+      link: "/death-certificate-affidavit",
+      image: "/forms/courtCerti.jpeg"
+    },
+    {
+      title: "स्व-घोषणा पत्र (मृत्यु प्रमाण हेतु)",
+      description: "मृत्यु प्रमाण पत्र उपलब्ध न होने पर (मुखिया सत्यापन सहित)",
+      link: "/death-certificate-declaration",
+      image: "/forms/selfCertiD.jpeg"
+    },
   ];
 
   return (

@@ -6,6 +6,11 @@ import SubscribeButton from "@/components/SubscribeButton";
 // Import your data from the new file!
 import { posts } from "@/app/data/posts"; 
 
+export const metadata = {
+  title: "बिहार सर्वे जानकारी | Bihar Survey Guide",
+  description: "बिहार भूमि सर्वे से जुड़ी सभी जानकारी – प्रपत्र-2, प्रपत्र-3, वंशावली, आपत्ति आवेदन, परिमार्जन और जरूरी दस्तावेज।"
+};
+
 export default async function BlogPost({ params }) {
   const { slug } = await params;
   

@@ -19,7 +19,7 @@ export const metadata = {
   keywords: "bihar bhumi jankari, bhumi jankari bihar government, bihar land records, jamabandi register 2 bihar, khatiyan bihar, bihar survey",
 };
 
-<script
+/*<script
   type="application/ld+json"
   dangerouslySetInnerHTML={{
     __html: JSON.stringify({
@@ -45,7 +45,7 @@ export const metadata = {
       ]
     })
   }}
-/>
+/>*/
 export default function BiharBhumiJankariPage() {
   return (
     <div className="min-h-screen bg-[#EFF6FF] text-slate-800 font-sans selection:bg-orange-200 selection:text-orange-900">
