@@ -2,6 +2,7 @@ import Link from "next/link";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
 import ShareButton from "@/components/ShareButton";
 import SubscribeButton from "@/components/SubscribeButton";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 // Import your data from the new file!
 import { posts } from "@/app/data/posts"; 
@@ -131,7 +132,7 @@ export default async function BlogPost({ params }) {
       <div className="mt-4">
         <CompactQuickLinks/>
       </div>
-      
+      <WhatsAppButton/>
     </div>
   );
 }

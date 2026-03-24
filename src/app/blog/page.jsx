@@ -2,6 +2,7 @@ import Link from "next/link";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
 import ShareButton from "@/components/ShareButton";
 import { Flame, BookOpen, FileText } from "lucide-react";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 // ✅ IMPORT YOUR BLOG DATA HERE
 import { posts } from "@/app/data/posts"; 
@@ -150,7 +151,7 @@ export default function BlogPage() {
         <div className="mt-4">
           <CompactQuickLinks/>
         </div>
-
+          <WhatsAppButton/>
       </div>
     </div>
   );
