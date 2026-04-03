@@ -101,29 +101,29 @@ if (!districts.includes(district)) {
         ))}
       </div>
         <section className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-<h2 className="text-2xl font-bold mb-6">
-{districtName} के ब्लॉक
-</h2>
+        <h2 className="uppercase text-3xl font-bold mb-6 p-1 border-b-2 border-gray-200 rounded-xl">
+        <span className="text-blue-600">{districtName}</span> के ब्लॉक :-
+        </h2>
 
-<div className="grid md:grid-cols-6 gap-4">
+        <div className="flex flex-wrap gap-2">
 
-{blocks.flatMap((item) =>
-item.blocks.map((block, i) => (
+        {blocks.flatMap((item) =>
+        item.blocks.map((block, i) => (
+        
+        <Link
+        key={i}
+        href={`/survey/${district}/${block}`}
+        className="capitalize px-4 py-2 bg-purple-50  border-b-2 border-purple-400 text-gray-700 font-bold rounded-lg hover:bg-purple-200"
+        >
+        {block}
+        
+        </Link>
 
-<Link
-key={i}
-href={`/survey/${district}/${block}`}
-className="p-2 border rounded-xl hover:shadow capitalize"
->
-{block}
+        ))
+        )}
 
-</Link>
-
-))
-)}
-
-</div>
-</section>
+        </div>
+      </section>
       {/* Info Section - "How it works" */}
       <section className="mt-20 bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
         <div className="flex items-center gap-2 mb-6">

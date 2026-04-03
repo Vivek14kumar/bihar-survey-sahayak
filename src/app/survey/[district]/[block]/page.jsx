@@ -161,12 +161,12 @@ export default async function SurveyPage({ params }) {
           <div className="flex flex-wrap gap-2">
           {locations
             .find(l => l.district === district)
-            ?.blocks.slice(0,8)
+            ?.blocks.slice(0)
             .map((b,i)=>(
           <Link
           key={i}
           href={`/survey/${district}/${b}`}
-          className="capitalize px-4 py-2  border-b-2 border-purple-400 text-gray-700 font-bold rounded-lg hover:bg-purple-200"
+          className="capitalize px-4 py-2 bg-purple-50  border-b-2 border-purple-400 text-gray-700 font-bold rounded-lg hover:bg-purple-200"
           >
           {b}
           </Link>

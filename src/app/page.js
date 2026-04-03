@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import FAQClient from "./faq/FAQClient";
 import VanshawaliTutorial from "@/components/VanshawaliTutorial";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import DistrictSection from "@/components/DistrictSection";
 
 export default function Home() {
   return (
@@ -78,6 +79,17 @@ export default function Home() {
       >
         अभी प्रपत्र-2 भरें →
       </a>
+      
+      <a
+        href="/batwara-application-bihar"
+        className="relative inline-flex items-center justify-center
+        bg-gradient-to-r from-emerald-400 to-green-500 text-white font-bold
+        px-10 py-4 rounded-xl shadow-xl 
+        hover:scale-105 hover:shadow-2xl transition-all duration-300"
+      >
+        अभी बटवारा पत्र बनाएं
+      </a>
+
     </div>
 
     {/* Social Proof */}
@@ -145,7 +157,7 @@ export default function Home() {
           ))}
         </div>
       </section>
-
+          
       {/* ================= TOOL ================= */}
       <section id="tool" className="max-w-6xl mx-auto mt-28 px-4 sm:px-6 md:px-12">
         {/* Tutorial Video */}
@@ -170,11 +182,16 @@ export default function Home() {
         </motion.div>
       </section>
 
+      {/*===================District Links========= */}
+      <section>
+        <DistrictSection />
+      </section>
+
       {/*=====================Quick Links============*/}
       <section className="p-10">
         <CompactQuickLinks/>
       </section>
-
+          
       {/* ================= TRUST ================= */}
       <section className="max-w-4xl mx-auto mt-24 px-4 sm:px-6 md:px-12">
         <motion.div
