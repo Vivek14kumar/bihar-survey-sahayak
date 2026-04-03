@@ -16,6 +16,7 @@ import {
   Info
 } from "lucide-react";
 
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   const districts = [...new Set(locations.map(l => l.district))];
@@ -33,8 +34,9 @@ export async function generateMetadata({ params }) {
     district.charAt(0).toUpperCase() + district.slice(1);
 
   return {
-    title: `बिहार सर्वे फॉर्म – ${districtName} जिला | प्रपत्र-2, वंशावली, आपत्ति आवेदन`,
-    description: `${districtName} जिला के लिए बिहार भूमि सर्वे फॉर्म ऑनलाइन बनाएं – प्रपत्र-2, वंशावली, शपथ पत्र, आपत्ति आवेदन।`
+    title: `${districtName} Bihar Survey 2026 | प्रपत्र-2, वंशावली, आपत्ति आवेदन`,
+    description: `${districtName} जिला बिहार भूमि सर्वे 2026 की पूरी जानकारी। प्रपत्र-2, वंशावली, आपत्ति आवेदन ऑनलाइन बनाएं और PDF डाउनलोड करें।`,
+    keywords: `${districtName} Bihar survey, ${districtName} भूमि सर्वे, ${districtName} प्रपत्र 2`
   };
 
 }
@@ -98,7 +100,30 @@ if (!districts.includes(district)) {
           </Link>
         ))}
       </div>
+        <section className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
+<h2 className="text-2xl font-bold mb-6">
+{districtName} के ब्लॉक
+</h2>
 
+<div className="grid md:grid-cols-6 gap-4">
+
+{blocks.flatMap((item) =>
+item.blocks.map((block, i) => (
+
+<Link
+key={i}
+href={`/survey/${district}/${block}`}
+className="p-2 border rounded-xl hover:shadow capitalize"
+>
+{block}
+
+</Link>
+
+))
+)}
+
+</div>
+</section>
       {/* Info Section - "How it works" */}
       <section className="mt-20 bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
         <div className="flex items-center gap-2 mb-6">

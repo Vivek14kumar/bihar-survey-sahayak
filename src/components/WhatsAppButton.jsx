@@ -6,7 +6,7 @@ const WhatsAppButton = () => {
       href="https://chat.whatsapp.com/HZUVaTxPxPALfUpWf629tZ?mode=gi_t"
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#25D366] text-white px-4 py-3 rounded-full shadow-xl hover:bg-green-600 hover:scale-105 transition-all duration-300"
+      className="fixed md:bottom-6 bottom-18 md:right-6 right-2 z-50 flex items-center gap-2 bg-[#25D366] text-white px-4 py-3 rounded-full shadow-xl hover:bg-green-600 hover:scale-105 transition-all duration-300"
       aria-label="Join our WhatsApp Group"
     >
       {/* WhatsApp SVG Icon */}

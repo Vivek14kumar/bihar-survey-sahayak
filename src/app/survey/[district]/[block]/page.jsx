@@ -14,7 +14,9 @@ import {
   ArrowRight,
   ClipboardList
 } from "lucide-react";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
 
@@ -89,6 +91,13 @@ export default async function SurveyPage({ params }) {
         </p>
       </header>
 
+      <section className="mt-8 mb-4 bg-red-50 p-2 rounded-xl border border-gray-200">
+        <p className="font-bold text-center">
+        <span className="text-blue-700 uppercase">{blockName}</span> प्रखंड <span className="text-blue-700 uppercase">{districtName}</span> में बिहार भूमि सर्वे 2026 जारी है। 
+        रैयत प्रपत्र-2, वंशावली, आपत्ति आवेदन यहाँ से आसानी से तैयार कर सकते हैं।
+        </p>
+      </section>
+
       {/* Tools Grid - Exact same design as District Page */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool, i) => (
@@ -144,6 +153,27 @@ export default async function SurveyPage({ params }) {
         </div>
       </section>
 
+        <section className="mt-16 bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
+          <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 rounded">
+          {districtName} के अन्य प्रखंड :-
+          </h2>
+
+          <div className="flex flex-wrap gap-2">
+          {locations
+            .find(l => l.district === district)
+            ?.blocks.slice(0,8)
+            .map((b,i)=>(
+          <Link
+          key={i}
+          href={`/survey/${district}/${b}`}
+          className="capitalize px-4 py-2  border-b-2 border-purple-400 text-gray-700 font-bold rounded-lg hover:bg-purple-200"
+          >
+          {b}
+          </Link>
+          ))}
+          </div>
+        </section>
+
       {/* Share Section */}
       <div className="mt-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-10 py-4 text-center text-white shadow-2xl">
         <h2 className="text-3xl font-bold mb-4">
@@ -158,6 +188,7 @@ export default async function SurveyPage({ params }) {
       </div>
         <div className="mt-4">
           <CompactQuickLinks/>
+          <WhatsAppButton/>
         </div>
     </div>
   );
