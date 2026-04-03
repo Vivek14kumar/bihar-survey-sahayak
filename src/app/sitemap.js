@@ -26,16 +26,14 @@ export default function sitemap() {
   }));
 
 
-    /* ---------------- BLOCK PAGES ---------------- */
+  /* ---------------- BLOCK PAGES ---------------- */
 
-  const blockUrls = locations.flatMap((loc) =>
-    loc.blocks.map((block) => ({
-      url: `${baseUrl}/survey/${loc.district}/${block}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8
-    }))
-  );
+  const blockUrls = locations.map((loc) => ({
+    url: `${baseUrl}/survey/${loc.district}/${loc.block}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.8
+  }));
 
 
   return [
@@ -107,7 +105,7 @@ export default function sitemap() {
     },
     
     {
-      url: `${baseUrl}/prapatra-3(1)`,
+      url: `${baseUrl}/prapatra-3-1`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9

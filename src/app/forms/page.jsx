@@ -15,7 +15,7 @@ export default function FormsPage() {
     {
       title: "प्रपत्र-3 (1)",
       description: "जमीन सर्वे हेतु आवश्यक फॉर्म",
-      link: "/prapatra-3(1)",
+      link: "/prapatra-3-1",
       image: "/forms/prapatra3.jpeg"
     },
     {
