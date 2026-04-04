@@ -199,11 +199,11 @@ export default function LegalPanchnama() {
   });
 
   // ⚡ PlotVillage & PlotThana added to Initial States ⚡
-  const initialTotalPlot = { id: Date.now(), khata: '', khesra: '', plotVillage: '', plotThana: '', rakbaAcre: '', rakbaDecimal: '', boundaries: { north: '', south: '', east: '', west: '' } };
+  const initialTotalPlot = { id: Date.now(), jamabandi: '', khata: '', khesra: '', plotVillage: '', plotThana: '', rakbaAcre: '', rakbaDecimal: '', boundaries: { north: '', south: '', east: '', west: '' } };
   const [totalPlots, setTotalPlots] = useState([{ ...initialTotalPlot }]);
 
   const initialPlot = { 
-    khata: '', khesra: '', plotVillage: '', plotThana: '',
+    jamabandi: '', khata: '', khesra: '', plotVillage: '', plotThana: '',
     rakbaAcre: '', rakbaDecimal: '', 
     boundaries: { north: '', south: '', east: '', west: '' },
     isAutoDivide: false, 
@@ -337,6 +337,7 @@ useEffect(() => {
             newParties[i].plots[plotIndex] = { ...initialPlot, id: Date.now() + Math.random() };
           }
           const targetPlot = newParties[i].plots[plotIndex];
+          targetPlot.jamabandi = currentPlot.jamabandi;
           targetPlot.khata = currentPlot.khata;
           targetPlot.khesra = currentPlot.khesra;
           targetPlot.plotVillage = currentPlot.plotVillage; // ⚡ Auto-divide village
@@ -399,7 +400,7 @@ useEffect(() => {
       const newPlots = parties[0].plots.map(p1Plot => {
          if (p1Plot.isAutoDivide) {
             const shares = calculateShare(p1Plot.totalRakbaAcre, p1Plot.totalRakbaDecimal, numPartiesAfterAdd);
-            return { ...initialPlot, id: Date.now() + Math.random(), khata: p1Plot.khata, khesra: p1Plot.khesra, plotVillage: p1Plot.plotVillage, plotThana: p1Plot.plotThana, rakbaAcre: shares.acre, rakbaDecimal: shares.decimal, boundaries: { ...p1Plot.boundaries } }
+            return { ...initialPlot, id: Date.now() + Math.random(), jamabandi: p1Plot.jamabandi, khata: p1Plot.khata, khesra: p1Plot.khesra, plotVillage: p1Plot.plotVillage, plotThana: p1Plot.plotThana, rakbaAcre: shares.acre, rakbaDecimal: shares.decimal, boundaries: { ...p1Plot.boundaries } }
          }
          return { ...initialPlot, id: Date.now() + Math.random() };
       });
@@ -701,7 +702,7 @@ useEffect(() => {
     return () => observer.disconnect();
   }, [showWatermark]);*/
   
-  const hasTotalPropertyData = totalPlots.some(p => p.khata || p.khesra || p.rakbaAcre || p.rakbaDecimal);
+  const hasTotalPropertyData = totalPlots.some(p =>p.jamabandi || p.khata || p.khesra || p.rakbaAcre || p.rakbaDecimal);
 
   // ⚡ NEW: चेक करें कि क्या किसी भी प्लॉट में दूसरा गाँव या थाना भरा गया है? ⚡
   const hasOtherVillages = totalPlots.some(p => p.plotVillage || p.plotThana) || parties.some(party => party.plots.some(p => p.plotVillage || p.plotThana));
@@ -767,8 +768,9 @@ useEffect(() => {
                    <HindiInput label="थाना नं. (यदि अलग हो)" name="plotThana" value={plot.plotThana} type="number" disableHindi={true} onChange={(e) => handleTotalPlotChange(plot.id, 'plotThana', e)} placeholder="नंबर..." helpText="अलग हो तभी भरें" />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-2">
+                <div className="grid grid-cols-3 gap-3 mb-2">
                   {/* ⚡ required={true} लगा दिया गया है ताकि लाल स्टार (*) दिखे ⚡ */}
+                  <HindiInput label="जमाबन्दी नं." name="jamabandi" value={plot.jamabandi} disableHindi={true} onChange={(e) => handleTotalPlotChange(plot.id, 'jamabandi', e)} placeholder="नं." />
                   <HindiInput label="खाता नं." name="khata" value={plot.khata} disableHindi={true} onChange={(e) => handleTotalPlotChange(plot.id, 'khata', e)} required={true} errorMsg={errors[`total_plot_${index}_khata`]} />
                   <HindiInput label="खेसरा नं." name="khesra" value={plot.khesra} disableHindi={true} onChange={(e) => handleTotalPlotChange(plot.id, 'khesra', e)} required={true} errorMsg={errors[`total_plot_${index}_khesra`]} />
                 </div>
@@ -860,7 +862,8 @@ useEffect(() => {
                        <HindiInput label="थाना नं. (यदि अलग हो)" name="plotThana" value={plot.plotThana} type="number" disableHindi={true} onChange={(e) => handlePlotChange(party.id, plot.id, 'plotThana', e)} disabled={isAutoSynced} placeholder="नंबर..." helpText="अलग हो तभी भरें" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 mb-2">
+                    <div className="grid grid-cols-3 gap-3 mb-2">
+                      <HindiInput label="जमाबन्दी नं." name="jamabandi" value={plot.jamabandi} disableHindi={true} onChange={(e) => handlePlotChange(party.id, plot.id, 'jamabandi', e)} disabled={isAutoSynced} placeholder="नं." />
                       <HindiInput label="खाता नं." name="khata" value={plot.khata} disableHindi={true} onChange={(e) => handlePlotChange(party.id, plot.id, 'khata', e)} disabled={isAutoSynced} required={!isAutoSynced} errorMsg={errors[`party_${party.id}_plot_${index}_khata`]} />
                       <HindiInput label="खेसरा नं." name="khesra" value={plot.khesra} disableHindi={true} onChange={(e) => handlePlotChange(party.id, plot.id, 'khesra', e)} disabled={isAutoSynced} required={!isAutoSynced} errorMsg={errors[`party_${party.id}_plot_${index}_khesra`]} />
                     </div>
@@ -1091,6 +1094,7 @@ useEffect(() => {
                   <thead>
                     <tr>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>क्र.</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>जमाबन्दी नं.</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खाता नं.</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खेसरा नं.</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>कुल रकबा</th>
@@ -1101,6 +1105,7 @@ useEffect(() => {
                     {totalPlots.map((plot, index) => (
                       <tr key={`total-plot-${plot.id}`}>
                         <td style={{ border: '1px solid #999', padding: '8px' }}>{index + 1}</td>
+                        <td style={{ border: '1px solid #999', padding: '8px' }}>{plot.jamabandi || '......'}</td>
                         <td style={{ border: '1px solid #999', padding: '8px' }}>
                           {plot.khata || '......'}
                           {/* ⚡ NEW: Village & Thana Print for Total Plots ⚡ */}
@@ -1116,15 +1121,15 @@ useEffect(() => {
                            {formatRakbaDisplay(plot.rakbaAcre, plot.rakbaDecimal)}
                         </td>
                         <td style={{ border: '1px solid #999', padding: '8px', lineHeight: '1.4' }}>
-                          उ.- {plot.boundaries.north || '......'}, द.- {plot.boundaries.south || '......'}<br/>
-                          पू.- {plot.boundaries.east || '......'}, प.- {plot.boundaries.west || '......'}
+                          <span style={{fontWeight: 'bold'}}>उ.-</span> {plot.boundaries.north || '......'}, <span style={{fontWeight: 'bold'}}> द.-</span> {plot.boundaries.south || '......'}<br/>
+                          <span style={{fontWeight: 'bold'}}>पू.-</span> {plot.boundaries.east || '......'}, <span style={{fontWeight: 'bold'}}>प.-</span> {plot.boundaries.west || '......'}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan="3" style={{ border: '1px solid #999', padding: '8px', textAlign: 'right', fontWeight: 'bold', backgroundColor: '#fdfdfd' }}>महा-कुल रकबा (Grand Total):</td>
+                      <td colSpan="4" style={{ border: '1px solid #999', padding: '8px', textAlign: 'right', fontWeight: 'bold', backgroundColor: '#fdfdfd' }}>कुल रकबा (Grand Total):</td>
                       <td colSpan="2" style={{ border: '1px solid #999', padding: '8px', fontWeight: 'bold', color: '#166534', backgroundColor: '#fdfdfd' }}>
                         {calculateTotalRakba(totalPlots)}
                       </td>
@@ -1144,6 +1149,7 @@ useEffect(() => {
                   <thead>
                     <tr>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>क्र.</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>जमाबन्दी नं.</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खाता नं.</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खेसरा नं.</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>रकबा</th>
@@ -1154,6 +1160,7 @@ useEffect(() => {
                     {party.plots.map((plot, index) => (
                       <tr key={`plot-${plot.id}`}>
                         <td style={{ border: '1px solid #999', padding: '8px' }}>{index + 1}</td>
+                        <td style={{ border: '1px solid #999', padding: '8px' }}>{plot.jamabandi || '......'}</td>
                         <td style={{ border: '1px solid #999', padding: '8px' }}>
                           {plot.khata || '......'}
                           {/* ⚡ NEW: Village & Thana Print for Party Plots ⚡ */}
@@ -1169,15 +1176,15 @@ useEffect(() => {
                            {formatRakbaDisplay(plot.rakbaAcre, plot.rakbaDecimal)}
                         </td>
                         <td style={{ border: '1px solid #999', padding: '8px', lineHeight: '1.4' }}>
-                          उ.- {plot.boundaries.north || '......'}, द.- {plot.boundaries.south || '......'}<br/>
-                          पू.- {plot.boundaries.east || '......'}, प.- {plot.boundaries.west || '......'}
+                          <span style={{fontWeight:'bold'}}>उ.-</span> {plot.boundaries.north || '......'}, <span style={{fontWeight:'bold'}}>द.-</span> {plot.boundaries.south || '......'}<br/>
+                          <span style={{fontWeight:'bold'}}>पू.-</span> {plot.boundaries.east || '......'}, <span style={{fontWeight:'bold'}}>प.-</span> {plot.boundaries.west || '......'}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan="3" style={{ border: '1px solid #999', padding: '8px', textAlign: 'right', fontWeight: 'bold', backgroundColor: '#fdfdfd' }}>
+                      <td colSpan="4" style={{ border: '1px solid #999', padding: '8px', textAlign: 'right', fontWeight: 'bold', backgroundColor: '#fdfdfd' }}>
                         इस हिस्सेदार का कुल रकबा:
                       </td>
                       <td colSpan="2" style={{ border: '1px solid #999', padding: '8px', fontWeight: 'bold',  backgroundColor: '#fdfdfd' }}>
