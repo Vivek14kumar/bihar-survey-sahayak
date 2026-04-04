@@ -516,6 +516,12 @@ useEffect(() => {
         name: "Bihar Survey Sahayak",
         description: "Premium Print (No Watermark)",
         order_id: orderData.id,
+        // ⚡ यहाँ PREFILL ऐड करें (यह फोन नंबर वाली स्क्रीन को बायपास कर देगा) ⚡
+        prefill: {
+          name: commonData.moolRaiyat || "Guest User",
+          email: "guest@biharsurveysahayak.com", // Dummy Email
+          contact: "9999999999" // Dummy Mobile Number
+        },
         handler: async function (response) {
   // 1. Kill the observer instance directly via Ref
   if (observerRef.current) {
@@ -963,29 +969,42 @@ useEffect(() => {
 
   <div className="grid grid-cols-2 gap-3">
 
-    {/* PREMIUM BUTTON */}
+    {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
     <button
       onClick={() => openRazorpay(handlePrint)}
       disabled={isDownloading}
-      className="relative flex flex-col items-center justify-center gap-1 
+      className="relative flex flex-col items-center justify-center gap-0.5 
       bg-gradient-to-r from-yellow-400 to-amber-500 text-black 
-      py-3 rounded-3xl font-bold text-[13px] 
+      py-2.5 rounded-3xl font-bold 
       hover:from-yellow-500 hover:to-amber-600 
       shadow-[0_6px_16px_rgba(234,179,8,0.45)] 
       transition disabled:bg-gray-400"
     >
-      {/* Shape badge*/} 
-      <span className="absolute -top-2 right-2 text-[12px] bg-black text-white px-2 py-[2px] rounded-full">
-        ₹29
+      {/* 🔴 डिस्काउंट बैज (लगातार ब्लिंक/एनिमेट करेगा ताकि नज़र जाए) */}
+      <span className="absolute -top-2 right-1 text-[10px] bg-gray-900 text-white px-2 py-[2px] rounded-full shadow-md animate-pulse">
+        सीमित ऑफर
       </span>
 
-      <Crown size={18} />
-      <span>प्रीमियम</span>
-      <span className="text-xs font-semibold">Print Without Watermark</span>
+      <div className="flex items-center gap-1">
+        <Crown size={16} />
+        <span className="text-[13px] md:text-sm">प्रीमियम प्रिंट</span>
+      </div>
+
+      {/* 💸 प्राइजिंग ट्रिक: ₹99 पर 'X' का निशान */}
+      <div className="flex items-center gap-2 my-0.5">
+        <div className="relative flex items-center justify-center opacity-80">
+          <span className="text-[14px] text-gray-800 font-bold">₹99</span>
+          {/* लाल रंग का 'X' जो ₹99 के ठीक ऊपर दिखेगा */}
+          <span className="absolute text-red-600 text-[18px] font-black select-none pointer-events-none ">✕</span>
+        </div>
+        <span className="text-[18px] font-black leading-none text-gray-900">₹39</span>
+      </div>
+
+      <span className="text-[10px] font-bold opacity-90">Blur और Watermark हटेगा</span>
     </button>
 
 
-    {/* FREE BUTTON */}
+    {/* FREE BUTTON (No Changes Here) */}
     <button
       onClick={async () => {
         if (!validateForm()) return;
@@ -1011,7 +1030,7 @@ useEffect(() => {
       <span className="text-xs font-semibold">Free (With Watermark)</span>
     </button>
 
-  </div>
+</div>
 
 </div>
           
@@ -1068,6 +1087,9 @@ useEffect(() => {
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='450' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='38' font-weight='900' font-family='Arial, sans-serif' fill='rgba(40, 29, 29, 0.11)' text-anchor='middle' transform='rotate(-40, 225, 225)'%3Eबिहार सर्वे सहायक बिहारसर्वेसहायक %3C/text%3E%3C/svg%3E")`,
                 backgroundRepeat: 'repeat',
               }}>
+              <div style={{ position: 'absolute', top:'.5%', left: '50%', transform: 'translate(-50%, 100px)', zIndex: 10, textAlign: 'center', backgroundColor: 'rgba(255, 0, 0, 0.63)', color: 'white', padding: '8px 18px', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', filter: 'none' }}>
+                कानूनी उपयोग एवं Blur हटाने हेतु प्रीमियम प्रिंट करें <a href="https://biharsurveysahayak.online/batwara-application-bihar" style={{fontSize:'12px'}}>https://biharsurveysahayak.online/batwara-application-bihar</a>
+              </div>
               </div>
             )}
 
@@ -1086,7 +1108,7 @@ useEffect(() => {
                 </div>
               </div>
             )}
-
+          
             <h2 style={{ textAlign: 'center', fontSize: '26px', fontWeight: '900', textDecoration: 'underline', marginBottom: '30px', letterSpacing: '0.5px' }}>आपसी सहमति से पारिवारिक भूमि बंटवारा </h2>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px', fontWeight: 'bold' }}>
               <p>दिनांक: {commonData.date || '...................'}</p>
@@ -1173,6 +1195,13 @@ useEffect(() => {
                 </table>
               </div>
             )}
+
+            <div style={{ 
+              filter: showWatermark ? 'blur(1px)' : 'none', 
+              userSelect: showWatermark ? 'none' : 'auto', // कॉपी करने से रोकेगा
+              pointerEvents: showWatermark ? 'none' : 'auto', // क्लिक करने से रोकेगा
+              transition: 'filter 0.5s ease'
+            }}>
 
             <h3 style={{ fontWeight: 'bold', marginBottom: '15px', fontSize: '19px', borderBottom: '2px solid #333', paddingBottom: '5px', pageBreakInside: 'avoid' }}>{hasTotalPropertyData ? '3.' : '2.'} संपत्ति के बंटवारे का विवरण (हिस्सेदारों के अनुसार):</h3>
             
@@ -1285,33 +1314,47 @@ useEffect(() => {
               </div>
             )}
           </div>
+          </div>
           <div className="sticky bottom-0 z-20 bg-white  rounded-3xl shadow-[0_-4px_14px_rgba(0,0,0,0.08)] px-3 py-3">
 
-  <div className="grid grid-cols-2 gap-3">
+<div className="grid grid-cols-2 gap-3">
 
-    {/* PREMIUM BUTTON */}
+    {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
     <button
       onClick={() => openRazorpay(handlePrint)}
       disabled={isDownloading}
-      className="relative flex flex-col items-center justify-center gap-1 
+      className="relative flex flex-col items-center justify-center gap-0.5 
       bg-gradient-to-r from-yellow-400 to-amber-500 text-black 
-      py-3 rounded-3xl font-bold text-[13px] 
+      py-2.5 rounded-3xl font-bold 
       hover:from-yellow-500 hover:to-amber-600 
       shadow-[0_6px_16px_rgba(234,179,8,0.45)] 
       transition disabled:bg-gray-400"
     >
-      {/* Shape badge */}
-      <span className="absolute -top-2 right-2 text-[12px] bg-black text-white px-2 py-[2px] rounded-full">
-        ₹29
+      {/* 🔴 डिस्काउंट बैज (लगातार ब्लिंक/एनिमेट करेगा ताकि नज़र जाए) */}
+      <span className="absolute -top-2 right-1 text-[10px] bg-gray-900 text-white px-2 py-[2px] rounded-full shadow-md animate-pulse">
+        सीमित ऑफर
       </span>
 
-      <Crown size={18} />
-      <span>प्रीमियम</span>
-      <span className="text-xs font-semibold">Print Without Watermark</span>
+      <div className="flex items-center gap-1">
+        <Crown size={16} />
+        <span className="text-[13px] md:text-sm">प्रीमियम प्रिंट</span>
+      </div>
+
+      {/* 💸 प्राइजिंग ट्रिक: ₹99 पर 'X' का निशान */}
+      <div className="flex items-center gap-2 my-0.5">
+        <div className="relative flex items-center justify-center opacity-80">
+          <span className="text-[14px] text-gray-800 font-bold">₹99</span>
+          {/* लाल रंग का 'X' जो ₹99 के ठीक ऊपर दिखेगा */}
+          <span className="absolute text-red-600 text-[18px] font-black select-none pointer-events-none ">✕</span>
+        </div>
+        <span className="text-[18px] font-black leading-none text-gray-900">₹39</span>
+      </div>
+
+      <span className="text-[10px] font-bold opacity-90">Blur और Watermark हटेगा</span>
     </button>
 
 
-    {/* FREE BUTTON */}
+    {/* FREE BUTTON (No Changes Here) */}
     <button
       onClick={async () => {
         if (!validateForm()) return;
@@ -1337,7 +1380,7 @@ useEffect(() => {
       <span className="text-xs font-semibold">Free (With Watermark)</span>
     </button>
 
-  </div>
+</div>
 
 </div>
         </div>

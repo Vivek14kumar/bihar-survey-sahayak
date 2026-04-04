@@ -22,7 +22,7 @@ export async function POST(req) {
   } else {
     // अगर पेड (प्रीमियम) है, तो पेड काउंट और रेवेन्यू दोनों बढ़ाएं
     updateData.paidBantwara = 1;
-    updateData.totalRevenue = 29; // ₹20 जोड़ दें
+    updateData.totalRevenue = 39; // ₹20 जोड़ दें
   }
 
   await db.collection("dailyStats").updateOne(
