@@ -195,7 +195,7 @@ export default function LegalPanchnama() {
   const observerRef = useRef(null);
 
   const [commonData, setCommonData] = useState({
-    date: getTodayHindiDate(), place: '', moolRaiyat: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
+    date: getTodayHindiDate(), place: '', moolRaiyat: '', caste: '', pincode: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
   });
 
   // ⚡ PlotVillage & PlotThana added to Initial States ⚡
@@ -211,8 +211,8 @@ export default function LegalPanchnama() {
   };
   
   const [parties, setParties] = useState([
-    { id: 1, title: 'प्रथम', name: '', age: '', aadhaar: '', plots: [{ ...initialPlot, id: Date.now() + 1 }] },
-    { id: 2, title: 'द्वितीय', name: '', age: '', aadhaar: '', plots: [{ ...initialPlot, id: Date.now() + 2 }] }
+    { id: 1, title: 'प्रथम', name: '', relation: 'पिता', relativeName: '', age: '', aadhaar: '', plots: [{ ...initialPlot, id: Date.now() + 1 }] },
+    { id: 2, title: 'द्वितीय', name: '',relation: 'पिता', relativeName: '', age: '', aadhaar: '', plots: [{ ...initialPlot, id: Date.now() + 2 }] }
   ]);
 
   const [selectedDocs, setSelectedDocs] = useState({
@@ -742,6 +742,8 @@ useEffect(() => {
             <HindiInput label="मुख्य थाना नंबर" name="thanaNo" value={commonData.thanaNo} onChange={handleCommonChange} type="number" helpText="खतियान में देखकर भरें" />
             <HindiInput label="अंचल (Block)" name="anchal" value={commonData.anchal} onChange={handleCommonChange} />
             <HindiInput label="जिला" name="district" value={commonData.district} onChange={handleCommonChange} />
+            <HindiInput label="जाति (Caste)" name="caste" value={commonData.caste} onChange={handleCommonChange} placeholder="जैसे- राजपूत, यादव..." />
+            <HindiInput label="पिन कोड" name="pincode" type="number" value={commonData.pincode} disableHindi={true} onChange={handleCommonChange} placeholder="6 अंक" />
           </div>
         </div>
 
@@ -823,7 +825,33 @@ useEffect(() => {
               )}
               
               <HindiInput label="हिस्सेदार का नाम" name="name" value={party.name} onChange={(e) => handlePartyChange(party.id, e)} required={true} errorMsg={errors[`party_${party.id}_name`]} />
-              
+              <div className="grid grid-cols-[110px_1fr] gap-3">
+                {/* पहला बॉक्स: संबंध चुनने के लिए */}
+                <div className="relative mb-4">
+                  <label className="block mb-1 text-sm font-bold text-gray-800">संबंध</label>
+                  {/* ऊँचाई बराबर रखने के लिए अदृश्य (invisible) टेक्स्ट */}
+                  <p className="text-[11px] text-transparent mb-1 leading-tight select-none">.</p>
+                  <select 
+                    name="relation" 
+                    value={party.relation || 'पिता'} 
+                    onChange={(e) => handlePartyChange(party.id, e)}
+                    className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm transition-colors cursor-pointer"
+                  >
+                    <option value="पिता">पिता</option>
+                    <option value="पति">पति</option>
+                  </select>
+                </div>
+
+                {/* दूसरा बॉक्स: नाम भरने के लिए */}
+                <HindiInput 
+                  label="पिता / पति का नाम" 
+                  name="relativeName" 
+                  value={party.relativeName} 
+                  onChange={(e) => handlePartyChange(party.id, e)} 
+                  placeholder="उनका नाम लिखें..." 
+                  helpText="खाली छोड़ेंगे तो दादा/पिता का नाम ही छपेगा"
+                />
+              </div>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <HindiInput label="उम्र (वर्ष में)" name="age" type="number" value={party.age} onChange={(e) => handlePartyChange(party.id, e)} />
                 <HindiInput label="आधार कार्ड नंबर" name="aadhaar" type="number" value={party.aadhaar} onChange={(e) => handlePartyChange(party.id, e)} placeholder="12 अंक" />
@@ -1037,7 +1065,7 @@ useEffect(() => {
                 zIndex: 9999,
                 pointerEvents: 'none',
                 // 🚀 जादू: यह SVG वॉलपेपर की तरह पूरे पेज पर अनंत तक रिपीट होगा 🚀
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='450' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='38' font-weight='900' font-family='Arial, sans-serif' fill='rgba(54, 40, 40, 0.11)' text-anchor='middle' transform='rotate(-40, 225, 225)'%3Eबिहार सर्वे सहायक बिहारसर्वेसहायक %3C/text%3E%3C/svg%3E")`,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='450' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='38' font-weight='900' font-family='Arial, sans-serif' fill='rgba(40, 29, 29, 0.11)' text-anchor='middle' transform='rotate(-40, 225, 225)'%3Eबिहार सर्वे सहायक बिहारसर्वेसहायक %3C/text%3E%3C/svg%3E")`,
                 backgroundRepeat: 'repeat',
               }}>
               </div>
@@ -1069,8 +1097,14 @@ useEffect(() => {
 
             <div style={{ marginBottom: '30px', padding: '15px', border: '1px solid #ddd', pageBreakInside: 'avoid', borderRadius: '4px' }}>
               {parties.map((party) => (
-                <p key={`intro-${party.id}`} style={{ marginBottom: '12px' }}>
-                  <strong>{party.title} पक्ष:</strong> श्री {party.name || '...................'}, उम्र- {party.age || '......'} वर्ष, <strong>आधार क्र.- {party.aadhaar || '................'}</strong>, निवासी- ग्राम {commonData.village || '...................'}, थाना {commonData.anchal || '...................'}, जिला {commonData.district || '...................'}।
+                <p key={`intro-${party.id}`} style={{ marginBottom: '12px', lineHeight: '1.6' }}>
+                  <strong>{party.title} पक्ष:</strong> श्री/श्रीमती {party.name || '...................'}, 
+                  <span> {party.relation || 'पिता'}- {party.relativeName || commonData.moolRaiyat || '...................'}</span>, 
+                  उम्र- {party.age || '......'} वर्ष, जाति- {commonData.caste || '.....................'}, 
+                  <strong>आधार क्र.- {party.aadhaar || '................'}</strong>, 
+                  निवासी- ग्राम {commonData.village || '...................'}, 
+                  थाना {commonData.anchal || '...................'}, 
+                  जिला {commonData.district || '...................'}, राज्य- बिहार, पिन कोड- {commonData.pincode || '..................'}।
                 </p>
               ))}
             </div>
@@ -1094,10 +1128,10 @@ useEffect(() => {
                   <thead>
                     <tr>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>क्र.</th>
-                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>जमाबन्दी नं.</th>
-                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खाता नं.</th>
-                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खेसरा नं.</th>
-                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>कुल रकबा</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खाता संख्या</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खेसरा संख्या</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>रकबा</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>जमाबन्दी संख्या</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>चौहद्दी</th>
                     </tr>
                   </thead>
@@ -1105,7 +1139,7 @@ useEffect(() => {
                     {totalPlots.map((plot, index) => (
                       <tr key={`total-plot-${plot.id}`}>
                         <td style={{ border: '1px solid #999', padding: '8px' }}>{index + 1}</td>
-                        <td style={{ border: '1px solid #999', padding: '8px' }}>{plot.jamabandi || '......'}</td>
+                        
                         <td style={{ border: '1px solid #999', padding: '8px' }}>
                           {plot.khata || '......'}
                           {/* ⚡ NEW: Village & Thana Print for Total Plots ⚡ */}
@@ -1120,6 +1154,7 @@ useEffect(() => {
                         <td style={{ border: '1px solid #999', padding: '8px', fontWeight: 'bold' }}>
                            {formatRakbaDisplay(plot.rakbaAcre, plot.rakbaDecimal)}
                         </td>
+                        <td style={{ border: '1px solid #999', padding: '8px' }}>{plot.jamabandi || '......'}</td>
                         <td style={{ border: '1px solid #999', padding: '8px', lineHeight: '1.4' }}>
                           <span style={{fontWeight: 'bold'}}>उ.-</span> {plot.boundaries.north || '......'}, <span style={{fontWeight: 'bold'}}> द.-</span> {plot.boundaries.south || '......'}<br/>
                           <span style={{fontWeight: 'bold'}}>पू.-</span> {plot.boundaries.east || '......'}, <span style={{fontWeight: 'bold'}}>प.-</span> {plot.boundaries.west || '......'}
@@ -1130,7 +1165,7 @@ useEffect(() => {
                   <tfoot>
                     <tr>
                       <td colSpan="4" style={{ border: '1px solid #999', padding: '8px', textAlign: 'right', fontWeight: 'bold', backgroundColor: '#fdfdfd' }}>कुल रकबा (Grand Total):</td>
-                      <td colSpan="2" style={{ border: '1px solid #999', padding: '8px', fontWeight: 'bold', color: '#166534', backgroundColor: '#fdfdfd' }}>
+                      <td colSpan="2" style={{ border: '1px solid #999', padding: '8px', fontWeight: 'bold',  backgroundColor: '#fdfdfd' }}>
                         {calculateTotalRakba(totalPlots)}
                       </td>
                     </tr>
@@ -1143,16 +1178,18 @@ useEffect(() => {
             
             {parties.map((party) => (
               <div key={`details-${party.id}`} style={{ marginBottom: '25px', padding: '15px', border: '1px solid #666', borderRadius: '4px', pageBreakInside: 'avoid' }}>
-                <p style={{ marginBottom: '15px', fontSize: '16px' }}><strong>{party.title} पक्ष (श्री {party.name || '...................'}) के पूर्ण अधिकार में आई संपत्ति का विवरण:</strong></p>
+                <p style={{ marginBottom: '15px', fontSize: '16px' }}>
+                  <strong>{party.title} पक्ष (श्री/श्रीमती {party.name || '...................'}, {party.relation || 'पिता'}- {party.relativeName || commonData.moolRaiyat || '...................'}) के पूर्ण अधिकार में आई संपत्ति का विवरण:</strong>
+                </p>
                 
                 <table style={{ width: '100%', marginBottom: '12px', borderCollapse: 'collapse', fontSize: '14px' }}>
                   <thead>
                     <tr>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>क्र.</th>
-                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>जमाबन्दी नं.</th>
-                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खाता नं.</th>
-                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खेसरा नं.</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खाता संख्या</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>खेसरा संख्या</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>रकबा</th>
+                      <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>जमाबन्दी संख्या</th>
                       <th style={{ border: '1px solid #999', padding: '8px', textAlign: 'left', borderBottom: '2px solid #333'}}>चौहद्दी</th>
                     </tr>
                   </thead>
@@ -1160,7 +1197,7 @@ useEffect(() => {
                     {party.plots.map((plot, index) => (
                       <tr key={`plot-${plot.id}`}>
                         <td style={{ border: '1px solid #999', padding: '8px' }}>{index + 1}</td>
-                        <td style={{ border: '1px solid #999', padding: '8px' }}>{plot.jamabandi || '......'}</td>
+                        
                         <td style={{ border: '1px solid #999', padding: '8px' }}>
                           {plot.khata || '......'}
                           {/* ⚡ NEW: Village & Thana Print for Party Plots ⚡ */}
@@ -1175,6 +1212,7 @@ useEffect(() => {
                         <td style={{ border: '1px solid #999', padding: '8px', fontWeight: 'bold' }}>
                            {formatRakbaDisplay(plot.rakbaAcre, plot.rakbaDecimal)}
                         </td>
+                        <td style={{ border: '1px solid #999', padding: '8px' }}>{plot.jamabandi || '......'}</td>
                         <td style={{ border: '1px solid #999', padding: '8px', lineHeight: '1.4' }}>
                           <span style={{fontWeight:'bold'}}>उ.-</span> {plot.boundaries.north || '......'}, <span style={{fontWeight:'bold'}}>द.-</span> {plot.boundaries.south || '......'}<br/>
                           <span style={{fontWeight:'bold'}}>पू.-</span> {plot.boundaries.east || '......'}, <span style={{fontWeight:'bold'}}>प.-</span> {plot.boundaries.west || '......'}
