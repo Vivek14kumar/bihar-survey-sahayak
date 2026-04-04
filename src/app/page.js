@@ -87,7 +87,7 @@ export default function Home() {
         px-10 py-4 rounded-xl shadow-xl 
         hover:scale-105 hover:shadow-2xl transition-all duration-300"
       >
-        अभी बटवारा पत्र बनाएं
+        अभी बंटवारा पत्र बनाएं
       </a>
 
     </div>
