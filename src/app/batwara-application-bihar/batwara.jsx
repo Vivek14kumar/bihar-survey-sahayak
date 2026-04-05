@@ -972,13 +972,13 @@ useEffect(() => {
     {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
     <button
       onClick={() => openRazorpay(handlePrint)}
-      disabled={isDownloading}
-      className="relative flex flex-col items-center justify-center gap-0.5 
-      bg-gradient-to-r from-yellow-400 to-amber-500 text-black 
-      py-2.5 rounded-3xl font-bold 
-      hover:from-yellow-500 hover:to-amber-600 
-      shadow-[0_6px_16px_rgba(234,179,8,0.45)] 
-      transition disabled:bg-gray-400"
+       disabled={isDownloading}
+       className="relative flex flex-col items-center justify-center gap-1
+       bg-gradient-to-r from-yellow-400 to-amber-500 text-black
+       py-3 rounded-3xl font-bold text-[13px]
+       hover:from-yellow-500 hover:to-amber-600
+       shadow-[0_6px_16px_rgba(234,179,8,0.45)]
+       transition disabled:bg-gray-400"
     >
       {/* 🔴 डिस्काउंट बैज (लगातार ब्लिंक/एनिमेट करेगा ताकि नज़र जाए) */}
       <span className="absolute -top-2 right-1 text-[10px] bg-gray-900 text-white px-2 py-[2px] rounded-full shadow-md animate-pulse">
@@ -1004,31 +1004,31 @@ useEffect(() => {
     </button>
 
 
-    {/* FREE BUTTON (No Changes Here) */}
+    {/* FREE BUTTON */}
     <button
-      onClick={async () => {
-        if (!validateForm()) return;
+     onClick={async () => {
+       if (!validateForm()) return;
 
-        try {
+         try {
           fetch("/api/batwara", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ type: "batwara", isFree: true })
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ type: "batwara", isFree: true })
           });
-        } catch (e) {}
+         } catch (e) {}
 
         handlePrint();
-      }}
-      disabled={isDownloading}
-      className="flex flex-col items-center justify-center gap-1 
-      bg-green-200 border border-green-300 text-gray-800 
-      py-3 rounded-3xl font-bold text-[13px] 
-      hover:bg-green-300 transition"
-    >
-      <Printer size={18} />
-      <span>फ्री प्रिंट</span>
-      <span className="text-xs font-semibold">Free (With Watermark)</span>
-    </button>
+       }}
+       disabled={isDownloading}
+       className="flex flex-col items-center justify-center gap-1
+       bg-green-200 border border-green-300 text-gray-800
+       py-3 rounded-3xl font-bold text-[13px]
+       hover:bg-green-300 transition"
+     >
+       <Printer size={18} />
+       <span>फ्री प्रिंट</span>
+       <span className="text-xs font-semibold">Free (With Watermark)</span>
+     </button>
 
 </div>
 
@@ -1087,8 +1087,8 @@ useEffect(() => {
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='450' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='38' font-weight='900' font-family='Arial, sans-serif' fill='rgba(40, 29, 29, 0.11)' text-anchor='middle' transform='rotate(-40, 225, 225)'%3Eबिहार सर्वे सहायक बिहारसर्वेसहायक %3C/text%3E%3C/svg%3E")`,
                 backgroundRepeat: 'repeat',
               }}>
-              <div style={{ position: 'absolute', top:'.5%', left: '50%', transform: 'translate(-50%, 100px)', zIndex: 10, textAlign: 'center', backgroundColor: 'rgba(255, 0, 0, 0.63)', color: 'white', padding: '8px 18px', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', filter: 'none' }}>
-                कानूनी उपयोग एवं Blur हटाने हेतु प्रीमियम प्रिंट करें <a href="https://biharsurveysahayak.online/batwara-application-bihar" style={{fontSize:'12px'}}>https://biharsurveysahayak.online/batwara-application-bihar</a>
+              <div style={{ position: 'absolute', top:'.5%', left: '50%', transform: 'translate(-50%, 100px)', zIndex: 10, textAlign: 'center', backgroundColor: 'rgba(255, 0, 0, 0.63)', color: 'white', padding: '6px 8px', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', filter: 'none' }}>
+                कानूनी उपयोग एवं Blur हटाने हेतु प्रीमियम प्रिंट करें <a href="https://biharsurveysahayak.online/batwara-application-bihar" style={{fontSize:'10px'}}>https://biharsurveysahayak.online/batwara-application-bihar</a>
               </div>
               </div>
             )}
@@ -1322,13 +1322,13 @@ useEffect(() => {
     {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
     <button
       onClick={() => openRazorpay(handlePrint)}
-      disabled={isDownloading}
-      className="relative flex flex-col items-center justify-center gap-0.5 
-      bg-gradient-to-r from-yellow-400 to-amber-500 text-black 
-      py-2.5 rounded-3xl font-bold 
-      hover:from-yellow-500 hover:to-amber-600 
-      shadow-[0_6px_16px_rgba(234,179,8,0.45)] 
-      transition disabled:bg-gray-400"
+       disabled={isDownloading}
+       className="relative flex flex-col items-center justify-center gap-1
+       bg-gradient-to-r from-yellow-400 to-amber-500 text-black
+       py-3 rounded-3xl font-bold text-[13px]
+       hover:from-yellow-500 hover:to-amber-600
+       shadow-[0_6px_16px_rgba(234,179,8,0.45)]
+       transition disabled:bg-gray-400"
     >
       {/* 🔴 डिस्काउंट बैज (लगातार ब्लिंक/एनिमेट करेगा ताकि नज़र जाए) */}
       <span className="absolute -top-2 right-1 text-[10px] bg-gray-900 text-white px-2 py-[2px] rounded-full shadow-md animate-pulse">
@@ -1354,31 +1354,31 @@ useEffect(() => {
     </button>
 
 
-    {/* FREE BUTTON (No Changes Here) */}
+    {/* FREE BUTTON */}
     <button
-      onClick={async () => {
-        if (!validateForm()) return;
+     onClick={async () => {
+       if (!validateForm()) return;
 
-        try {
+         try {
           fetch("/api/batwara", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ type: "batwara", isFree: true })
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ type: "batwara", isFree: true })
           });
-        } catch (e) {}
+         } catch (e) {}
 
         handlePrint();
-      }}
-      disabled={isDownloading}
-      className="flex flex-col items-center justify-center gap-1 
-      bg-green-200 border border-green-300 text-gray-800 
-      py-3 rounded-3xl font-bold text-[13px] 
-      hover:bg-green-300 transition"
-    >
-      <Printer size={18} />
-      <span>फ्री प्रिंट</span>
-      <span className="text-xs font-semibold">Free (With Watermark)</span>
-    </button>
+       }}
+       disabled={isDownloading}
+       className="flex flex-col items-center justify-center gap-1
+       bg-green-200 border border-green-300 text-gray-800
+       py-3 rounded-3xl font-bold text-[13px]
+       hover:bg-green-300 transition"
+     >
+       <Printer size={18} />
+       <span>फ्री प्रिंट</span>
+       <span className="text-xs font-semibold">Free (With Watermark)</span>
+     </button>
 
 </div>
 
