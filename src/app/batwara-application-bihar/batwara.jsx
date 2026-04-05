@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { Printer, FileText, Crown, CheckCircle } from "lucide-react";
+import { Printer, Download, FileText, Crown, CheckCircle } from "lucide-react";
 
 const getTodayHindiDate = () => {
   const months = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
@@ -581,15 +581,42 @@ useEffect(() => {
     },
   });
 
-  const downloadPDF = async () => {
+  // ⚡ यहाँ isPremium = false डिफ़ॉल्ट रूप से सेट किया गया है
+  const downloadPDF = async (isPremium = false) => {
     if (!validateForm()) return;
     setIsDownloading(true);
-    
+
+    const stampEl = document.getElementById('stamp-layer');
+
+    // 🚀 अगर पेमेंट हुआ है (isPremium true है), तभी वाटरमार्क और स्टाम्प छुपाएं
+    if (isPremium) {
+      if (stampEl) {
+         stampEl.style.display = 'none'; // 👈 यह स्टाम्प के डिज़ाइन को पूरी तरह हटा देगा
+      }
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+      setShowWatermark(false); 
+    }
+
     const element = document.getElementById('legal-panchnama-document');
-    const originalStyles = [];
-    const allElements = [element, ...element.querySelectorAll('*')];
     
-    allElements.forEach((el) => {
+    // 🚀 1. MOBILE WIDTH HACK: मोबाइल में टेबल सिकुड़ने से बचाने के लिए
+    const originalWidth = element.style.width;
+    const originalMaxWidth = element.style.maxWidth;
+    const originalMargin = element.style.margin;
+
+    element.style.width = '700px';
+    element.style.maxWidth = '700px';
+    element.style.margin = '0 auto';
+
+    // 🚀 2. COLOR HACK (Olab Error Fix)
+    const originalStyles = [];
+    const elementsToSanitize = [document.documentElement, document.body, element, ...element.querySelectorAll('*')];
+    
+    elementsToSanitize.forEach((el) => {
+      if (!el) return;
       const comp = window.getComputedStyle(el);
       const bg = comp.backgroundColor || '';
       const color = comp.color || '';
@@ -597,8 +624,9 @@ useEffect(() => {
       let needsFix = false;
       const fix = {};
       
+      // Tailwind v4 के lab/oklch कलर्स को डिटेक्ट करना
       if (bg.includes('lab') || bg.includes('oklch') || bg.includes('color(')) {
-        fix.bg = (bg.includes('/ 0)') || bg.includes(', 0)')) ? 'transparent' : '#ffffff';
+        fix.bg = (bg.includes('/ 0)') || bg.includes(', 0)') || bg.includes(' 0)')) ? 'transparent' : '#ffffff';
         needsFix = true;
       }
       if (color.includes('lab') || color.includes('oklch') || color.includes('color(')) {
@@ -606,13 +634,14 @@ useEffect(() => {
         needsFix = true;
       }
       if (border.includes('lab') || border.includes('oklch') || border.includes('color(')) {
-        fix.border = '#cccccc';
+        fix.border = 'transparent';
         needsFix = true;
       }
       
       if (needsFix) {
         originalStyles.push({
-          el, oldBg: el.style.getPropertyValue('background-color'), oldBgPriority: el.style.getPropertyPriority('background-color'),
+          el, 
+          oldBg: el.style.getPropertyValue('background-color'), oldBgPriority: el.style.getPropertyPriority('background-color'),
           oldColor: el.style.getPropertyValue('color'), oldColorPriority: el.style.getPropertyPriority('color'),
           oldBorder: el.style.getPropertyValue('border-color'), oldBorderPriority: el.style.getPropertyPriority('border-color')
         });
@@ -622,20 +651,31 @@ useEffect(() => {
       }
     });
 
+    // ⚡ React को State अपडेट करने का समय देने के लिए Timeout
     setTimeout(async () => {
       try {
         const html2pdfModule = await import('html2pdf.js');
         const html2pdf = html2pdfModule.default ? html2pdfModule.default : html2pdfModule;
         
         const opt = {
-          margin: [0.5, 0.5, 0.8, 0.5], filename: 'Batwara_Panchnama.pdf', image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'in', format: 'legal', orientation: 'portrait' }
+          margin: [0.5, 0.5, 0.8, 0.5], 
+          filename: isPremium ? 'Premium_Batwara_Panchnama.pdf' : 'Free_Batwara_Draft.pdf', 
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false,
+            windowWidth: 800 // ⚡ मोबाइल लेआउट फिक्स
+          }, 
+          jsPDF: { unit: 'in', format: 'legal', orientation: 'portrait' }
         };
         
         await html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
           const totalPages = pdf.internal.getNumberOfPages();
           for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i); pdf.setFontSize(10); pdf.setTextColor(100); 
+            pdf.setPage(i); 
+            pdf.setFontSize(10); 
+            pdf.setTextColor(100); 
             const text = `Page ${i} of ${totalPages}`;
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
@@ -644,14 +684,37 @@ useEffect(() => {
           }
         }).save();
       } catch (error) {
-        console.error(error); alert("PDF जनरेट करने में समस्या।");
+        console.error("PDF Error:", error); 
+        alert("PDF जनरेट करने में समस्या।");
       } finally {
+        // ऑरिजिनल कलर्स वापस सेट करना
         originalStyles.forEach(({ el, oldBg, oldBgPriority, oldColor, oldColorPriority, oldBorder, oldBorderPriority }) => {
-          el.style.setProperty('background-color', oldBg, oldBgPriority); el.style.setProperty('color', oldColor, oldColorPriority); el.style.setProperty('border-color', oldBorder, oldBorderPriority);
+          if (oldBg) el.style.setProperty('background-color', oldBg, oldBgPriority); 
+          else el.style.removeProperty('background-color');
+          
+          if (oldColor) el.style.setProperty('color', oldColor, oldColorPriority); 
+          else el.style.removeProperty('color');
+          
+          if (oldBorder) el.style.setProperty('border-color', oldBorder, oldBorderPriority); 
+          else el.style.removeProperty('border-color');
         });
+        
+        // मोबाइल चौड़ाई वापस लाएं
+        element.style.width = originalWidth;
+        element.style.maxWidth = originalMaxWidth;
+        element.style.margin = originalMargin;
+
+        // 🚀 अगर प्रीमियम था, तो वापस वाटरमार्क चालू करें ताकि स्क्रीन पर दिखने लगे
+        if (isPremium) {
+          setShowWatermark(true); 
+          if (stampEl) {
+             stampEl.style.display = 'flex'; // 👈 यह स्टाम्प को वापस स्क्रीन पर दिखा देगा
+          }
+        }
+        
         setIsDownloading(false);
       }
-    }, 300);
+    }, 500);
   };
 
   const downloadWord = () => {
@@ -967,11 +1030,16 @@ useEffect(() => {
         </div>
           <div className="visible lg:invisible sticky bottom-0 z-20 bg-white  rounded-3xl shadow-[0_-4px_14px_rgba(0,0,0,0.08)] px-3 py-3">
 
-  <div className="grid grid-cols-2 gap-3">
+<div className="grid grid-cols-2 gap-3">
 
     {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
     <button
-      onClick={() => openRazorpay(handlePrint)}
+      onClick={() => {
+          if (!validateForm()) return;
+          openRazorpay(() => {
+             downloadPDF(true); // ⚡ TRUE मतलब प्रीमियम (वाटरमार्क हटाओ)
+          });
+        }}
        disabled={isDownloading}
        className="relative flex flex-col items-center justify-center gap-1
        bg-gradient-to-r from-yellow-400 to-amber-500 text-black
@@ -987,7 +1055,7 @@ useEffect(() => {
 
       <div className="flex items-center gap-1">
         <Crown size={16} />
-        <span className="text-[13px] md:text-sm">प्रीमियम प्रिंट</span>
+        <span className="text-[13px] md:text-sm">प्रीमियम डाउनलोड</span>
       </div>
 
       {/* 💸 प्राइजिंग ट्रिक: ₹99 पर 'X' का निशान */}
@@ -1017,7 +1085,8 @@ useEffect(() => {
           });
          } catch (e) {}
 
-        handlePrint();
+         downloadPDF(false);
+        {/*handlePrint();*/}
        }}
        disabled={isDownloading}
        className="flex flex-col items-center justify-center gap-1
@@ -1025,8 +1094,8 @@ useEffect(() => {
        py-3 rounded-3xl font-bold text-[13px]
        hover:bg-green-300 transition"
      >
-       <Printer size={18} />
-       <span>फ्री प्रिंट</span>
+       <Download size={18} />
+       <span>फ्री डाउनलोड</span>
        <span className="text-xs font-semibold">Free (With Watermark)</span>
      </button>
 
@@ -1095,7 +1164,7 @@ useEffect(() => {
 
             {isStampPaper && (
               <div style={{ height: '3.5in' }}>
-                <div className="print:hidden flex flex-col justify-center items-center relative overflow-hidden rounded-md" style={{ height: '100%', width: '100%', backgroundColor: '#eaf4ea', border: '3px dashed #4caf50', color: '#2e7d32' }}>
+                <div id="stamp-layer" className="print:hidden flex flex-col justify-center items-center relative overflow-hidden rounded-md" style={{ height: '100%', width: '100%', backgroundColor: '#eaf4ea', border: '3px dashed #4caf50', color: '#2e7d32' }}>
                   <div style={{ position: 'absolute', opacity: 0.08, fontSize: '120px', transform: 'rotate(-30deg)', whiteSpace: 'nowrap', fontWeight: '900' }}>e-Stamp</div>
                   <h1 style={{ fontSize: '28px', fontWeight: '900', zIndex: 1 }}>भारत सरकार / GOVT. OF INDIA</h1>
                   <h2 style={{ fontSize: '20px', marginTop: '5px', zIndex: 1, letterSpacing: '2px' }}>ई-स्टाम्प / e-Stamp</h2>
@@ -1268,13 +1337,13 @@ useEffect(() => {
             <h3 style={{ fontWeight: 'bold', marginBottom: '25px', fontSize: '18px', padding: '8px', borderBottom: '1px solid #ccc', pageBreakInside: 'avoid' }}>पक्षकारों के हस्ताक्षर, फोटो एवं अंगूठे के निशान:</h3>
             <div style={{ width: '100%' }}>
               {parties.map((party) => (
-                 <div key={`sig-${party.id}`} style={{ display: 'inline-block', width: '46%', marginBottom: '40px', verticalAlign: 'top', border: '1px solid #aaa', padding: '15px', boxSizing: 'border-box', marginRight: party.id % 2 !== 0 ? '6%' : '0', pageBreakInside: 'avoid', borderRadius: '4px' }}>
+                 <div key={`sig-${party.id}`} style={{ display: 'inline-block', width: '42%', marginBottom: '40px', verticalAlign: 'top', border: '1px solid #aaa', padding: '15px', boxSizing: 'border-box', marginRight: party.id % 2 !== 0 ? '6%' : '0', pageBreakInside: 'avoid', borderRadius: '4px' }}>
                    <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>{party.title} पक्ष: {party.name || '...................'}</p>
                    <p style={{ fontSize: '12px', marginBottom: '20px', color: '#555' }}>आधार नं: {party.aadhaar || '................'}</p>
                    <div style={{ display: 'table', width: '100%', marginBottom: '25px' }}>
                       <div style={{ display: 'table-cell', width: '80px', height: '110px', border: '1px dashed #666', verticalAlign: 'middle', textAlign: 'center', fontSize: '12px', color: '#777' }}>पासपोर्ट<br/>फोटो<br/>चिपकाएं</div>
                       <div style={{ display: 'table-cell', width: '15px' }}></div>
-                      <div style={{ display: 'table-cell', width: '90px', height: '110px', border: '1px dashed #666', verticalAlign: 'bottom', textAlign: 'center', fontSize: '12px', color: '#777' }}>अंगूठे का निशान</div>
+                      <div style={{ display: 'table-cell', width: '90px', height: '110px', border: '1px dashed #666', verticalAlign: 'bottom', textAlign: 'center', padding:'2px', fontSize: '12px', color: '#777' }}>अंगूठे का निशान</div>
                    </div>
                    <p style={{ borderTop: '1px solid #000', paddingTop: '8px', paddingBottom: '18px', textAlign: 'center', fontWeight: 'bold' }}>हस्ताक्षर (Sign)</p>
                  </div>
@@ -1317,7 +1386,7 @@ useEffect(() => {
           </div>
           <div className="sticky bottom-0 z-20 bg-white  rounded-3xl shadow-[0_-4px_14px_rgba(0,0,0,0.08)] px-3 py-3">
 
-<div className="grid grid-cols-2 gap-3">
+  <div className="grid grid-cols-2 gap-3">
 
     {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
     <button
