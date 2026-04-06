@@ -116,6 +116,31 @@ export default function Vanshavali() {
     }
   };
 
+  //------------ Select Parent Details ----------------
+  const parentOptions = [
+    ...new Map(
+      members.map((m) => [m.name, { name: m.name, relation: m.relation }])
+    ).values()
+  ];
+
+  const filteredParents = parentOptions.filter((p) => {
+    // पत्नी → only male members
+    if (relation === "पत्नी") {
+      return ["स्वयं", "पुत्र"].includes(p.relation);
+    }
+
+    // पुत्र / पुत्री → only male members
+    if (relation === "पुत्र" || relation === "पुत्री") {
+      return ["स्वयं", "पुत्र"].includes(p.relation);
+    }
+
+    return true;
+  });
+
+  useEffect(()=>{
+    setParent("");
+  },[relation]);
+
   // ---------- Load Razorpay script ----------
   useEffect(() => {
     const script = document.createElement("script");
@@ -522,9 +547,22 @@ export default function Vanshavali() {
                 <option key={r}>{r}</option>
               ))}
             </select>
+            
+            {/*Select Parent Details */}
+            {/*renderInput(parent, setParent, "parent", "पिता / पति का नाम")*/}
+            <select
+              value={parent}
+              onChange={(e) => setParent(e.target.value)}
+              className="p-3 rounded-xl border w-full"
+            >
+              <option value="">पिता / पति चुनें</option>
 
-            {renderInput(parent, setParent, "parent", "पिता / पति का नाम")}
-
+              {filteredParents.map((p, i) => (
+                <option key={i} value={p.name}>
+                  {p.relation} : {p.name}
+                </option>
+              ))}
+            </select>
             <button
               onClick={handleAddMember}
               className="bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold rounded-xl flex items-center justify-center gap-2 w-full sm:w-auto py-3"
