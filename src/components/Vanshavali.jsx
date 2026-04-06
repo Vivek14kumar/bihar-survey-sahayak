@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Plus, Trash2, Users, UserPlus, Edit3, CircleCheckBig, Download, IndianRupee  } from "lucide-react";
+import { Plus, Trash2, Users, UserPlus, RotateCcw,  Edit3, CircleCheckBig, Download, IndianRupee  } from "lucide-react";
 import AutoFamilyTreePDF from "./TreePDF";
 import { pdf } from "@react-pdf/renderer";
 import FamilyTreePreview from "@/components/FamilyTreePreviewWrapper";
@@ -135,6 +135,14 @@ export default function Vanshavali() {
     localStorage.setItem("survey_data", JSON.stringify(members));
   }, [members]);
 
+  //------------- Delete LocalStorage -----------
+  const handleReset = () => {
+  if (confirm("क्या आप सभी डेटा हटाना चाहते हैं?")) {
+    localStorage.removeItem("survey_data");
+    setMembers([]);
+    setRelation("स्वयं");   // reset relation
+  }
+}; 
   const trackVanshawaliDownload = async () => {
   try {
     // We send the "type" so the backend knows to check 'freeUsedVanshavali'
@@ -529,7 +537,15 @@ export default function Vanshavali() {
         {/* MEMBERS LIST */}
         {members.length > 0 && (
           <div className="bg-white shadow-xl rounded-3xl p-6 mb-6 overflow-x-auto">
-            <h2 className="text-lg font-semibold mb-4">सदस्य सूची</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold">सदस्य सूची</h2>
+              <button 
+               onClick={handleReset}
+               className="flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-red-500 text-white hover:bg-red-600 transition">
+                <RotateCcw size={16} />
+                Reset
+              </button>
+            </div>
             <table className="min-w-full text-left">
               <thead>
                 <tr className="border-b border-slate-200">
