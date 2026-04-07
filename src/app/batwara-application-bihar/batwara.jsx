@@ -4,10 +4,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { Printer, Download, FileText, Crown, CheckCircle } from "lucide-react";
 
-const getTodayHindiDate = () => {
+// ⚡ नया फंक्शन जो कैलेंडर से चुनी तारीख को हिंदी में बदलेगा
+const getFormattedHindiDate = (dateString) => {
+  if (!dateString) return '';
   const months = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
-  const today = new Date();
-  return `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`;
+  const [year, month, day] = dateString.split('-');
+  if (!year || !month || !day) return dateString;
+  return `${parseInt(day)} ${months[parseInt(month) - 1]} ${year}`;
 };
 
 const calculateShare = (acreStr, decimalStr, numParties) => {
@@ -195,7 +198,9 @@ export default function LegalPanchnama() {
   const observerRef = useRef(null);
 
   const [commonData, setCommonData] = useState({
-    date: getTodayHindiDate(), place: '', moolRaiyat: '', caste: '', pincode: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
+    // ⚡ ऑटोमैटिक हिंदी डेट हटाकर कैलेंडर का डिफ़ॉल्ट डेट लगा दिया 
+    date: new Date().toISOString().split('T')[0], 
+    place: '', moolRaiyat: '', caste: '', pincode: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
   });
 
   // ⚡ PlotVillage & PlotThana added to Initial States ⚡
@@ -804,7 +809,21 @@ useEffect(() => {
             <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">1</span>
             <h3 className="font-bold text-blue-900 text-lg">पारिवारिक जानकारी (मुख्य)</h3>
           </div>
+          
           <p className="text-xs text-blue-700 mb-3">उस गाँव/थाने का नाम लिखें जहाँ आपका मुख्य घर या सबसे ज़्यादा ज़मीन है।</p>
+          {/* ⚡ तारीख चुनने का बॉक्स (Date Picker) ⚡ */}
+            <div className="mb-4">
+              <label className="block mb-1 text-sm font-bold text-gray-800">
+                बंटवारे की तारीख <span className="text-red-500">*</span>
+              </label>
+              <input 
+                type="date" 
+                name="date" 
+                value={commonData.date} 
+                onChange={handleCommonChange} 
+                className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm" 
+              />
+            </div>
           <HindiInput label="मूल रैयत (दादा/पिता) का नाम" name="moolRaiyat" value={commonData.moolRaiyat} onChange={handleCommonChange} required={true} errorMsg={errors.moolRaiyat} helpText="जिनके नाम से खतियान है" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <HindiInput label="मुख्य गाँव/मौजा का नाम" name="village" value={commonData.village} onChange={handleCommonChange} required={true} errorMsg={errors.village} />
@@ -1032,7 +1051,7 @@ useEffect(() => {
 
 <div className="grid grid-cols-2 gap-3">
 
-    {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
+    {/* ⚡ PREMIUM BUTTON (Updated with ₹30 & Pricing Trick) ⚡ */}
     <button
       onClick={() => {
           if (!validateForm()) return;
@@ -1065,7 +1084,7 @@ useEffect(() => {
           {/* लाल रंग का 'X' जो ₹99 के ठीक ऊपर दिखेगा */}
           <span className="absolute text-red-600 text-[18px] font-black select-none pointer-events-none ">✕</span>
         </div>
-        <span className="text-[18px] font-black leading-none text-gray-900">₹39</span>
+        <span className="text-[18px] font-black leading-none text-gray-900">₹30</span>
       </div>
 
       <span className="text-[10px] font-bold opacity-90">Blur और Watermark हटेगा</span>
@@ -1180,11 +1199,11 @@ useEffect(() => {
           
             <h2 style={{ textAlign: 'center', fontSize: '26px', fontWeight: '900', textDecoration: 'underline', marginBottom: '30px', letterSpacing: '0.5px' }}>आपसी सहमति से पारिवारिक भूमि बंटवारा </h2>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px', fontWeight: 'bold' }}>
-              <p>दिनांक: {commonData.date || '...................'}</p>
+              <p>दिनांक: {getFormattedHindiDate(commonData.date) || '...................'}</p>
               <p>स्थान: {commonData.village || '...................'}</p>
             </div>
 
-            <p style={{ marginBottom: '25px', textAlign: 'justify', lineHeight: '1.8' }}>आज दिनांक <strong>{commonData.date || '...................'}</strong> को स्थान <strong>{commonData.village || '...................'}</strong> पर, हम निम्नलिखित पक्षकार बिना किसी दबाव, प्रलोभन, जोर-जबर्दस्ती या नशे के, पूर्ण रूप से स्वस्थ चित्त (Sound Mind) में, अपनी स्वेच्छा से गवाहों (पंचों) के समक्ष यह पारिवारिक बंटवारा निष्पादित (Execute) कर रहे हैं:</p>
+            <p style={{ marginBottom: '25px', textAlign: 'justify', lineHeight: '1.8' }}>आज दिनांक <strong>{getFormattedHindiDate(commonData.date) || '...................'}</strong> को स्थान <strong>{commonData.village || '...................'}</strong> पर, हम निम्नलिखित पक्षकार बिना किसी दबाव, प्रलोभन, जोर-जबर्दस्ती या नशे के, पूर्ण रूप से स्वस्थ चित्त (Sound Mind) में, अपनी स्वेच्छा से गवाहों (पंचों) के समक्ष यह पारिवारिक बंटवारा निष्पादित (Execute) कर रहे हैं:</p>
 
             <div style={{ marginBottom: '30px', padding: '15px', border: '1px solid #ddd', pageBreakInside: 'avoid', borderRadius: '4px' }}>
               {parties.map((party) => (
@@ -1388,7 +1407,7 @@ useEffect(() => {
 
   <div className="grid grid-cols-2 gap-3">
 
-    {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
+    {/* ⚡ PREMIUM BUTTON (Updated with ₹30 & Pricing Trick) ⚡ */}
     <button
       onClick={() => openRazorpay(handlePrint)}
        disabled={isDownloading}
@@ -1416,7 +1435,7 @@ useEffect(() => {
           {/* लाल रंग का 'X' जो ₹99 के ठीक ऊपर दिखेगा */}
           <span className="absolute text-red-600 text-[18px] font-black select-none pointer-events-none ">✕</span>
         </div>
-        <span className="text-[18px] font-black leading-none text-gray-900">₹39</span>
+        <span className="text-[18px] font-black leading-none text-gray-900">₹30</span>
       </div>
 
       <span className="text-[10px] font-bold opacity-90">Blur और Watermark हटेगा</span>

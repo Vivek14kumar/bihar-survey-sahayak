@@ -28,7 +28,7 @@ export async function POST(req) {
     }else if (type === "prapatra3") {
       amount = 3 * 100; // ✅ ₹8 per document
     }else if (type === "batwara") {
-      amount = 39 * 100; // ✅ ₹29 per document 
+      amount = 30 * 100; // ✅ ₹29 per document 
     }  else {
       return Response.json({ error: "Invalid type" }, { status: 400 });
     }
