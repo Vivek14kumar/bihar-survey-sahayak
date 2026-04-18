@@ -26,7 +26,7 @@ export default function sitemap() {
   }));
 
 
-    /* ---------------- BLOCK PAGES ---------------- */
+    /* ---------------- BLOCK PAGES ---------------- 
 
   const blockUrls = locations.flatMap((loc) =>
     loc.blocks.map((block) => ({
@@ -35,7 +35,7 @@ export default function sitemap() {
       changeFrequency: "weekly",
       priority: 0.8
     }))
-  );
+  );*/
 
 
   return [
