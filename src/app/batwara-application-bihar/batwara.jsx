@@ -1403,7 +1403,11 @@ useEffect(() => {
             )}
           </div>
           </div>
+<<<<<<< HEAD
           <div className=" invisible md:visible sticky bottom-0 z-20 bg-white  rounded-3xl shadow-[0_-4px_14px_rgba(0,0,0,0.08)] px-3 py-3">
+=======
+          <div className="invisible md:visible sticky bottom-0 z-20 bg-white  rounded-3xl shadow-[0_-4px_14px_rgba(0,0,0,0.08)] px-3 py-3">
+>>>>>>> 85a781cdd9e45c45e0d2a8bf6eeb25bc0ec100c9
 
   <div className="grid grid-cols-2 gap-3">
 
