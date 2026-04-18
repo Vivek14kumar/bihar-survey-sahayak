@@ -64,7 +64,38 @@ if (!districts.includes(district)) {
   const blocks = locations.filter(
   (loc) => loc.district === district
 );
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://biharsurveysahayak.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Survey Forms",
+        "item": "https://biharsurveysahayak.online/forms"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": districtName,
+        "item": `https://biharsurveysahayak.online/survey/${district}`
+      }
+    ]
+  };
   return (
+    <>
+
+    <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="max-w-6xl mx-auto px-4 py-12 font-sans">
       
       {/* Header Section */}
@@ -166,5 +197,6 @@ if (!districts.includes(district)) {
          <CompactQuickLinks/>
        </div>
     </div>
+    </>
   );
 }

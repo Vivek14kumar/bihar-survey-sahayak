@@ -7,10 +7,33 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 // Import your data from the new file!
 import { posts } from "@/app/data/posts"; 
 
-export const metadata = {
-  title: "बिहार सर्वे जानकारी | Bihar Survey Guide",
-  description: "बिहार भूमि सर्वे से जुड़ी सभी जानकारी – प्रपत्र-2, प्रपत्र-3, वंशावली, आपत्ति आवेदन, परिमार्जन और जरूरी दस्तावेज।"
-};
+// Remove the static metadata block and add this:
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const post = posts[slug];
+
+  if (!post) {
+    return { title: "Post Not Found | Bihar Survey Sahayak" };
+  }
+
+  return {
+    title: `${post.title} | Bihar Survey Sahayak`,
+    description: post.intro.substring(0, 155), // Google prefers ~155 characters for meta descriptions
+    openGraph: {
+      title: post.title,
+      description: post.intro,
+      url: `https://biharsurveysahayak.online/blog/${slug}`,
+      type: 'article',
+    },
+  };
+}
+
+export async function generateStaticParams() {
+  // This tells Next.js to pre-build every slug found in your posts.js file
+  return Object.keys(posts).map((slug) => ({
+    slug: slug,
+  }));
+}
 
 export default async function BlogPost({ params }) {
   const { slug } = await params;
@@ -22,7 +45,27 @@ export default async function BlogPost({ params }) {
     return <div className="p-10 text-center">Article not found</div>;
   }
 
+  // 1. Create the Schema object
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.intro,
+    author: {
+      '@type': 'Organization',
+      name: 'Bihar Survey Sahayak',
+    },
+    url: `https://biharsurveysahayak.online/blog/${slug}`,
+  };
+
   return (
+    <>
+    {/* 2. Inject the Schema into the DOM */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
     <div className="max-w-4xl mx-auto px-4 py-14">
 
       <h1 className="text-4xl font-bold mb-6 text-slate-800">
@@ -134,5 +177,6 @@ export default async function BlogPost({ params }) {
       </div>
       <WhatsAppButton/>
     </div>
+    </>
   );
 }

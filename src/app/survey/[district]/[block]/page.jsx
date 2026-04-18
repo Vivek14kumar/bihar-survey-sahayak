@@ -41,8 +41,12 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `सर्वे फॉर्म ${blockName} (${districtName}) | प्रपत्र-2, वंशावली, आपत्ति आवेदन`,
-    description: `${blockName} प्रखंड (${districtName}) के लिए बिहार भूमि सर्वे फॉर्म ऑनलाइन बनाएं – प्रपत्र-2, वंशावली, शपथ पत्र, आपत्ति आवेदन।`
-  };
+    description: `${blockName} प्रखंड (${districtName}) के लिए बिहार भूमि सर्वे फॉर्म ऑनलाइन बनाएं – प्रपत्र-2, वंशावली, शपथ पत्र, आपत्ति आवेदन।`,
+    // 👇 THIS IS THE CRITICAL ADDITION
+    alternates: {
+      canonical: `https://biharsurveysahayak.online/survey/${district}`, 
+    },
+  };  
 
 }
 
@@ -69,7 +73,43 @@ export default async function SurveyPage({ params }) {
     { name: "आपत्ति आवेदन (Objection)", url: "/objection-letter", icon: <AlertCircle className="text-red-600" />, color: "bg-red-50", desc: "सर्वे में गलत प्रविष्टि पर आपत्ति दर्ज करें।" },
   ];
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://biharsurveysahayak.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Survey Forms",
+        "item": "https://biharsurveysahayak.online/forms"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": districtName,
+        "item": `https://biharsurveysahayak.online/survey/${district}`
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": blockName,
+        "item": `https://biharsurveysahayak.online/survey/${district}/${block}`
+      }
+    ]
+  };
+
   return (
+    <>
+    <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="max-w-6xl mx-auto px-4 py-12 font-sans">
       
       {/* Header Section */}
@@ -94,7 +134,7 @@ export default async function SurveyPage({ params }) {
       <section className="mt-8 mb-4 bg-red-50 p-2 rounded-xl border border-gray-200">
         <p className="font-bold text-center">
         <span className="text-blue-700 uppercase">{blockName}</span> प्रखंड <span className="text-blue-700 uppercase">{districtName}</span> में बिहार भूमि सर्वे 2026 जारी है। 
-        रैयत प्रपत्र-2, वंशावली, आपत्ति आवेदन यहाँ से आसानी से तैयार कर सकते हैं।
+        रैयत प्रपत्र-2, वंशावली, बंटवारा, आपत्ति आवेदन यहाँ से आसानी से तैयार कर सकते हैं।
         </p>
       </section>
 
@@ -191,5 +231,6 @@ export default async function SurveyPage({ params }) {
           <WhatsAppButton/>
         </div>
     </div>
+    </>
   );
 }
