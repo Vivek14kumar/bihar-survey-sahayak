@@ -315,6 +315,8 @@ useEffect(() => {
     if(errors[`party_${partyId}_${e.target.name}`]) setErrors({...errors, [`party_${partyId}_${e.target.name}`]: null});
   };
 
+  // ⚡ 1. यहाँ आपका पुराना handlePlotChange फंक्शन है ⚡
+  // ⚡ अपडेटेड handlePlotChange (Untick Fix के साथ) ⚡
   const handlePlotChange = (partyId, plotId, field, e) => {
     const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
 
@@ -330,27 +332,68 @@ useEffect(() => {
         setErrors(errs => ({...errs, [`party_${partyId}_plot_${plotIndex}_${field}`]: null}));
       }
 
-      if (partyId === 1 && currentPlot.isAutoDivide) {
-        const numParties = newParties.length;
-        const shares = calculateShare(currentPlot.totalRakbaAcre, currentPlot.totalRakbaDecimal, numParties);
-        
-        currentPlot.rakbaAcre = shares.acre;
-        currentPlot.rakbaDecimal = shares.decimal;
+      if (partyId === 1 && field === 'isAutoDivide') {
+         if (val === true) {
+            // ✅ टिक किया गया: डेटा बाँटें
+            if (!currentPlot.totalRakbaAcre && !currentPlot.totalRakbaDecimal) {
+                currentPlot.totalRakbaAcre = currentPlot.rakbaAcre;
+                currentPlot.totalRakbaDecimal = currentPlot.rakbaDecimal;
+            }
+            const numParties = newParties.length;
+            const shares = calculateShare(currentPlot.totalRakbaAcre, currentPlot.totalRakbaDecimal, numParties);
+            
+            currentPlot.rakbaAcre = shares.acre;
+            currentPlot.rakbaDecimal = shares.decimal;
 
-        for (let i = 1; i < numParties; i++) {
-          if (!newParties[i].plots[plotIndex]) {
-            newParties[i].plots[plotIndex] = { ...initialPlot, id: Date.now() + Math.random() };
-          }
-          const targetPlot = newParties[i].plots[plotIndex];
-          targetPlot.jamabandi = currentPlot.jamabandi;
-          targetPlot.khata = currentPlot.khata;
-          targetPlot.khesra = currentPlot.khesra;
-          targetPlot.plotVillage = currentPlot.plotVillage; // ⚡ Auto-divide village
-          targetPlot.plotThana = currentPlot.plotThana;     // ⚡ Auto-divide thana
-          targetPlot.rakbaAcre = shares.acre;
-          targetPlot.rakbaDecimal = shares.decimal;
-        }
+            for (let i = 1; i < numParties; i++) {
+              if (!newParties[i].plots[plotIndex]) {
+                newParties[i].plots[plotIndex] = { id: Date.now() + Math.random(), boundaries: { north: '', south: '', east: '', west: '' } };
+              }
+              const targetPlot = newParties[i].plots[plotIndex];
+              targetPlot.jamabandi = currentPlot.jamabandi;
+              targetPlot.khata = currentPlot.khata;
+              targetPlot.khesra = currentPlot.khesra;
+              targetPlot.plotVillage = currentPlot.plotVillage; 
+              targetPlot.plotThana = currentPlot.plotThana;     
+              targetPlot.rakbaAcre = shares.acre;
+              targetPlot.rakbaDecimal = shares.decimal;
+              targetPlot.boundaries = { ...currentPlot.boundaries };
+            }
+         } else {
+            // ❌ अनटिक किया गया: पहले भाई का रकबा वापस करें
+            currentPlot.rakbaAcre = currentPlot.totalRakbaAcre || currentPlot.rakbaAcre;
+            currentPlot.rakbaDecimal = currentPlot.totalRakbaDecimal || currentPlot.rakbaDecimal;
+            
+            // ⚡ FIX: बाकी सभी भाइयों के फॉर्म से इस खेत का डेटा पूरी तरह खाली (Clear) कर दें ⚡
+            for (let i = 1; i < newParties.length; i++) {
+              if (newParties[i].plots[plotIndex]) {
+                const targetPlot = newParties[i].plots[plotIndex];
+                targetPlot.jamabandi = '';
+                targetPlot.khata = '';
+                targetPlot.khesra = '';
+                targetPlot.plotVillage = '';
+                targetPlot.plotThana = '';
+                targetPlot.rakbaAcre = '';
+                targetPlot.rakbaDecimal = '';
+                targetPlot.boundaries = { north: '', south: '', east: '', west: '' };
+              }
+            }
+         }
+      } else if (partyId === 1 && currentPlot.isAutoDivide) {
+         // अगर टिक होने के बाद किसी ने रकबा बदल दिया, तो फिर से बाँटें
+         const numParties = newParties.length;
+         const shares = calculateShare(currentPlot.totalRakbaAcre, currentPlot.totalRakbaDecimal, numParties);
+         currentPlot.rakbaAcre = shares.acre;
+         currentPlot.rakbaDecimal = shares.decimal;
+
+         for (let i = 1; i < numParties; i++) {
+            if (newParties[i].plots[plotIndex]) {
+               newParties[i].plots[plotIndex].rakbaAcre = shares.acre;
+               newParties[i].plots[plotIndex].rakbaDecimal = shares.decimal;
+            }
+         }
       }
+
       return newParties;
     });
   };
@@ -980,7 +1023,34 @@ useEffect(() => {
 
                     <div className="grid grid-cols-3 gap-3 mb-2">
                       <HindiInput label="जमाबन्दी नं." name="jamabandi" value={plot.jamabandi} disableHindi={true} onChange={(e) => handlePlotChange(party.id, plot.id, 'jamabandi', e)} disabled={isAutoSynced} placeholder="नं." />
-                      <HindiInput label="खाता नं." name="khata" value={plot.khata} disableHindi={true} onChange={(e) => handlePlotChange(party.id, plot.id, 'khata', e)} disabled={isAutoSynced} required={!isAutoSynced} errorMsg={errors[`party_${party.id}_plot_${index}_khata`]} />
+                      {/* ⚡ SMART AUTO-FILL KHATA SELECT ⚡ */}
+                      <div className="mb-4 relative">
+                        <label className={`block mb-1 text-sm font-bold ${isAutoSynced ? 'text-gray-500' : 'text-gray-800'}`}>
+                          खाता नं. {!isAutoSynced && <span className="text-red-500">*</span>}
+                        </label>
+                        <select
+                          disabled={isAutoSynced}
+                          // Yeh check karega ki kaunsa Khata select hai
+                          value={
+                            totalPlots.findIndex(tp => tp.khata === plot.khata && tp.khesra === plot.khesra && plot.khata !== '') !== -1 
+                            ? totalPlots.findIndex(tp => tp.khata === plot.khata && tp.khesra === plot.khesra) 
+                            : ""
+                          }
+                          onChange={(e) => handleAutoFillFromKhata(party.id, plot.id, e.target.value)}
+                          className={`w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors ${errors[`party_${party.id}_plot_${index}_khata`] ? 'border-red-500 bg-red-50' : 'border-gray-300'} ${isAutoSynced ? 'bg-gray-200 text-gray-600 cursor-not-allowed' : 'bg-white cursor-pointer'}`}
+                        >
+                          <option value="">-- चुनें --</option>
+                          {totalPlots.map((tp, tIdx) => {
+                            if (!tp.khata && !tp.khesra) return null;
+                            return (
+                              <option key={tIdx} value={tIdx}>
+                                {tp.khata || '...'} (खेसरा: {tp.khesra || '...'})
+                              </option>
+                            );
+                          })}
+                        </select>
+                        {errors[`party_${party.id}_plot_${index}_khata`] && !isAutoSynced && <p className="text-xs text-red-600 mt-1 font-semibold flex items-center">⚠️ खाता चुनें</p>}
+                      </div>
                       <HindiInput label="खेसरा नं." name="khesra" value={plot.khesra} disableHindi={true} onChange={(e) => handlePlotChange(party.id, plot.id, 'khesra', e)} disabled={isAutoSynced} required={!isAutoSynced} errorMsg={errors[`party_${party.id}_plot_${index}_khesra`]} />
                     </div>
 
@@ -1009,10 +1079,10 @@ useEffect(() => {
                     <div className="mt-3">
                       <label className={`block mb-2 text-sm font-bold border-b pb-1 ${isAutoSynced ? 'text-gray-500 border-gray-300' : 'text-gray-700 border-gray-300'}`}>चौहद्दी (Boundaries)</label>
                       <div className="grid grid-cols-2 gap-2">
-                        <HindiInput label="उत्तर" name="north" value={plot.boundaries.north} onChange={(e) => handleBoundaryChange(party.id, plot.id, 'north', e)} disabled={isAutoSynced} placeholder="नाम..." />
-                        <HindiInput label="दक्षिण" name="south" value={plot.boundaries.south} onChange={(e) => handleBoundaryChange(party.id, plot.id, 'south', e)} disabled={isAutoSynced} placeholder="नाम..." />
-                        <HindiInput label="पूरब" name="east" value={plot.boundaries.east} onChange={(e) => handleBoundaryChange(party.id, plot.id, 'east', e)} disabled={isAutoSynced} placeholder="नाम..." />
-                        <HindiInput label="पश्चिम" name="west" value={plot.boundaries.west} onChange={(e) => handleBoundaryChange(party.id, plot.id, 'west', e)} disabled={isAutoSynced} placeholder="नाम..." />
+                        <HindiInput label="उत्तर" name="north" value={plot.boundaries.north} onChange={(e) => handleBoundaryChange(party.id, plot.id, 'north', e)}  placeholder="नाम..." /> {/**disabled={isAutoSynced} */}
+                        <HindiInput label="दक्षिण" name="south" value={plot.boundaries.south} onChange={(e) => handleBoundaryChange(party.id, plot.id, 'south', e)}  placeholder="नाम..." /> {/**disabled={isAutoSynced} */}
+                        <HindiInput label="पूरब" name="east" value={plot.boundaries.east} onChange={(e) => handleBoundaryChange(party.id, plot.id, 'east', e)}  placeholder="नाम..." /> {/**disabled={isAutoSynced} */}
+                        <HindiInput label="पश्चिम" name="west" value={plot.boundaries.west} onChange={(e) => handleBoundaryChange(party.id, plot.id, 'west', e)}  placeholder="नाम..." /> {/**disabled={isAutoSynced} */}
                       </div>
                     </div>
                   </div>
