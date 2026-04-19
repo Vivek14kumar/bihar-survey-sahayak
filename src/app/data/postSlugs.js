@@ -24,5 +24,7 @@ export const postSlugs = [
   "request-offline-land-documents-online-bihar",
   "co-mutation-approval-without-hearing-appeal-process",
   "martyred-soldiers-land-allotment-bihar",
-  "bihar-mutation-work-aso-kanungo-charge"
+  "bihar-mutation-work-aso-kanungo-charge",
+  "bihar-e-mapi-land-measurement-official-fee",
+  "bettiah-raj-land-action-rules"
 ];

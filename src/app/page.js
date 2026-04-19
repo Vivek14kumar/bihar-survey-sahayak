@@ -7,6 +7,7 @@ import FAQClient from "./faq/FAQClient";
 import VanshawaliTutorial from "@/components/VanshawaliTutorial";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
 import DistrictSection from "@/components/DistrictSection";
+import PublicStats from "@/components/PublicStats";
 
 export default function Home() {
   return (
@@ -95,7 +96,7 @@ export default function Home() {
     {/* Social Proof */}
     <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-6 text-white text-sm">
       <div>
-        <h3 className="text-2xl font-bold text-yellow-300">10,000+</h3>
+        <h3 className="text-2xl font-bold text-yellow-300">21.4k+</h3>
         सफल डाउनलोड
       </div>
       <div>
@@ -113,7 +114,7 @@ export default function Home() {
        यह एक निजी नागरिक सहायता टूल है। यह कोई सरकारी वेबसाइट नहीं है। 
       उपयोगकर्ता सभी विवरण अपने स्थानीय सर्वे शिविर (अमीन / पर्यवेक्षक) से सत्यापित करें।
     </p>
-
+    <PublicStats/>
   </motion.div>
 </section>
 
