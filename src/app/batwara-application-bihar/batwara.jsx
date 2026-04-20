@@ -315,8 +315,71 @@ useEffect(() => {
     if(errors[`party_${partyId}_${e.target.name}`]) setErrors({...errors, [`party_${partyId}_${e.target.name}`]: null});
   };
 
-  // ⚡ 1. यहाँ आपका पुराना handlePlotChange फंक्शन है ⚡
-  // ⚡ अपडेटेड handlePlotChange (Untick Fix के साथ) ⚡
+  // ⚡ 1. SMART AUTO-FILL FUNCTION ⚡
+  const handleAutoFillFromKhata = (partyId, plotId, totalPlotIndexStr) => {
+    if (totalPlotIndexStr === "") return;
+    const tIndex = parseInt(totalPlotIndexStr);
+    const sourcePlot = totalPlots[tIndex];
+
+    setParties(prev => {
+      const newParties = JSON.parse(JSON.stringify(prev));
+      const partyIndex = newParties.findIndex(p => p.id === partyId);
+      const plotIndex = newParties[partyIndex].plots.findIndex(p => p.id === plotId);
+      const currentPlot = newParties[partyIndex].plots[plotIndex];
+
+      currentPlot.khata = sourcePlot.khata;
+      currentPlot.khesra = sourcePlot.khesra;
+      currentPlot.jamabandi = sourcePlot.jamabandi;
+      currentPlot.plotVillage = sourcePlot.plotVillage;
+      currentPlot.plotThana = sourcePlot.plotThana;
+      currentPlot.boundaries = { ...sourcePlot.boundaries };
+
+      currentPlot.totalRakbaAcre = sourcePlot.rakbaAcre;
+      currentPlot.totalRakbaDecimal = sourcePlot.rakbaDecimal;
+
+      if (partyId === 1 && currentPlot.isAutoDivide) {
+        const numParties = newParties.length;
+        const shares = calculateShare(sourcePlot.rakbaAcre, sourcePlot.rakbaDecimal, numParties);
+        
+        currentPlot.rakbaAcre = shares.acre;
+        currentPlot.rakbaDecimal = shares.decimal;
+
+        for (let i = 1; i < numParties; i++) {
+          if (!newParties[i].plots[plotIndex]) {
+            newParties[i].plots[plotIndex] = { id: Date.now() + Math.random(), boundaries: { north: '', south: '', east: '', west: '' } };
+          }
+          const targetPlot = newParties[i].plots[plotIndex];
+          targetPlot.jamabandi = sourcePlot.jamabandi;
+          targetPlot.khata = sourcePlot.khata;
+          targetPlot.khesra = sourcePlot.khesra;
+          targetPlot.plotVillage = sourcePlot.plotVillage;
+          targetPlot.plotThana = sourcePlot.plotThana; 
+          targetPlot.boundaries = { ...sourcePlot.boundaries }; 
+          targetPlot.rakbaAcre = shares.acre; 
+          targetPlot.rakbaDecimal = shares.decimal;
+        }
+      } else {
+        currentPlot.rakbaAcre = sourcePlot.rakbaAcre;
+        currentPlot.rakbaDecimal = sourcePlot.rakbaDecimal;
+      }
+      return newParties;
+    });
+
+    const pIdx = parties.findIndex(p => p.id === partyId);
+    const plIdx = parties[pIdx]?.plots.findIndex(p => p.id === plotId);
+    if(errors[`party_${partyId}_plot_${plIdx}_khata`]) {
+      setErrors(errs => {
+        const newErrs = {...errs};
+        delete newErrs[`party_${partyId}_plot_${plIdx}_khata`];
+        delete newErrs[`party_${partyId}_plot_${plIdx}_khesra`];
+        delete newErrs[`party_${partyId}_plot_${plIdx}_rakba`];
+        return newErrs;
+      });
+    }
+  };
+
+
+  // ⚡ 2. UPDATED handlePlotChange FUNCTION (Untick Fix) ⚡
   const handlePlotChange = (partyId, plotId, field, e) => {
     const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
 
@@ -334,7 +397,6 @@ useEffect(() => {
 
       if (partyId === 1 && field === 'isAutoDivide') {
          if (val === true) {
-            // ✅ टिक किया गया: डेटा बाँटें
             if (!currentPlot.totalRakbaAcre && !currentPlot.totalRakbaDecimal) {
                 currentPlot.totalRakbaAcre = currentPlot.rakbaAcre;
                 currentPlot.totalRakbaDecimal = currentPlot.rakbaDecimal;
@@ -360,11 +422,9 @@ useEffect(() => {
               targetPlot.boundaries = { ...currentPlot.boundaries };
             }
          } else {
-            // ❌ अनटिक किया गया: पहले भाई का रकबा वापस करें
             currentPlot.rakbaAcre = currentPlot.totalRakbaAcre || currentPlot.rakbaAcre;
             currentPlot.rakbaDecimal = currentPlot.totalRakbaDecimal || currentPlot.rakbaDecimal;
             
-            // ⚡ FIX: बाकी सभी भाइयों के फॉर्म से इस खेत का डेटा पूरी तरह खाली (Clear) कर दें ⚡
             for (let i = 1; i < newParties.length; i++) {
               if (newParties[i].plots[plotIndex]) {
                 const targetPlot = newParties[i].plots[plotIndex];
@@ -380,7 +440,6 @@ useEffect(() => {
             }
          }
       } else if (partyId === 1 && currentPlot.isAutoDivide) {
-         // अगर टिक होने के बाद किसी ने रकबा बदल दिया, तो फिर से बाँटें
          const numParties = newParties.length;
          const shares = calculateShare(currentPlot.totalRakbaAcre, currentPlot.totalRakbaDecimal, numParties);
          currentPlot.rakbaAcre = shares.acre;
@@ -393,7 +452,6 @@ useEffect(() => {
             }
          }
       }
-
       return newParties;
     });
   };
