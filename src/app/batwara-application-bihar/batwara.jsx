@@ -200,7 +200,7 @@ export default function LegalPanchnama() {
   const [commonData, setCommonData] = useState({
     // ⚡ ऑटोमैटिक हिंदी डेट हटाकर कैलेंडर का डिफ़ॉल्ट डेट लगा दिया 
     date: new Date().toISOString().split('T')[0], 
-    place: '', moolRaiyat: '', caste: '', pincode: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
+    place: '', moolRaiyat: '', moolRelation: 'पिता', moolRelativeName: '', caste: '', pincode: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
   });
 
   // ⚡ PlotVillage & PlotThana added to Initial States ⚡
@@ -926,6 +926,35 @@ useEffect(() => {
               />
             </div>
           <HindiInput label="मूल रैयत (दादा/पिता) का नाम" name="moolRaiyat" value={commonData.moolRaiyat} onChange={handleCommonChange} required={true} errorMsg={errors.moolRaiyat} helpText="जिनके नाम से खतियान है" />
+          <div className="grid grid-cols-[110px_1fr] gap-3">
+              {/* पहला बॉक्स: संबंध चुनने के लिए */}
+              <div className="relative mb-4">
+                <label className="block mb-1 text-sm font-bold text-gray-800">संबंध</label>
+                {/* ऊँचाई बराबर रखने के लिए अदृश्य (invisible) टेक्स्ट */}
+                <p className="text-[11px] text-transparent mb-1 leading-tight select-none">.</p>
+                <select 
+                  name="moolRelation" 
+                  value={commonData.moolRelation} 
+                  onChange={handleCommonChange}
+                  className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm transition-colors cursor-pointer"
+                >
+                  <option value="पिता">पिता</option>
+                  <option value="पति">पति</option>
+                </select>
+              </div>
+
+              {/* दूसरा बॉक्स: नाम भरने के लिए */}
+              <HindiInput 
+                label="पिता / पति का नाम" 
+                name="moolRelativeName" 
+                value={commonData.moolRelativeName} 
+                onChange={handleCommonChange}
+                placeholder="उनका नाम लिखें..." 
+                helpText="&nbsp;"
+                
+                errorMsg={errors.moolRelativeName} 
+              />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <HindiInput label="मुख्य गाँव/मौजा का नाम" name="village" value={commonData.village} onChange={handleCommonChange} required={true} errorMsg={errors.village} />
             <HindiInput label="मुख्य थाना नंबर" name="thanaNo" value={commonData.thanaNo} onChange={handleCommonChange} type="number" helpText="खतियान में देखकर भरें" />
@@ -1350,7 +1379,7 @@ useEffect(() => {
             <h3 style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '19px', borderBottom: '2px solid #333', paddingBottom: '5px', pageBreakInside: 'avoid' }}>1. बंटवारे की पृष्ठभूमि और कानूनी शर्तें:</h3>
             <ol style={{ paddingLeft: '25px', marginBottom: '35px', textAlign: 'justify', lineHeight: '1.7' }}>
               <li style={{ marginBottom: '12px' }}>
-                <strong>पैतृक संपत्ति:</strong> हम सभी पक्षकार आपस में सगे संबंधी हैं। हमारे पूर्वज <strong>{commonData.moolRaiyat || '...................'}</strong> के नाम से ग्राम <strong>{commonData.village || '...........'}</strong>, थाना नंबर <strong>{commonData.thanaNo || '...........'}</strong>, अंचल <strong>{commonData.anchal || '...........'}</strong>, जिला <strong>{commonData.district || '...........'}</strong>{hasOtherVillages ? ' (तथा अन्य मौजों/थानों)' : ''} में पैतृक भूमि स्थित है, जिसका उपभोग हम संयुक्त रूप से करते आ रहे थे।
+                <strong>पैतृक संपत्ति:</strong> हम सभी पक्षकार आपस में सगे संबंधी हैं। हमारी पारिवारिक/पैतृक भूमि  <strong>{commonData.moolRaiyat || '...................'} , {commonData.moolRelation}- {commonData.moolRelativeName}</strong> के नाम से ग्राम <strong>{commonData.village || '...........'}</strong>, थाना नंबर <strong>{commonData.thanaNo || '...........'}</strong>, अंचल <strong>{commonData.anchal || '...........'}</strong>, जिला <strong>{commonData.district || '...........'}</strong>{hasOtherVillages ? ' (तथा अन्य मौजों/थानों)' : ''} में पैतृक भूमि स्थित है, जिसका उपभोग हम संयुक्त रूप से करते आ रहे थे।
               </li>
               <li style={{ marginBottom: '12px' }}><strong>बंटवारे का कारण:</strong> परिवार के विस्तार, शांतिपूर्ण उपभोग और वर्तमान <strong>बिहार विशेष भूमि सर्वेक्षण (Land Survey)</strong> तथा अंचल कार्यालय में <strong>दाखिल-खारिज (Mutation)</strong> के कार्यों को सुचारु रूप से संपन्न करने हेतु हम सभी पक्षकार अपनी पूर्ण आपसी सहमति से संपत्ति का बंटवारा कर रहे हैं।</li>
               <li style={{ marginBottom: '12px' }}><strong>स्वामित्व और अधिकार:</strong> इस पंचनामे के लागू होने के पश्चात, जो संपत्ति जिस पक्ष के हिस्से में आई है, वह उस पर पूर्ण रूप से अपना मालिकाना हक (स्वामित्व) रखेगा। उसे उस भूमि को बेचने, दान करने या निर्माण करने का पूर्ण अधिकार होगा।</li>
