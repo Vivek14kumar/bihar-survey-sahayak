@@ -224,6 +224,9 @@ export default function LegalPanchnama() {
     aadhaar: true, witnessId: true, vanshavali: true, khatiyan: true, receipt: true, prapatra2: true
   });
 
+  // डिफ़ॉल्ट रूप से 4 गवाह सेट किए गए हैं
+  const [witnessCount, setWitnessCount] = useState(4);
+
   // ⚡ Razorpay & Watermark States ⚡
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [showWatermark, setShowWatermark] = useState(true);
@@ -1186,6 +1189,26 @@ useEffect(() => {
             <span className="text-xl">+</span> एक और हिस्सेदार (भाई) जोड़ें
           </button>
         </div>
+          
+        <div className="bg-gray-50 p-4 rounded-3xl mb-6 border border-gray-200 shadow-sm">
+          <h3 className="font-bold text-gray-800 text-sm md:text-base mb-3">गवाहों (Witnesses) की संख्या</h3>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setWitnessCount(prev => Math.max(2, prev - 1))} 
+              className="bg-red-100 text-red-600 px-4 py-2 rounded-xl font-bold hover:bg-red-200"
+            >
+              - कम करें
+            </button>
+            <span className="font-extrabold text-xl">{witnessCount}</span>
+            <button 
+              onClick={() => setWitnessCount(prev => Math.min(5, prev + 1))} 
+              className="bg-green-100 text-green-700 px-4 py-2 rounded-xl font-bold hover:bg-green-200"
+            >
+              + और जोड़ें
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">प्रिंट में खाली लाइनें आएँगी जहाँ गवाह हाथ से साइन करेंगे।</p>
+        </div>
 
         {/* Section 4 & Documents */}
         <div className="bg-yellow-50 p-4 rounded-3xl mb-5 border border-yellow-200 shadow-sm">
@@ -1528,26 +1551,54 @@ useEffect(() => {
 
             <div style={{ clear: 'both', marginTop: '10px', borderTop: '2px solid #333', paddingTop: '25px', pageBreakInside: 'avoid' }}>
               <p style={{ fontWeight: 'bold', marginBottom: '25px', fontSize: '18px' }}>गवाहों (Witnesses) के विवरण एवं हस्ताक्षर:</p>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <tbody>
-                  <tr>
-                    <td style={{ width: '50%', paddingRight: '25px', verticalAlign: 'top' }}>
-                      <p style={{ fontWeight: 'bold', marginBottom: '12px' }}>गवाह न. 1</p>
-                      <p style={{ marginBottom: '12px' }}>नाम: ___________________________</p>
-                      <p style={{ marginBottom: '12px' }}>पिता: ___________________________</p>
-                      <p style={{ marginBottom: '35px' }}>मोबाईल नं: ________________________</p>
-                      <p style={{ borderTop: '1px solid #000', paddingTop: '8px', width: '220px', textAlign: 'center', fontWeight: 'bold' }}>गवाह के हस्ताक्षर</p>
-                    </td>
-                    <td style={{ width: '50%', verticalAlign: 'top', paddingLeft: '10px' }}>
-                      <p style={{ fontWeight: 'bold', marginBottom: '12px' }}>गवाह न. 2</p>
-                      <p style={{ marginBottom: '12px' }}>नाम: ___________________________</p>
-                      <p style={{ marginBottom: '12px' }}>पिता: ___________________________</p>
-                      <p style={{ marginBottom: '35px' }}>मोबाईल नं: ________________________</p>
-                      <p style={{ borderTop: '1px solid #000', paddingTop: '8px', width: '220px', textAlign: 'center', fontWeight: 'bold' }}>गवाह के हस्ताक्षर</p>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                        
+              {/* Olab/PDF Safe - Flexbox गवाह लूप */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                {Array.from({ length: witnessCount }).map((_, index) => (
+                  <div 
+                    key={index} 
+                    style={{ 
+                      width: '48%', 
+                      marginBottom: '25px', 
+                      pageBreakInside: 'avoid', 
+                      border: '1px solid #666', // Olab सेफ: सिंपल सॉलिड ग्रे/ब्लैक बॉर्डर
+                      borderRadius: '2px',
+                      padding: '15px', 
+                      boxSizing: 'border-box'
+                      // बैकग्राउंड कलर हटा दिया गया है ताकि Olab एरर न दे
+                    }}
+                  >
+                    <p style={{ fontWeight: 'bold', marginBottom: '15px', fontSize: '15px', color: '#000', borderBottom: '1px solid #ccc', paddingBottom: '5px' }}>
+                      गवाह न. {index + 1}
+                    </p>
+                  
+                    {/* नाम की लाइन */}
+                    <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '14px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', marginRight: '8px', color: '#000' }}>नाम:</span>
+                      <div style={{ flex: 1, borderBottom: '1px dotted #666' }}></div> {/* Dotted लाइन Olab में सबसे अच्छी प्रिंट होती है */}
+                    </div>
+                  
+                    {/* पिता की लाइन */}
+                    <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '14px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', marginRight: '8px', color: '#000' }}>पिता:</span>
+                      <div style={{ flex: 1, borderBottom: '1px dotted #666' }}></div>
+                    </div>
+                  
+                    {/* मोबाईल की लाइन */}
+                    <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '35px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', marginRight: '8px', color: '#000' }}>मोबाईल नं:</span>
+                      <div style={{ flex: 1, borderBottom: '1px dotted #666' }}></div>
+                    </div>
+                  
+                    {/* हस्ताक्षर की लाइन */}
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <p style={{ borderTop: '1px solid #000', paddingTop: '6px', width: '80%', textAlign: 'center', fontWeight: 'bold', fontSize: '14px', color: '#000' }}>
+                        गवाह के हस्ताक्षर
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {Object.values(selectedDocs).some(val => val === true) && (
