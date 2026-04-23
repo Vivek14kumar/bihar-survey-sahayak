@@ -27,17 +27,7 @@ export default function LandscapePage() {
   const entry = entries[0];
   const missingFields = [];
   
-  const executeAction = () => {
-  if (actionType === "print") {
-    setShowWatermark(false); // Remove watermark for paid
-    handlePrint();
-  }
-
-  if (actionType === "download") {
-    setShowWatermark(false); // Remove watermark for paid
-    handleDownloadPDF();
-  }
-};
+  
 
   // 1. Check Header Fields
   const headerLabels = {
@@ -105,9 +95,12 @@ export default function LandscapePage() {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
+    // Grab the first khata number. If it's empty, fallback to the current date so the filename doesn't look broken.
+    const firstKhata = entries[0].plots[0].khata || todayDate;
+
     // 4. Add the image and save
     pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`Bihar_Survey_Prapatra2_${todayDate}.pdf`);
+    pdf.save(`Prapatra2_Khata_${firstKhata}.pdf`);
 
   } catch (err) {
     console.error('PDF Generation Error:', err);
@@ -116,6 +109,7 @@ export default function LandscapePage() {
     buttons.forEach(btn => btn.style.display = '');
     setIsDownloading(false);
     await fetch("/api/track-prapatra2-print", { method: "POST" });
+    setShowWatermark(true);
   }
 };
 
@@ -381,6 +375,7 @@ const openRazorpay = async (callbackAction) => {
 };
 
 // 4. The Unified Gatekeeper for Print/Download
+// 4. The Unified Gatekeeper for Print/Download
 const handleSecureAction = async (actionType) => {
 
   // 1️⃣ Validate form first
@@ -411,9 +406,14 @@ const handleSecureAction = async (actionType) => {
     
     const data = await res.json();
 
+    // 🟢 UPDATED EXECUTE ACTION: Removes watermark and waits 150ms before printing
     const executeAction = () => {
-      if (actionType === "print") handlePrint();
-      if (actionType === "download") handleDownloadPDF();
+      setShowWatermark(false); 
+      
+      setTimeout(() => {
+        if (actionType === "print") handlePrint();
+        if (actionType === "download") handleDownloadPDF();
+      }, 150);
     };
 
     // 5️⃣ Gatekeeper Logic
@@ -445,6 +445,7 @@ const handleSecureAction = async (actionType) => {
     onAfterPrint: async () => {
       await fetch("/api/track-prapatra2-print", { method: "POST" });
       console.log("Print tracked successfully");
+      setShowWatermark(true);
     },
   });
 
