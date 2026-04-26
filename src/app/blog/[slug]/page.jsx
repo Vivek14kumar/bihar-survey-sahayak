@@ -123,7 +123,15 @@ export default async function BlogPost({ params }) {
         </h3>
         <Link
           href={post.tool.link}
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+          className="
+            block w-full sm:w-auto text-center
+            bg-blue-600 text-white 
+            px-5 py-3 sm:px-6
+            rounded-xl font-semibold
+            text-sm sm:text-base
+            hover:bg-blue-700
+            transition
+          "
         >
           {post.tool.text}
         </Link>
