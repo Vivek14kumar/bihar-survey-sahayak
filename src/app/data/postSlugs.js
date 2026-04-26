@@ -26,5 +26,11 @@ export const postSlugs = [
   "martyred-soldiers-land-allotment-bihar",
   "bihar-mutation-work-aso-kanungo-charge",
   "bihar-e-mapi-land-measurement-official-fee",
-  "bettiah-raj-land-action-rules"
+  "bettiah-raj-land-action-rules",
+  "how-to-request-offline-land-documents-bihar",
+  "what-is-dakhil-kharij-mutation-bihar",
+  "jamabandi-mobile-number-link-sms-alert",
+  "parivarik-batwara-mutation-online-bihar",
+  "parimarjan-plus-missing-jamabandi-digitization",
+  "tips-to-avoid-mutation-rejection-bihar"
 ];

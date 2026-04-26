@@ -438,6 +438,24 @@ const handleSecureAction = async (actionType) => {
     toast.error("सर्वर से संपर्क नहीं हो सका।");
   }
 };
+
+// 🛠️ DEV ONLY: Bypass Payment Gate for Testing
+{/*const handleTestBypass = (actionType) => {
+  // 1. Run the same validation check
+  if (!validateForm()) return;
+
+  // 2. Alert so you know you are using the bypass
+  toast.success("DEV MODE: Payment Bypassed.");
+
+  // 3. Remove watermark and execute
+  setShowWatermark(false);
+  
+  setTimeout(() => {
+    if (actionType === "print") handlePrint();
+    if (actionType === "download") handleDownloadPDF();
+  }, 150);
+};*/}
+
   const handlePrint = useReactToPrint({
     contentRef,
     documentTitle: `Prapatra-2_${todayDate}`,
@@ -457,6 +475,25 @@ const handleSecureAction = async (actionType) => {
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 no-print-bg">
       <div className="flex justify-center gap-4 mb-6 print:hidden flex-wrap">
   
+  {/* ================= DEV TEST BUTTONS (HIDDEN IN PRODUCTION) ================= 
+{process.env.NODE_ENV === 'development' && (
+  <div className="flex gap-4 w-full justify-center p-4 bg-red-50 border-2 border-red-500 border-dashed rounded-xl mt-4 print:hidden">
+    <button
+      onClick={() => handleTestBypass("print")}
+      className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-bold shadow-sm"
+    >
+      🛠️ Force Print (No Pay)
+    </button>
+    
+    <button
+      onClick={() => handleTestBypass("download")}
+      className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 font-bold shadow-sm"
+    >
+      🛠️ Force Download (No Pay)
+    </button>
+  </div>
+)}*/}
+
   {/* ================= PRINT BUTTON (PAID) ================= */}
   <button
     onClick={() => handleSecureAction("print")}
