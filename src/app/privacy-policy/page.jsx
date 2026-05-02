@@ -54,7 +54,7 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="font-bold text-xl text-indigo-600 mb-2 border-l-4 border-indigo-600 pl-3">6. संपर्क करें (Contact)</h2>
             <p>
-              यदि आपके पास इस नीति के बारे में कोई प्रश्न हैं, तो आप हमें <strong>support@yourdomain.com</strong> पर ईमेल कर सकते हैं।
+              यदि आपके पास इस नीति के बारे में कोई प्रश्न हैं, तो आप हमें <strong>viktechzweb@gmail.com</strong> पर ईमेल कर सकते हैं।
             </p>
           </section>
 

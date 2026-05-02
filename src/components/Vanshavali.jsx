@@ -640,6 +640,18 @@ export default function Vanshavali() {
 </button>
           </div>
         )}
+        {/* TESTING BYPASS BUTTON - REMOVE IN PRODUCTION 
+        {process.env.NODE_ENV === "development" && (
+          <button
+            onClick={() => {
+              toast.success("Testing Bypass: Generating PDF...");
+              generatePDF();
+            }}
+            className="w-full mt-2 bg-gray-800 hover:bg-gray-900 text-white p-2 rounded-xl font-mono text-xs flex items-center justify-center gap-2 border-2 border-dashed border-red-500"
+          >
+            [DEV ONLY] Bypass Payment & Download
+          </button>
+        )}*/}
       </div>
     </div>
   );

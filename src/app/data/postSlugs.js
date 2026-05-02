@@ -32,5 +32,6 @@ export const postSlugs = [
   "jamabandi-mobile-number-link-sms-alert",
   "parivarik-batwara-mutation-online-bihar",
   "parimarjan-plus-missing-jamabandi-digitization",
-  "tips-to-avoid-mutation-rejection-bihar"
+  "tips-to-avoid-mutation-rejection-bihar",
+  "revenue-officers-strike-ends-bihar-2026"
 ];
