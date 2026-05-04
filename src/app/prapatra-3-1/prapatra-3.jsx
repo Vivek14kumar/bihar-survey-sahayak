@@ -11,6 +11,10 @@ export default function PrapatraVanshavaliTree() {
   const [formData, setFormData] = useState({
     campAnchal: "",
     campDistrict: "",
+    applicants: [
+    { id: 1, name: "", rel: "पुत्र", relName: "" },
+    { id: 2, name: "", rel: "पुत्र", relName: "" }
+    ],
     app1Name: "", app1Rel: "पुत्र", app1RelName: "",
     app2Name: "", app2Rel: "पुत्र", app2RelName: "",
     app3Name1: "", app3Name2: "", app3RelName: "",
@@ -56,6 +60,38 @@ export default function PrapatraVanshavaliTree() {
   const cacheRef = useRef({});
   const printRef = useRef(null);
   const observerRef = useRef(null);
+
+  const addApplicant = () => {
+  if (formData.applicants.length < 4) {
+    setFormData({
+      ...formData,
+      applicants: [...formData.applicants, { id: Date.now(), name: "", rel: "पुत्र", relName: "" }]
+    });
+  }
+};
+
+const removeApplicant = (index) => {
+  if (formData.applicants.length > 2) {
+    const newApplicants = formData.applicants.filter((_, i) => i !== index);
+    setFormData({ ...formData, applicants: newApplicants });
+  }
+};
+
+const updateApplicant = (index, field, value) => {
+  const newApplicants = [...formData.applicants];
+  newApplicants[index][field] = value;
+  setFormData({ ...formData, applicants: newApplicants });
+  
+  // हिंदी सजेशन के लिए (अगर आप इस्तेमाल कर रहे हैं)
+  if (field === "name" || field === "relName") {
+    const words = value.split(" ");
+    const lastWord = words[words.length - 1];
+    if (lastWord.trim()) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 200);
+    }
+  }
+};
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -431,34 +467,88 @@ export default function PrapatraVanshavaliTree() {
         </div>
 
         {/* Section 2 */}
-        <div className="bg-orange-50 p-4 md:p-5 rounded-3xl mb-5 border border-orange-200 shadow-sm">
-          <div className="flex items-center gap-2 mb-4 border-b border-orange-300 pb-2">
-            <span className="bg-orange-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">2</span>
-            <h3 className="font-bold text-orange-900 text-lg">आवेदक(ओं) का विवरण</h3>
-          </div>
-          {[1, 2].map((num) => (
-            <div key={num} className="bg-white p-3 rounded-xl border border-orange-100 mb-3 shadow-sm">
-              {renderInput({ label: `आवेदक ${num} का नाम`, name: `app${num}Name`, placeholder: "नाम लिखें" })}
-              <div className="flex gap-3">
-                <div className="w-1/3 relative mb-3">
-                  <label className="block mb-1 text-sm font-bold text-gray-800">संबंध</label>
-                  <select className="w-full border border-gray-300 p-3 rounded-xl text-sm bg-white" value={formData[`app${num}Rel`]} onChange={(e)=>setFormData({...formData, [`app${num}Rel`]: e.target.value})}>
-                    <option>पुत्र</option><option>पुत्री</option><option>पत्नी</option>
-                  </select>
-                </div>
-                {renderInput({ label: "पिता/पति का नाम", name: `app${num}RelName`, placeholder: "नाम लिखें", width: "w-2/3" })}
-              </div>
-            </div>
-          ))}
-          <div className="bg-white p-3 rounded-xl border border-orange-100 shadow-sm mt-4">
-            <h4 className="text-xs font-bold text-gray-600 mb-2">पॉइंट (iii) का विवरण</h4>
-            <div className="grid grid-cols-2 gap-3">
-              {renderInput({ label: "श्री/श्रीमती 1", name: "app3Name1", placeholder: "नाम" })}
-              {renderInput({ label: "श्री/श्रीमती 2", name: "app3Name2", placeholder: "नाम" })}
-            </div>
-            {renderInput({ label: "पुत्री(यों), पत्नी (का नाम)", name: "app3RelName", placeholder: "नाम लिखें" })}
-          </div>
-        </div>
+<div className="bg-orange-50 p-4 md:p-5 rounded-3xl mb-5 border border-orange-200 shadow-sm">
+  <div className="flex items-center justify-between mb-4 border-b border-orange-300 pb-2">
+    <div className="flex items-center gap-2">
+      <span className="bg-orange-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+      <h3 className="font-bold text-orange-900 text-lg">आवेदक(ओं) का विवरण</h3>
+    </div>
+    
+  </div>
+
+  {/* आवेदकों की लिस्ट */}
+{formData.applicants.map((app, index) => (
+  <div key={index} className="bg-white p-3 rounded-xl border border-orange-100 mb-3 relative">
+    
+    {/* ❌ हटाएँ बटन: केवल 3rd और 4th आवेदक के लिए (index 2 और 3) */}
+    {index > 1 && (
+      <button 
+        onClick={() => removeApplicant(index)} 
+        className="absolute top-2 right-2 text-red-500 text-[10px] font-bold bg-red-50 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors"
+      >
+        हटाएं ✕
+      </button>
+    )}
+    
+    <label className="block mb-1 text-sm font-bold text-gray-800">
+      आवेदक {index + 1} का नाम
+    </label>
+    <input
+      type="text"
+      className="w-full border border-gray-300 p-3 rounded-xl mb-3 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+      placeholder="नाम लिखें"
+      value={app.name}
+      onChange={(e) => updateApplicant(index, "name", e.target.value)}
+    />
+
+    <div className="flex gap-3">
+      <select 
+        className="w-1/3 border border-gray-300 p-3 rounded-xl text-sm bg-white outline-none"
+        value={app.rel}
+        onChange={(e) => updateApplicant(index, "rel", e.target.value)}
+      >
+        <option>पुत्र</option>
+        <option>पुत्री</option>
+        <option>पत्नी</option>
+      </select>
+      <input
+        type="text"
+        placeholder="पिता/पति का नाम"
+        className="w-2/3 border border-gray-300 p-3 rounded-xl text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+        value={app.relName}
+        onChange={(e) => updateApplicant(index, "relName", e.target.value)}
+      />
+    </div>
+  </div>
+))}
+
+{/* ✅ जोड़ें बटन: लूप के बाहर, ताकि यह लिस्ट के अंत में केवल एक बार दिखे */}
+<div className="flex justify-center mt-2 mb-4">
+  <button 
+    onClick={addApplicant} 
+    disabled={formData.applicants.length >= 4} 
+    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+  >
+    <span>+</span> और आवेदक जोड़ें
+  </button>
+</div>
+
+  {/* Dynamic Point Numbering (iv, v) */}
+  <div className="bg-white p-3 rounded-xl border border-orange-100 shadow-sm mt-4">
+    <h4 className="text-xs font-bold text-gray-600 mb-2">
+      बिंदु ({
+        formData.applicants.length === 1 ? 'ii' : 
+        formData.applicants.length === 2 ? 'iii' : 
+        formData.applicants.length === 3 ? 'iv' : 'v'
+      }) का विवरण
+    </h4>
+    <div className="grid grid-cols-2 gap-3">
+      {renderInput({ label: "श्री/श्रीमती 1", name: "app3Name1" })}
+      {renderInput({ label: "श्री/श्रीमती 2", name: "app3Name2" })}
+    </div>
+    {renderInput({ label: "पुत्री(यों), पत्नी (का नाम)", name: "app3RelName" })}
+  </div>
+</div>
 
         {/* Section 3 */}
         <div className="bg-purple-50 p-4 md:p-5 rounded-3xl mb-5 border border-purple-200 shadow-sm">
@@ -540,11 +630,11 @@ export default function PrapatraVanshavaliTree() {
         <div className="sticky bottom-0 left-0 w-full z-20 bg-white rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.1)] px-3 py-4 border-t border-gray-100">
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => processAction('print')} className="relative flex flex-col items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3.5 rounded-2xl font-bold text-[13px] hover:shadow-lg transition-all">
-              {showWatermark && <span className="absolute -top-2 right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹3</span>}
+              {showWatermark && <span className="absolute -top-2 right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹5</span>}
               <Printer size={20} /><span>प्रिंट करें</span>
             </button>
             <button onClick={() => processAction('download')} disabled={isGeneratingPDF} className="relative flex flex-col items-center justify-center gap-1 bg-gradient-to-r from-yellow-400 to-amber-500 text-black py-3.5 rounded-2xl font-bold text-[13px] hover:shadow-lg transition-all disabled:opacity-70">
-              {showWatermark && <span className="absolute -top-2 right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹3</span>}
+              {showWatermark && <span className="absolute -top-2 right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹5</span>}
               <Download size={20} /><span>{isGeneratingPDF ? 'लोडिंग...' : 'PDF डाउनलोड'}</span>
             </button>
 
@@ -599,15 +689,41 @@ export default function PrapatraVanshavaliTree() {
               <p style={{ paddingLeft: '45px', marginBottom: '10px' }}>उपरोक्त विषय के सम्बन्ध में सूचित करते हुए कहना है कि मैं / हमलोग</p>
               
               <div style={{ paddingLeft: '45px', marginBottom: '15px', lineHeight: '2' }}>
-                <p>(i) &nbsp;&nbsp;&nbsp; श्री / श्रीमती <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app1Name || "________________"}</span> {formData.app1Rel} / पत्नी श्री <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app1RelName || "________________"}</span></p>
-                <p>(ii) &nbsp;&nbsp; श्री / श्रीमती <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app2Name || "________________"}</span> {formData.app2Rel} / पत्नी श्री <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app2RelName || "________________"}</span></p>
-                <p>(iii) &nbsp; श्री / श्रीमती <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app3Name1 || "________________"}</span> श्री / श्रीमती <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app3Name2 || "________________"}</span><br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; पुत्री(यों), पत्नी <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app3RelName || "________________"}</span> निवासी <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.village || "________________"}</span> ग्राम <br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; थाना <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.thana || "_________"}</span> अंचल:- <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.anchal || "_________"}</span> जिला <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.district || "_________"}</span> जाति <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.caste || "_________"}</span><br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ने भूमि जिसका विवरण आवेदन के साथ संलग्न प्रपत्र ।। में अंकित है स्व <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.propertyOwnerName || "_________"}</span><br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; पिता:- <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.propertyFatherName || "_________"}</span> ग्राम <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.propertyVillage || "_________"}</span>
-                </p>
-              </div>
+  {/* 1. डायनामिक आवेदकों की लिस्ट (i, ii, iii...) */}
+  {formData.applicants.map((app, idx) => {
+    const romanNumerals = ["i", "ii", "iii", "iv", "v"];
+    return (
+      <p key={idx}>
+        ({romanNumerals[idx]}) &nbsp;&nbsp;&nbsp; श्री / श्रीमती 
+        <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>
+          {app.name || "________________"}
+        </span> 
+        &nbsp; {app.rel} / पत्नी श्री &nbsp;
+        <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>
+          {app.relName || "________________"}
+        </span>
+      </p>
+    );
+  })}
+
+  {/* 2. अगला पॉइंट (आवेदकों की संख्या + 1) */}
+  <p>
+    ({
+      formData.applicants.length === 1 ? 'ii' : 
+      formData.applicants.length === 2 ? 'iii' : 
+      formData.applicants.length === 3 ? 'iv' : 'v'
+    }) &nbsp; श्री / श्रीमती <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app3Name1 || "________________"}</span> 
+    &nbsp; श्री / श्रीमती <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app3Name2 || "________________"}</span><br/>
+    
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; पुत्री(यों), पत्नी <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.app3RelName || "________________"}</span> निवासी <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.village || "________________"}</span> ग्राम <br/>
+    
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; थाना <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.thana || "_________"}</span> अंचल:- <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.anchal || "_________"}</span> जिला <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.district || "_________"}</span> जाति <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.caste || "_________"}</span><br/>
+    
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ने भूमि जिसका विवरण आवेदन के साथ संलग्न प्रपत्र ।। में अंकित है स्व <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.propertyOwnerName || "_________"}</span><br/>
+    
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; पिता:- <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.propertyFatherName || "_________"}</span> ग्राम <span style={{ borderBottom: '1px dashed #666', padding: '0 8px', fontWeight: 'bold' }}>{formData.propertyVillage || "_________"}</span>
+  </p>
+</div>
 
               <p style={{ textAlign: 'justify', lineHeight: '2', marginBottom: '0' }}>
                 जो राजस्व ग्राम:- <span style={{ fontWeight: 'bold', borderBottom: '1px dashed #666', padding: '0 8px' }}>{formData.revenueVillage || "_________"}</span> 

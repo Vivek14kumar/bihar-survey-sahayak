@@ -425,7 +425,7 @@ export default function DeathCertificateDeclaration() {
               onClick={() => processAction('print')}
               className="relative flex flex-col items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3.5 rounded-2xl font-bold text-[13px] hover:shadow-lg hover:from-blue-700 hover:to-indigo-800 transition-all"
             >
-              {showWatermark && <span className="absolute -top-2 right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹3</span>}
+              {showWatermark && <span className="absolute -top-2 right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹5</span>}
               <Printer size={20} />
               <span>प्रिंट करें</span>
             </button>
@@ -435,7 +435,7 @@ export default function DeathCertificateDeclaration() {
               disabled={isGeneratingPDF}
               className="relative flex flex-col items-center justify-center gap-1 bg-gradient-to-r from-yellow-400 to-amber-500 text-black py-3.5 rounded-2xl font-bold text-[13px] hover:shadow-lg hover:from-yellow-500 hover:to-amber-600 transition-all disabled:opacity-70"
             >
-              {showWatermark && <span className="absolute -top-2 right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹3</span>}
+              {showWatermark && <span className="absolute -top-2 right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹5</span>}
               <Download size={20} />
               <span>{isGeneratingPDF ? 'लोडिंग...' : 'PDF डाउनलोड'}</span>
             </button>

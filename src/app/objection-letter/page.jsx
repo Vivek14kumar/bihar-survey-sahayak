@@ -310,9 +310,9 @@ export default function ObjectionLetter() {
         >
           <div className="flex items-center gap-3">
             <Printer size={22} />
-            <span>Print Objection Letter ₹3</span>
+            <span>Print Objection Letter ₹5</span>
           </div>
-          <span className="text-xs opacity-90">बिना वॉटरमार्क PDF प्रिंट करें – ₹3</span>
+          <span className="text-xs opacity-90">बिना वॉटरमार्क PDF प्रिंट करें – ₹5</span>
         </button>
       </div>
 
@@ -517,9 +517,9 @@ export default function ObjectionLetter() {
         >
           <div className="flex items-center gap-3">
             <Printer size={22} />
-            <span>Print Objection Letter ₹3</span>
+            <span>Print Objection Letter ₹5</span>
           </div>
-          <span className="text-xs opacity-90">बिना वॉटरमार्क PDF प्रिंट करें – ₹3</span>
+          <span className="text-xs opacity-90">बिना वॉटरमार्क PDF प्रिंट करें – ₹5</span>
         </button>
       </div>
     </div>

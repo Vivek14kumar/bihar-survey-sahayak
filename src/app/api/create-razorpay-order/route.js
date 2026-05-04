@@ -18,17 +18,17 @@ export async function POST(req) {
     }else if (type === "affidavit") {
       amount = 3 * 100; // ✅ ₹3 per document
     }else if (type === "objectionLetter") {
-      amount = 3 * 100; // ✅ ₹3 per document
+      amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "cancellationJama") {
-      amount = 3 * 100; // ✅ ₹3 per document
+      amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "deathAffidavit") {
-      amount = 3 * 100; // ✅ ₹3 per document
+      amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "deathDeclaration") {
-      amount = 3 * 100; // ✅ ₹3 per document
+      amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "prapatra3") {
-      amount = 3 * 100; // ✅ ₹8 per document
+      amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "batwara") {
-      amount = 30 * 100; // ✅ ₹29 per document 
+      amount = 30 * 100; // ✅ ₹30 per document 
     }  else {
       return Response.json({ error: "Invalid type" }, { status: 400 });
     }
