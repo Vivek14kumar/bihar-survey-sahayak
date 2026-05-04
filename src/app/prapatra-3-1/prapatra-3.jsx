@@ -133,14 +133,23 @@ const updateApplicant = (index, field, value) => {
   }, []);
 
   const validateForm = () => {
-    const requiredFields = ["campAnchal", "app1Name", "village", "khataNo"];
+    // यहाँ से 'app1Name' हटा दिया गया है
+    const requiredFields = ["campAnchal", "village", "khataNo"];
     for (let field of requiredFields) {
       if (!formData[field] || formData[field].trim() === "") {
-        alert("कृपया सभी महत्वपूर्ण जानकारी (अंचल, नाम, गाँव, खाता आदि) भरें।");
+        alert("कृपया सभी महत्वपूर्ण जानकारी (अंचल, गाँव, खाता आदि) भरें।");
         const formContainer = document.getElementById("form-container");
         if(formContainer) formContainer.scrollTo({ top: 0, behavior: 'smooth' });
         return false;
       }
+    }
+    
+    // नए स्ट्रक्चर के अनुसार पहले आवेदक का नाम चेक करें
+    if (!formData.applicants[0] || formData.applicants[0].name.trim() === "") {
+      alert("कृपया कम से कम पहले आवेदक का नाम भरें।");
+      const formContainer = document.getElementById("form-container");
+      if(formContainer) formContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      return false;
     }
     return true;
   };
@@ -185,10 +194,10 @@ const updateApplicant = (index, field, value) => {
 
     try {
       const orderRes = await fetch("/api/create-razorpay-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "vanshavali-prapatra", amount: 800 }) 
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ type: "prapatra3" }) // Changed to match your backend exactly
+});
 
       const orderData = await orderRes.json();
 
@@ -416,6 +425,58 @@ const updateApplicant = (index, field, value) => {
       </li>
     );
   };
+// 1. टाइप करते समय इनपुट हैंडल करने के लिए (डबल टाइपिंग फिक्स)
+  const handleApplicantInputChange = (index, field, value) => {
+    setFormData((prev) => {
+      const newApplicants = [...prev.applicants];
+      newApplicants[index] = { ...newApplicants[index], [field]: value };
+      return { ...prev, applicants: newApplicants };
+    });
+
+    const words = value.split(/[\s\n]+/);
+    const lastWord = words[words.length - 1];
+    if (lastWord.trim()) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 200);
+    } else { 
+      setSuggestions([]); 
+    }
+  };
+
+  // 2. सजेशन सेलेक्ट (Click/Space/Enter) करने के लिए 
+  const selectApplicantSuggestion = (selectedWord, index, fieldName) => {
+    setFormData((prev) => {
+      const newApplicants = [...prev.applicants];
+      newApplicants[index] = { ...newApplicants[index] }; 
+      
+      const words = newApplicants[index][fieldName].split(/([\s\n]+)/); 
+      words[words.length - 1] = selectedWord;
+      
+      newApplicants[index][fieldName] = words.join("") + " "; 
+      return { ...prev, applicants: newApplicants };
+    });
+    setSuggestions([]); 
+    setActiveIndex(0);
+  };
+
+  // 3. कीबोर्ड का Space और Arrow Keys कंट्रोल करने के लिए
+  const handleApplicantKeyDown = (e, index, fieldName, currentFieldName) => {
+    if (suggestions.length > 0 && currentField === currentFieldName) {
+      if (e.key === "ArrowDown") { 
+        e.preventDefault(); 
+        setActiveIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev)); 
+      } 
+      else if (e.key === "ArrowUp") { 
+        e.preventDefault(); 
+        setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0)); 
+      } 
+      else if (e.key === " " || e.key === "Enter") { 
+        e.preventDefault(); 
+        // यहाँ क्रम को सही किया गया है (selectedWord, index, fieldName)
+        selectApplicantSuggestion(suggestions[activeIndex], index, fieldName); 
+      }
+    }
+  };
 
   return (
     <div className="p-2 md:p-6 max-w-[1400px] mx-auto bg-gray-100 flex flex-col lg:flex-row gap-6 font-sans">
@@ -480,11 +541,11 @@ const updateApplicant = (index, field, value) => {
 {formData.applicants.map((app, index) => (
   <div key={index} className="bg-white p-3 rounded-xl border border-orange-100 mb-3 relative">
     
-    {/* ❌ हटाएँ बटन: केवल 3rd और 4th आवेदक के लिए (index 2 और 3) */}
+    {/* हटाएँ बटन */}
     {index > 1 && (
       <button 
         onClick={() => removeApplicant(index)} 
-        className="absolute top-2 right-2 text-red-500 text-[10px] font-bold bg-red-50 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors"
+        className="absolute top-2 right-2 text-red-500 text-[10px] font-bold bg-red-50 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors z-10"
       >
         हटाएं ✕
       </button>
@@ -493,41 +554,76 @@ const updateApplicant = (index, field, value) => {
     <label className="block mb-1 text-sm font-bold text-gray-800">
       आवेदक {index + 1} का नाम
     </label>
-    <input
-      type="text"
-      className="w-full border border-gray-300 p-3 rounded-xl mb-3 text-sm focus:ring-2 focus:ring-orange-400 outline-none"
-      placeholder="नाम लिखें"
-      value={app.name}
-      onChange={(e) => updateApplicant(index, "name", e.target.value)}
-    />
-
-    <div className="flex gap-3">
-      <select 
-        className="w-1/3 border border-gray-300 p-3 rounded-xl text-sm bg-white outline-none"
-        value={app.rel}
-        onChange={(e) => updateApplicant(index, "rel", e.target.value)}
-      >
-        <option>पुत्र</option>
-        <option>पुत्री</option>
-        <option>पत्नी</option>
-      </select>
+    
+    {/* 1. नाम का इनपुट (ऑटो हिंदी के साथ) */}
+    <div className="relative mb-3">
       <input
         type="text"
-        placeholder="पिता/पति का नाम"
-        className="w-2/3 border border-gray-300 p-3 rounded-xl text-sm focus:ring-2 focus:ring-orange-400 outline-none"
-        value={app.relName}
-        onChange={(e) => updateApplicant(index, "relName", e.target.value)}
+        className="w-full border border-gray-300 p-3 rounded-xl text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+        placeholder="नाम लिखें"
+        value={app.name}
+        onFocus={() => setCurrentField(`app_${index}_name`)}
+        onBlur={() => setTimeout(() => { if (currentField === `app_${index}_name`) setSuggestions([]) }, 200)}
+        onChange={(e) => handleApplicantInputChange(index, "name", e.target.value)}
+        onKeyDown={(e) => handleApplicantKeyDown(e, index, "name", `app_${index}_name`)}
       />
+      {currentField === `app_${index}_name` && suggestions.length > 0 && (
+        <ul className="absolute z-50 w-full bg-white border border-gray-300 rounded shadow-xl mt-1 max-h-48 overflow-y-auto left-0">
+          {suggestions.map((s, i) => (
+            <li key={i} onMouseDown={(e) => { e.preventDefault(); selectApplicantSuggestion(s, index, "name"); }} className={`p-2 cursor-pointer text-sm border-b flex justify-between items-center ${i === activeIndex ? 'bg-orange-100 text-orange-800 font-bold' : 'hover:bg-gray-100 text-gray-700'}`}>
+              <span>{s}</span>{i === activeIndex && <span className="text-[10px] opacity-60 uppercase">Space</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+
+    <div className="flex gap-3">
+      {/* संबंध */}
+      <div className="w-1/3">
+        <select 
+          className="w-full border border-gray-300 p-3 rounded-xl text-sm bg-white outline-none"
+          value={app.rel}
+          onChange={(e) => handleApplicantInputChange(index, "rel", e.target.value)}
+        >
+          <option>पुत्र</option>
+          <option>पुत्री</option>
+          <option>पत्नी</option>
+        </select>
+      </div>
+      
+      {/* 2. पिता/पति का नाम (ऑटो हिंदी के साथ) */}
+      <div className="w-2/3 relative">
+        <input
+          type="text"
+          placeholder="पिता/पति का नाम"
+          className="w-full border border-gray-300 p-3 rounded-xl text-sm focus:ring-2 focus:ring-orange-400 outline-none"
+          value={app.relName}
+          onFocus={() => setCurrentField(`app_${index}_relName`)}
+          onBlur={() => setTimeout(() => { if (currentField === `app_${index}_relName`) setSuggestions([]) }, 200)}
+          onChange={(e) => handleApplicantInputChange(index, "relName", e.target.value)}
+          onKeyDown={(e) => handleApplicantKeyDown(e, index, "relName", `app_${index}_relName`)}
+        />
+        {currentField === `app_${index}_relName` && suggestions.length > 0 && (
+          <ul className="absolute z-50 w-full bg-white border border-gray-300 rounded shadow-xl mt-1 max-h-48 overflow-y-auto left-0">
+            {suggestions.map((s, i) => (
+              <li key={i} onMouseDown={(e) => { e.preventDefault(); selectApplicantSuggestion(s, index, "relName"); }} className={`p-2 cursor-pointer text-sm border-b flex justify-between items-center ${i === activeIndex ? 'bg-orange-100 text-orange-800 font-bold' : 'hover:bg-gray-100 text-gray-700'}`}>
+                <span>{s}</span>{i === activeIndex && <span className="text-[10px] opacity-60 uppercase">Space</span>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   </div>
 ))}
 
-{/* ✅ जोड़ें बटन: लूप के बाहर, ताकि यह लिस्ट के अंत में केवल एक बार दिखे */}
+{/* जोड़ें बटन */}
 <div className="flex justify-center mt-2 mb-4">
   <button 
     onClick={addApplicant} 
     disabled={formData.applicants.length >= 4} 
-    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+    className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
   >
     <span>+</span> और आवेदक जोड़ें
   </button>
@@ -589,7 +685,7 @@ const updateApplicant = (index, field, value) => {
           </div>
           
           {/* --- NEW SPLIT RAKBA INPUTS HERE --- */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1  gap-2">
             {renderInput({ label: "खेसरा नं.", name: "khesraNo", disableHindi: true })}
             <div className="flex gap-2">
               {renderInput({ label: "एकड़", name: "rakbaAcre", type: "number", disableHindi: true })}
