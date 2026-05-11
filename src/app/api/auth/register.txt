@@ -1,0 +1,63 @@
+import dbConnect from '../../../utils/dbConnect';
+import User from '../../../models/User';
+import bcrypt from 'bcryptjs';
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).end();
+
+  await dbConnect();
+
+  try {
+    // 1. Extract all fields sent from the frontend, including userType
+    const { 
+      userType, 
+      ownerName, 
+      shopName, 
+      mobileNumber, 
+      email, 
+      password, 
+      address, 
+      district, 
+      pincode 
+    } = req.body;
+
+    // 2. Check if user already exists (by email or mobile)
+    const existingUser = await User.findOne({ $or: [{ email }, { mobileNumber }] });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User with this email or mobile already exists.' });
+    }
+
+    // 3. Hash the password securely
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 4. Auto-Generate a unique User ID based on their role
+    const prefix = userType === "normal" ? "BSS-USER" : "BSS-OP";
+    const random6Digit = Math.floor(100000 + Math.random() * 900000);
+    const generatedUserId = `${prefix}-${random6Digit}`;
+
+    // 5. Save to Database
+    const newUser = await User.create({
+      userId: generatedUserId, // Matches the schema field
+      userType: userType || 'normal',
+      ownerName,
+      shopName: shopName || "", // Fallback to empty string if not provided
+      mobileNumber,
+      email,
+      password: hashedPassword,
+      address,
+      district,
+      pincode,
+      walletBalance: 0 // Default starting balance
+    });
+
+    // 6. Return success with the generated ID so the frontend Success Card can display it
+    res.status(201).json({ 
+      message: 'Account created successfully!', 
+      generatedId: generatedUserId // We changed this from cscId to generatedId to match frontend
+    });
+
+  } catch (error) {
+    console.error("Registration Error:", error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}

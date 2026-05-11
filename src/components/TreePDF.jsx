@@ -226,7 +226,7 @@ export default function AutoFamilyTreePDF({ data, isPreview = false, formatType 
   const lines = buildLines(positionedNodes);
 
   // Watermark text rows
-  const watermarkLabel = "BIHAR SURVEY SAHAYAK BIHAR SURVEY SAHAYAK BIHAR SURVEY SAHAYAK";
+  const watermarkLabel = "BIHAR सर्वे  SAHAYAK BIHAR SURVEY सहायक  बिहार  SURVEY SAHAYAK";
 
   return (
     <Document>

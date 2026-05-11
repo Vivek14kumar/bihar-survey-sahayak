@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { locations } from "@/app/data/locations";
+import { locations } from "@/app/(public)/data/locations";
 import { MapPin, ArrowRight, Compass, Search } from "lucide-react";
 
 // Dictionary mapping for Bihar Districts (English to Hindi)

@@ -17,7 +17,9 @@ import {
   LifeBuoy,
   Stamp ,// Icon for Shapath Patra
   Grid,
-  BookOpen
+  BookOpen,
+  LogIn,
+  UserPlus
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -29,7 +31,6 @@ export default function Navbar() {
   // Define all routes for central management
   const navLinks = [
     { name: "होम", href: "/", icon: <Home size={18} /> },
-    { name: "बंटवारा पत्र", href: "/batwara-application-bihar", icon: <Grid size={18} /> },
     { name: "PDF टूलकिट", href: "/pdf-toolkit", icon: <Binary size={18} /> },
     { name: "प्रपत्र भरे (Forms)", href: "/forms", icon: <FileSpreadsheet size={18} /> },
     { name: "परिमार्जन हेल्प", href: "/parimarjan-help", icon: <LifeBuoy size={18} /> },
@@ -47,9 +48,9 @@ export default function Navbar() {
     <>
       {/* ================= DESKTOP HEADER ================= */}
       <header className="hidden md:block sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-slate-200 shadow-sm print:hidden">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-2 py-2 flex justify-between items-center font-[var(--font-hind)]">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-1">
             <Image src="/images/logo.png" alt="Logo" width={45} height={45} priority />
             <div>
               <p className="font-black text-lg text-slate-900 leading-none">Bihar Survey Sahayak</p>
@@ -58,32 +59,56 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <nav className="flex items-center gap-6 text-sm font-bold text-slate-600">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.href} 
-                href={link.href} 
-                className={`transition-colors hover:text-indigo-600 ${pathname === link.href ? 'text-indigo-600' : ''}`}
-              >
-                {link.name}
+          <nav className="flex items-center gap-4 text-sm font-bold text-slate-600">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  // Added 'relative' so the spans can align to the bottom of this link
+                  // Added 'group' so the hover effect on the span triggers when the link is hovered
+                  className={`relative group  transition-colors hover:text-indigo-600 ${
+                    isActive ? "text-indigo-600" : "text-slate-600"
+                  }`}
+                >
+                  {link.name}
+                
+                  {/* Active Bottom Line */}
+                  {isActive && (
+                    <span className="absolute bottom-[-12px] left-0 w-full h-[3px] bg-indigo-600 rounded-t-md shadow-[0_-2px_10px_rgba(16,185,129,0.5)]"></span>
+                  )}
+
+                  {/* Hover Bottom Line */}
+                  {!isActive && (
+                    <span className="absolute bottom-[-12px] left-1/2 w-0 h-[3px] bg-slate-200 rounded-t-md transition-all duration-300 group-hover:w-full group-hover:left-0"></span>
+                  )}
+                </Link>
+              );
+            })}
+            
+            <div className="h-6 w-px bg-slate-200 "></div>
+            
+            <Link href="/login" className="flex items-center gap-1 text-sm font-bold text-slate-600 hover:text-emerald-600  p-1 rounded-lg hover:bg-emerald-50 transition-colors">
+                <LogIn size={16} /> LogIn
               </Link>
-            ))}
-            
-            <div className="h-6 w-px bg-slate-200 mx-2"></div>
-            
-            <Link 
+              <Link href="/register" className="flex items-center gap-1  py-2  text-sm font-bold p-1 rounded-lg hover:bg-emerald-50 transition-all active:scale-95">
+                <UserPlus size={16} /> Register
+              </Link>
+
+            {/*<Link 
               href="/#tool" 
               className="bg-slate-900 text-white px-6 py-2.5 rounded-xl hover:bg-black transition shadow-lg shadow-slate-200 active:scale-95"
             >
               वंशावली बनाएं
-            </Link>
+            </Link>*/}
           </nav>
         </div>
       </header>
 
       {/* ================= MOBILE TOP HEADER ================= */}
       <header className="md:hidden sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-slate-200 shadow-sm print:hidden">
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-2 py-3">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/images/logo.png" alt="Logo" width={35} height={35} priority />
             <div>
@@ -93,12 +118,14 @@ export default function Navbar() {
             
           </Link>
           
-          <button 
-            onClick={() => setMenuOpen(!menuOpen)} 
-            className="text-slate-700 p-2 bg-slate-100 rounded-xl active:scale-90 transition-transform"
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/login" className="flex items-center justify-center bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl border border-emerald-100 font-bold text-xs">
+              LogIn
+            </Link>
+            <button onClick={() => setMenuOpen(!menuOpen)} className="text-slate-700 p-2 bg-slate-100 hover:bg-slate-200 rounded-xl active:scale-90 transition-all">
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Full Menu Overlay */}
@@ -147,16 +174,21 @@ export default function Navbar() {
             <FileSpreadsheet size={20} />
             <span className="text-[10px] font-black uppercase">प्रपत्र</span>
           </Link>
+          
+          <Link href="/register" className={`flex flex-col items-center gap-1 ${pathname === '/register' ? 'text-indigo-600' : 'text-slate-400'}`}>
+            <User size={20} />
+            <span className="text-[10px] font-black uppercase">Register</span>
+          </Link>
 
-          <Link href="/batwara-application-bihar" className={`flex flex-col items-center gap-1 ${pathname === '/batwara-application-bihar' ? 'text-indigo-600' : 'text-slate-400'}`}>
+          {/*<Link href="/batwara-application-bihar" className={`flex flex-col items-center gap-1 ${pathname === '/batwara-application-bihar' ? 'text-indigo-600' : 'text-slate-400'}`}>
             <Grid size={20} />
             <span className="text-[10px] font-black uppercase">बंटवारा पत्र</span>
-          </Link>
+          </Link>*/}
         </div>
       </nav>
 
-      {/* Spacer for bottom nav */}
-      <div className="md:hidden h-20 print:hidden"></div>
+      {/* Spacer for bottom nav h-20 */}
+      <div className="md:hidden  print:hidden"></div>
     </>
   );
 }

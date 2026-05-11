@@ -1,0 +1,36 @@
+// /src/middleware.js (or /middleware.js depending on your root)
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server"; // <-- Corrected import
+
+export default withAuth(
+  function middleware(req) {
+    const token = req.nextauth.token;
+    const path = req.nextUrl.pathname;
+
+    // 1. Protect Admin Routes
+    if (path.startsWith("/admin")) {
+      if (token?.role !== "admin") {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+    }
+
+    // 2. Protect Operator Routes
+    if (path.startsWith("/dashboard")) {
+      if (token?.role === "admin") {
+        return NextResponse.redirect(new URL("/admin", req.url));
+      }
+    }
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+  }
+);
+
+export const config = {
+  matcher: [
+    "/admin/:path*", 
+    "/dashboard/:path*"
+  ],
+};

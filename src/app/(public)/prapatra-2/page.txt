@@ -1,0 +1,405 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+
+export default function LandscapePage() {
+  const totalRows = 6;
+  const totalCols = 11;
+
+  const [todayDate, setTodayDate] = useState("");
+
+  // Create empty table data (6 rows × 11 columns)
+  const [tableData, setTableData] = useState(
+    Array.from({ length: totalRows }, () =>
+      Array.from({ length: totalCols }, () => "")
+    )
+  );
+
+  const handleChange = (rowIndex, colIndex, value) => {
+    const updatedData = [...tableData];
+    updatedData[rowIndex][colIndex] = value;
+    setTableData(updatedData);
+  }; 
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // ---------- Hindi Transliteration ----------
+const [suggestions, setSuggestions] = useState([]);
+const [activeIndex, setActiveIndex] = useState(0);
+const [currentCell, setCurrentCell] = useState(null);
+
+const debounceRef = useRef(null);
+const cacheRef = useRef({});
+
+const fetchSuggestions = async (word) => {
+  if (!word) return;
+
+  if (cacheRef.current[word]) {
+    setSuggestions(cacheRef.current[word]);
+    setActiveIndex(0);
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `https://inputtools.google.com/request?text=${word}&itc=hi-t-i0-und&num=5`
+    );
+    const data = await res.json();
+    if (data[0] === "SUCCESS") {
+      const result = data[1][0][1];
+      cacheRef.current[word] = result;
+      setSuggestions(result);
+      setActiveIndex(0);
+    }
+  } catch {
+    setSuggestions([]);
+  }
+};
+
+const debounceFetch = (word) => {
+  clearTimeout(debounceRef.current);
+  debounceRef.current = setTimeout(() => {
+    fetchSuggestions(word);
+  }, 300);
+};
+
+const handleHindiChange = (rowIndex, colIndex, value) => {
+  handleChange(rowIndex, colIndex, value);
+
+  const words = value.split(" ");
+  const lastWord = words[words.length - 1];
+
+  if (lastWord.trim()) debounceFetch(lastWord);
+  else setSuggestions([]);
+};
+
+const selectSuggestion = (selectedWord) => {
+  if (!currentCell) return;
+
+  const { rowIndex, colIndex } = currentCell;
+  const value = tableData[rowIndex][colIndex];
+
+  const words = value.split(" ");
+  words[words.length - 1] = selectedWord;
+
+  handleChange(rowIndex, colIndex, words.join(" ") + " ");
+  setSuggestions([]);
+};
+
+const handleKeyDown = (e) => {
+  if (!suggestions.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    setActiveIndex((prev) =>
+      prev < suggestions.length - 1 ? prev + 1 : prev
+    );
+  }
+
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0));
+  }
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+    selectSuggestion(suggestions[activeIndex]);
+  }
+
+  if (e.key === " ") {
+    e.preventDefault();
+    selectSuggestion(suggestions[0]);
+  }
+};
+
+  const addRow = () => setRows([...rows, rows.length + 1]);
+
+  useEffect(() => {
+  const today = new Date();
+  const formatted =
+    today.getDate().toString().padStart(2, "0") +
+    "/" +
+    (today.getMonth() + 1).toString().padStart(2, "0") +
+    "/" +
+    today.getFullYear();
+
+  setTodayDate(formatted);
+}, []);
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8 no-print-bg overflow-x-auto">
+      
+      {/* Action Buttons */}
+      <div className="flex flex-wrap justify-center gap-4 mb-6 print:hidden">
+        {/*<button
+          onClick={addRow}
+          className="px-4 md:px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition text-sm md:text-base"
+        >
+          Add Row
+        </button>*/}
+
+        <button
+          onClick={handlePrint}
+          className="px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition text-sm md:text-base"
+        >
+          Print to PDF
+        </button>
+      </div>
+
+      {/* Responsive Wrapper */}
+      <div className="w-full overflow-x-auto">
+        <div className="relative mx-auto bg-white shadow-2xl print:shadow-none print:m-0 page-container">
+
+          <div className="p-4 md:p-8 w-full h-full border border-gray-200 print:border-none">
+            
+            {/* Header */}
+            <header className="text-center underline mb-4">
+              <p className="font-bold text-base md:text-lg">प्रपत्र-2</p>
+              <p className="text-xs md:text-sm">(देखें नियम-6 उप नियम-(1))</p>
+              <h1 className="font-bold mt-2 text-sm md:text-base">
+                रैयत द्वारा स्वामित्व/धारित भूमि की स्व-घोषणा हेतु प्रपत्र
+              </h1>
+            </header>
+
+            <main>
+
+              {/* Top Info Section */}
+              <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs md:text-sm mb-4 text-left">
+                <span>राजस्व ग्राम :- &nbsp;
+                   <input className="underline decoration-dotted" placeholder="राजस्व ग्राम लिखे "/>
+                </span>
+                <span>थाना नं0 :- &nbsp;
+                  <input className="underline decoration-dotted" type="number" placeholder="थाना नं0 लिखे "/>
+                </span>
+                <span>हल्का नं0 :- &nbsp;
+                  <input className="underline decoration-dotted" type="number" placeholder="हल्का नं0 लिखे "/>
+                </span>
+                <span>पुलिस थाना :- &nbsp;
+                  <input className="underline decoration-dotted" placeholder="पुलिस थाना लिखे "/>
+                </span>
+                <span>अंचल :- &nbsp;
+                  <input className="underline decoration-dotted" placeholder="अंचल लिखे "/>
+                </span>
+                <span>जिला :- &nbsp;
+                  <input className="underline decoration-dotted" placeholder="जिला लिखे "/>
+                </span>
+              </section>
+
+              <span className="absolute right-2 top-10 rotate-90 text-xs hidden md:block">
+                282 ]
+              </span>
+
+              <span className="absolute right-[-85] top-92 rotate-90 text-[10px] hidden md:block">
+                बिहार विशेष सर्वेक्षण एवं बन्दोबस्त तकनीकी मार्गदर्शिका
+              </span>
+
+              {/* Table Section */}
+              <section className="overflow-x-auto">
+                <table className="min-w-[1000px] w-full border-collapse border border-black text-[10px] md:text-[12px] text-center">
+                  <thead>
+                    <tr>
+                      <th className="border border-black p-1" rowSpan={2}>
+                        रैयत का नाम <br />
+                        (सह-हिस्सेदारों का नामएवं <br />
+                        अंश, अगर कोई हो, सहित) <br />
+                        एवं पिता का नाम
+                      </th>
+                      <th className="border border-black p-1" rowSpan={2}>
+                        स्थायी पता
+                      </th>
+                      <th className="border border-black p-1" colSpan={6}>
+                        स्वामित्व/धारित भूमि का ब्यौरा
+                      </th>
+                      <th className="border border-black p-1" rowSpan={2}>
+                        जमाबंदी सं०
+                      </th>
+                      <th className="border border-black p-1" rowSpan={2}>
+                        भूमि पर दावा का आधार <br />
+                        यथा-उत्तराधिकार/दान <br />
+                        क्रय/बंदोबस्त/अन्य
+                      </th>
+                      <th className="border border-black p-1" rowSpan={2}>
+                        अभ्युक्ति अगर कोई हो।
+                      </th>
+                    </tr>
+
+                    <tr>
+                      <th className="border border-black p-1">खाता</th>
+                      <th className="border border-black p-1">खेसरा</th>
+                      <th className="border border-black p-1">
+                        रकबा <br /> ए0 डी0
+                      </th>
+                      <th className="border border-black p-1">चौहद्दी</th>
+                      <th className="border border-black p-1">
+                        किस्म <br /> जमीन
+                      </th>
+                      <th className="border border-black p-1">
+                        सेस को <br /> छोड़कर <br /> लगान
+                      </th>
+                    </tr>
+
+                    <tr className="font-bold">
+                      {Array.from({ length: 11 }).map((_, i) => (
+                        <td key={i} className="border border-black">
+                          {i + 1}
+                        </td>
+                      ))}
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                  {tableData.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {row.map((cell, colIndex) => (
+                        <td
+                          key={colIndex}
+                          className="border border-black p-1"
+                        >
+                          <div className="relative">
+  <textarea
+    type="text"
+    value={cell}
+    onFocus={() => setCurrentCell({ rowIndex, colIndex })}
+    onChange={(e) =>
+      handleHindiChange(rowIndex, colIndex, e.target.value)
+    }
+    onKeyDown={handleKeyDown}
+    className="w-full outline-none bg-transparent text-[11px] print:border-none"
+  />
+
+  {currentCell?.rowIndex === rowIndex &&
+    currentCell?.colIndex === colIndex &&
+    suggestions.length > 0 && (
+      <div className="absolute bg-white border rounded shadow-lg mt-1 w-full z-50 max-h-40 overflow-auto text-sm">
+        {suggestions.map((s, i) => (
+          <div
+            key={i}
+            onClick={() => selectSuggestion(s)}
+            className={`px-2 py-1 cursor-pointer ${
+              i === activeIndex
+                ? "bg-indigo-100"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            {s}
+          </div>
+        ))}
+      </div>
+    )}
+</div>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+                </table>
+
+                <span className="text-[8px] md:text-[8px] leading-tight block mt-2">
+                  मैं/हम घोषणा करता हूँ/करते हैं कि स्व-घोषणा में की गई प्रविष्टि मेरी/हमारी जानकारी में सही है। सव-घोषणा में किसी गलत प्रविष्टि के लिए मैं/हम जवाबदेह हूँ/है।
+                  <br />
+                  नोट :- इस प्रपत्र को दो प्रतियों में दाखिल किया जायेगा। एक प्रति आवेदक को प्राप्तकर्त्ता पदा0/कर्मी द्वारा हस्ताक्षर तथा आवेदन की तारीख एवं क्रमांक अंकित कर प्राप्ति के प्रमाण के रूप में लौटाया जाएगा।
+                </span>
+              </section>
+
+              {/* Footer */}
+              <footer className="mt-12 text-xs md:text-sm flex flex-col md:flex-row justify-between gap-6 md:gap-0 px-4 md:px-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-20">
+                  <p>स्थान:  &nbsp;
+                  <input className="underline decoration-dotted" placeholder="स्थान लिखे "/>
+                  </p>
+                  <p>
+                    दिनांक: &nbsp;
+                    <input
+                      type="text"
+                      value={todayDate}
+                      onChange={(e) => setTodayDate(e.target.value)}
+                      placeholder="dd/mm/yyyy"
+                      className="underline decoration-dotted"
+                    />
+                  </p>
+                </div>
+
+                <div className="text-center mt-10">
+                  {/* Signature Line */}
+                  <div className="mb-6">
+                    <p className="mb-2 font-medium">
+                      रैयत का हस्ताक्षर / अंगूठे का निशान
+                    </p>
+
+                    {/* Signature Space */}
+                    <div className="h-16 w-64 border-b border-black mx-auto"></div>
+                  </div>
+
+                  {/* Mobile & Aadhaar Section */}
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-4">
+
+                    {/* Mobile */}
+                    <div className="flex items-center gap-2">
+                      <label className="font-medium whitespace-nowrap">
+                        मोबाईल नं :
+                      </label>
+                      <input
+                        type="tel"
+                        maxLength={10}
+                        inputMode="numeric"
+                        placeholder="मोबाईल नं लिखे"
+                        className="underline decoration-dotted font-bold text-gray-700 outline-none w-40"
+                      />
+                    </div>
+
+                    {/* Aadhaar */}
+                    <div className="flex items-center gap-2">
+                      <label className="font-medium whitespace-nowrap">
+                        आधार सं :
+                      </label>
+                      <input
+                        type="tel"
+                        maxLength={12}
+                        inputMode="numeric"
+                        placeholder="आधार सं लिखे"
+                        className="underline decoration-dotted font-bold text-gray-700 outline-none w-48"
+                      />
+                    </div>
+
+                  </div>
+                </div>
+              </footer>
+            </main>
+          </div>
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @page {
+          size: A4 landscape;
+          margin: 10mm;
+        }
+
+        @media screen {
+          .page-container {
+            width: 100%;
+            max-width: 297mm;
+            min-height: 210mm;
+          }
+        }
+
+        @media print {
+          body {
+            background: white;
+          }
+          .no-print-bg {
+            background: none !important;
+            padding: 0 !important;
+          }
+          .page-container {
+            width: 100%;
+            border: none;
+            box-shadow: none;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
