@@ -27,7 +27,7 @@ const notoHindi = Noto_Sans_Devanagari({
 
 // Your metadata stays here perfectly safe!
 export const metadata = {
-  title: "वंशावली निर्माण ऑनलाइन | Bihar Land Survey Helper | Vanshavali Maker 2026",
+  title: "Bihar Survey Sahayak | वंशावली निर्माण ऑनलाइन | Bihar Land Survey Helper | Vanshavali Maker 2026",
   description: "Prepare your Vanshavali safely for Bihar Land Survey 2026. Generate official format PDF instantly without login.",
   manifest: "/manifest.json",
   keywords: [

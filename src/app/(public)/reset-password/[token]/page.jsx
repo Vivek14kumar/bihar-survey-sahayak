@@ -8,7 +8,7 @@ import { Lock, ShieldCheck, KeyRound, AlertCircle, CheckCircle2, Eye, EyeOff, Ar
 export default function ResetPassword() {
   const params = useParams();
   const router = useRouter();
-  const token = params?.token; // Grabs the token directly from the URL
+  const token = params?.token; 
 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,20 +21,16 @@ export default function ResetPassword() {
     e.preventDefault();
     setError('');
 
-    // Basic Validation
-    if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters long.");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match. Please try again.");
-      return;
+    // Double-check on submit just in case
+    if (newPassword.length < 8 || newPassword !== confirmPassword) {
+      setError("Please fix the errors above before submitting.");
+      return; 
     }
 
     setLoading(true);
 
     try {
-        console.log("SENDING TO BACKEND:", { token, newPassword });
+      console.log("SENDING TO BACKEND:", { token, newPassword });
       const res = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,6 +50,11 @@ export default function ResetPassword() {
       setLoading(false);
     }
   };
+
+  // --- Real-time Validation Logic ---
+  const isPasswordTooShort = newPassword.length > 0 && newPassword.length < 8;
+  const doPasswordsMismatch = confirmPassword.length > 0 && confirmPassword !== newPassword;
+  const isFormInvalid = newPassword.length < 8 || newPassword !== confirmPassword;
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
@@ -99,6 +100,7 @@ export default function ResetPassword() {
                 <p className="text-slate-500 text-sm mt-1">Please enter your new secure password below.</p>
               </header>
 
+              {/* General Submission Error */}
               {error && (
                 <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm flex items-start gap-3 rounded-r-lg">
                   <AlertCircle size={18} className="shrink-0 mt-0.5" />
@@ -120,9 +122,15 @@ export default function ResetPassword() {
                     <input 
                       type={showPassword ? "text" : "password"} 
                       required 
+                      maxLength={8}
+                      minLength={6}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)} 
-                      className="w-full pl-10 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-medium text-slate-800" 
+                      className={`w-full pl-10 pr-12 py-3.5 bg-slate-50 border rounded-xl text-sm outline-none transition-all focus:bg-white focus:ring-4 font-medium text-slate-800 ${
+                        isPasswordTooShort 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-red-500/10' 
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500/10'
+                      }`} 
                       placeholder="Min 8 characters" 
                     />
                     <button 
@@ -133,6 +141,12 @@ export default function ResetPassword() {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
+                  {/* REAL-TIME LENGTH WARNING */}
+                  {isPasswordTooShort && (
+                    <span className="text-xs text-red-500 ml-1 flex items-center gap-1 font-medium mt-0.5">
+                      <AlertCircle size={12} /> Must be at least 8 characters long
+                    </span>
+                  )}
                 </div>
 
                 {/* Confirm Password */}
@@ -147,18 +161,30 @@ export default function ResetPassword() {
                     <input 
                       type={showPassword ? "text" : "password"} 
                       required 
+                      maxLength={8}
+                      minLength={6}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)} 
-                      className="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-medium text-slate-800" 
+                      className={`w-full pl-10 pr-4 py-3.5 bg-slate-50 border rounded-xl text-sm outline-none transition-all focus:bg-white focus:ring-4 font-medium text-slate-800 ${
+                        doPasswordsMismatch 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-red-500/10' 
+                          : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500/10'
+                      }`} 
                       placeholder="Repeat password" 
                     />
                   </div>
+                  {/* REAL-TIME MISMATCH WARNING */}
+                  {doPasswordsMismatch && (
+                    <span className="text-xs text-red-500 ml-1 flex items-center gap-1 font-medium mt-0.5">
+                      <AlertCircle size={12} /> Passwords do not match
+                    </span>
+                  )}
                 </div>
 
                 <button 
                   type="submit" 
-                  disabled={loading} 
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/20 transition-all transform active:scale-[0.98] mt-6 text-xs uppercase tracking-[0.2em] disabled:opacity-50 flex justify-center items-center gap-2"
+                  disabled={loading || isFormInvalid} 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/20 transition-all transform active:scale-[0.98] mt-6 text-xs uppercase tracking-[0.2em] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
                 >
                   {loading ? (
                     <>
