@@ -1,5 +1,5 @@
-import { locations } from "@/app/data/locations";
-import { postSlugs } from "@/app/data/postSlugs";
+import { locations } from "@/app/(public)/data/locations";
+import { postSlugs } from "@/app/(public)/data/postSlugs";
 
 export default function sitemap() {
 
