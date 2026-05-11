@@ -177,7 +177,28 @@ export default function sitemap() {
     },
 
     {
-      url: `${baseUrl}/parimarjan-help`,
+      url: `${baseUrl}/login`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8
+    },
+
+    {
+      url: `${baseUrl}/register`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8
+    },
+
+    {
+      url: `${baseUrl}/login`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8
+    },
+
+    {
+      url: `${baseUrl}/forgot-password`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.85
