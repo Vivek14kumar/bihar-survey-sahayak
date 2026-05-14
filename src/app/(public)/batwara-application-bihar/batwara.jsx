@@ -1305,8 +1305,8 @@ useEffect(() => {
       </div>
 
       {/* RIGHT SIDE: Document Preview */}
-      <div className="w-full lg:w-2/3 p-2 md:p-6 rounded-lg overflow-x-auto overflow-y-auto h-auto lg:h-[88vh] flex justify-center " style={{backgroundColor: 'white'}}>
-        <div className=" p-8 md:p-14 relative" style={{ backgroundColor:'white', transform: `scale(${scale})`}}>
+      <div className="w-full lg:w-2/3 rounded-lg overflow-x-auto overflow-y-auto  lg:h-[88vh] flex justify-center " style={{backgroundColor: 'white'}}>
+        <div className=" p-8 md:p-14 relative" style={{ backgroundColor:'white',zoom: scale}}>
           
           {/* ⚡ PRINT CSS ⚡ */}
           <style media="print">

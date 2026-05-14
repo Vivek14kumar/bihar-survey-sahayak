@@ -38,7 +38,7 @@ export async function GET() {
     ]);
 
     // 2. Extract the Top 2 Shops (Format names for privacy, e.g., "Vivek K.")
-    const topShops = leaderboardPipeline.slice(0, 2).map(shop => {
+    const topShops = leaderboardPipeline.slice(0, 3).map(shop => {
       const displayName = shop.name;
       /*const nameParts = (shop.name || "CSC Operator").split(" ");
       const displayName = nameParts.length > 1 

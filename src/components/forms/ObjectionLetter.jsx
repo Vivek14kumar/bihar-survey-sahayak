@@ -222,7 +222,7 @@ export default function ObjectionLetter({ isGenerating, onGenerate }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4 no-print-bg overflow-x-hidden font-hindi">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center no-print-bg overflow-x-hidden font-hindi">
       <style>{`
             @media print {
               @page { 

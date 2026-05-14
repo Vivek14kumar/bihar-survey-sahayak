@@ -270,7 +270,7 @@ export default function DeathCertificateDecl({ isGenerating, onGenerate }) {
   );
 
   return (
-    <div className="p-2 md:p-6 max-w-[1400px] mx-auto bg-gray-100 flex flex-col gap-6 font-sans">
+    <div className="max-w-[1400px] mx-auto  flex flex-col gap-6 font-sans">
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
         .font-hindi { font-family: 'Noto Sans Devanagari', sans-serif; }
@@ -286,8 +286,8 @@ export default function DeathCertificateDecl({ isGenerating, onGenerate }) {
         }
       `}</style>
 
-      {/* TOP SECTION: Input Form */}
-      <div id="form-container" className="w-full bg-white p-4 md:p-6 shadow-xl rounded-xl h-auto border-t-[6px] border-blue-600 scroll-smooth print:hidden relative">
+      {/* TOP SECTION: Input Form  bg-white p-4 md:p-6 shadow-xl rounded-xl h-auto border-t-[6px] border-blue-600  */}
+      <div id="form-container" className="w-full scroll-smooth print:hidden relative">
         
         <div className="text-center mb-6 border-b pb-4">
           <h2 className="text-2xl md:text-3xl font-extrabold text-blue-800 tracking-tight">स्व-घोषणा पत्र</h2>

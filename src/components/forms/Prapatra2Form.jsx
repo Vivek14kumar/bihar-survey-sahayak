@@ -12,6 +12,7 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
   const [currentCell, setCurrentCell] = useState(null); 
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [scale, setScale] = useState(1);
 
   const [showWatermark, setShowWatermark] = useState(true);
 
@@ -55,6 +56,19 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
 
     return true;
   };
+
+  useEffect(() => {
+      const handleResize = () => {
+        if (window.innerWidth < 850) {
+          setScale(window.innerWidth / 950);
+        } else {
+          setScale(1);
+        }
+      };
+      window.addEventListener("resize", handleResize);
+      handleResize();
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
   const handleDownloadPDF = async () => {
     if (!validateForm()) return; 
@@ -357,7 +371,7 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
   }, []);
   
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8 no-print-bg">
+    <div className="min-h-screen bg-gray-100  no-print-bg" style={{zoom:scale}} > {/**Add zoom scale for mobiles */}
       <div className="w-full overflow-x-auto print:overflow-visible  ">
         <div ref={contentRef} className=" relative max-md:min-w-[1000px] mx-auto bg-white shadow-2xl print:shadow-none print:m-0 page-container p-4 md:p-6 lg:p-8 border border-gray-200 print:border-none w-full">
           {showWatermark && (
@@ -391,25 +405,25 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
               { label: "जिला", field: "district", width: "w-50", numeric: false },
             ].map((item) => (
               <span key={item.field} className="flex flex-col">
-  <div className="flex items-center">
-    {item.label} :- 
-    <input
-      className={`border-b border-dotted outline-none px-1 bg-transparent ${item.width} ${
-        (!entries[0][item.field] && item.field !== 'halkaNo') ? "border-red-400" : "border-black"
-      } focus:border-blue-500 transition-colors`}
-                  value={entries[0][item.field]}
-                  onFocus={() => setCurrentCell({ entryId: entries[0].id, plotIndex: null, field: item.field })}
-                  onChange={(e) => 
-                    handleHindiChange(entries[0].id, null, item.field, e.target.value, item.numeric)
-                  }
-                  onKeyDown={handleKeyDown}
-                  placeholder={item.numeric ? "00" : "लिखें"}
-                  
-                /></div>
-  {(!entries[0][item.field] && item.field !== 'halkaNo') && (
-    <span className="text-[10px] text-red-500 italic ml-14 print:hidden">आवश्यक है*</span>
-  )}
-</span>
+                <div className="flex items-center">
+                  {item.label} :- 
+                  <input
+                    className={`border-b border-dotted outline-none px-1 bg-transparent ${item.width} ${
+                      (!entries[0][item.field] && item.field !== 'halkaNo') ? "border-red-400" : "border-black"
+                    } focus:border-blue-500 transition-colors`}
+                                value={entries[0][item.field]}
+                                onFocus={() => setCurrentCell({ entryId: entries[0].id, plotIndex: null, field: item.field })}
+                                onChange={(e) => 
+                                  handleHindiChange(entries[0].id, null, item.field, e.target.value, item.numeric)
+                                }
+                                onKeyDown={handleKeyDown}
+                                placeholder={item.numeric ? "00" : "लिखें"}
+                                
+                              /></div>
+                {(!entries[0][item.field] && item.field !== 'halkaNo') && (
+                  <span className="text-[10px] text-red-500 italic ml-14 print:hidden">आवश्यक है*</span>
+                )}
+              </span>
             ))}
           </section>
 

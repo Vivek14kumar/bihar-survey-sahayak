@@ -258,7 +258,7 @@ export default function CancelJamabandhi({ isGenerating, onGenerate }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4 no-print-bg overflow-x-hidden font-hindi">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center no-print-bg overflow-x-hidden font-hindi">
       <style jsx global>{`
         @font-face {
           font-family: 'Hindi';
@@ -586,10 +586,8 @@ export default function CancelJamabandhi({ isGenerating, onGenerate }) {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Control Buttons Bottom */}
-      <div className="w-full max-w-4xl flex justify-center mt-6 print-hidden">
+        {/* Control Buttons Bottom */}
+      <div className="w-full max-w-4xl flex justify-center p-4 print-hidden">
         <button 
           onClick={handlePaidPrint}
           disabled={isGenerating}
@@ -601,6 +599,9 @@ export default function CancelJamabandhi({ isGenerating, onGenerate }) {
           </div>
         </button>
       </div>
+      </div>
+
+      
     </div>
   );
 }

@@ -245,7 +245,7 @@ export default function ParimarjanAffidavit({ isGenerating, onGenerate }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4 overflow-x-hidden print:bg-white print:p-0">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center  overflow-x-hidden print:bg-white print:p-0">
       
       {/* Wrapper */}
       <div 
@@ -418,27 +418,22 @@ export default function ParimarjanAffidavit({ isGenerating, onGenerate }) {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* --- BUTTONS SECTION --- */}
-      <div className="w-full max-w-4xl z-20 bg-white rounded-3xl shadow-[0_0_20px_rgba(0,0,0,0.1)] px-4 py-5 border border-gray-200 mt-6 print:hidden">
-        <div className="mb-2">
-          <h3 className="text-center font-bold text-indigo-800 mb-3 text-sm md:text-base border-b pb-2">
-            Print Without Watermark 
-          </h3>
-          <div className="grid">
+        {/* --- BUTTONS SECTION --- */}
+      <div className="w-full max-w-4xl flex justify-center p-4 print-hidden">
+        
+          
             <button 
               onClick={() => handleSecureAction('print')} 
               disabled={isDownloading || isGenerating}
-              className="relative flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 md:py-4 rounded-2xl font-bold text-[13px] md:text-[14px] hover:shadow-lg transition-all disabled:opacity-70"
+              className="flex  items-center justify-center gap-1 px-10 py-4 bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-xl shadow-xl hover:scale-105 transition-all font-bold disabled:opacity-70 disabled:hover:scale-100"
             >
               {(isDownloading || isGenerating) ? <Loader2 size={20} className="animate-spin" /> : <Printer size={20} />}
               <span>{(isDownloading || isGenerating) ? 'Loading...' : 'Print'}</span>
             </button>
-          </div>
-        </div>
+          
+        
       </div>
-      
+      </div>
     </div>
   );
 }

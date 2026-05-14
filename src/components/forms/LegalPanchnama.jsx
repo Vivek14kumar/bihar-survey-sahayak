@@ -566,6 +566,7 @@ export default function LegalPanchnama({ isGenerating, onGenerate }) {
         setScale(1);
       }
     };
+    console.log(scale);
     window.addEventListener("resize", handleResize);
     handleResize(); 
     return () => window.removeEventListener("resize", handleResize);
@@ -738,10 +739,10 @@ export default function LegalPanchnama({ isGenerating, onGenerate }) {
   const hasOtherVillages = totalPlots.some(p => p.plotVillage || p.plotThana) || parties.some(party => party.plots.some(p => p.plotVillage || p.plotThana));
 
   return (
-    <div className="p-2 md:p-6 max-w-[1400px] mx-auto bg-gray-100 flex flex-col gap-6 font-sans">
+    <div className="max-w-[1400px] mx-auto  flex flex-col gap-6 font-sans"> {/**bg-gray-100 */}
       
-      {/* TOP: Input Form */}
-      <div id="form-container" className="w-full bg-white p-4 md:p-6 shadow-xl rounded-xl border-t-[6px] border-blue-600 scroll-smooth">
+      {/* TOP: Input Form   bg-white p-4 md:p-6 shadow-xl rounded-xl border-t-[6px] border-blue-600  */}
+      <div id="form-container" className="w-full scroll-smooth">
         
         <div className="text-center mb-6 border-b pb-4">
           <h2 className="text-2xl md:text-3xl font-extrabold text-blue-800 tracking-tight">ऑनलाइन बंटवारा पंचनामा</h2>
@@ -1137,9 +1138,9 @@ export default function LegalPanchnama({ isGenerating, onGenerate }) {
 
       </div>
 
-      {/* BOTTOM: Document Preview */}
-      <div className="w-full p-2 md:p-6 rounded-lg overflow-x-auto flex justify-center" style={{backgroundColor: 'white'}}>
-        <div className="p-8 md:p-14 relative" style={{ backgroundColor:'white', transform: `scale(${scale})`, transformOrigin: 'top center'}}>
+      {/* BOTTOM: Document Preview  transform: `scale(${scale})`, transformOrigin: 'top center'*/}
+      <div className=" w-full overflow-auto h-150 p-4 rounded-lg overflow-x-auto flex justify-center" style={{backgroundColor: 'white'}}>
+        <div className="p-8 md:p-14 relative" style={{ backgroundColor:'white', zoom: scale}}>
           
           {/* ⚡ PRINT CSS ⚡ */}
           <style media="print">
