@@ -196,7 +196,7 @@ export default function DashboardLayout({
               </div>
             )}
             
-            <div className="relative flex-1 hidden sm:block max-w-[160px] md:max-w-[250px] lg:max-w-sm ml-auto">
+            <div className="relative flex-1   max-w-[160px] md:max-w-[250px] lg:max-w-sm ml-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input 
                 type="text" placeholder="Search forms..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} 
@@ -207,9 +207,9 @@ export default function DashboardLayout({
               )}
             </div>
             
-            <div className="sm:hidden p-2 text-slate-400 ml-auto">
+            {/*<div className="sm:hidden p-2 text-slate-400 ml-auto">
               <Search size={20} />
-            </div>
+            </div>*/}
           </div>
           
           {/* Right: Actions & Profile */}
@@ -222,7 +222,14 @@ export default function DashboardLayout({
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-[320px] bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border border-slate-100 z-50 p-4 animate-in fade-in slide-in-from-top-2">
+                <div className="
+                  fixed top-16 left-1/2 -translate-x-1/2 mt-2 
+                  sm:absolute sm:top-full sm:left-auto sm:right-0 sm:translate-x-0 sm:mt-2 
+                  w-[calc(100vw-2rem)] max-w-[320px] 
+                  bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] 
+                  border border-slate-100 z-50 p-4 
+                  animate-in fade-in slide-in-from-top-2
+                ">
                   <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-3">
                     <h4 className="text-xs font-bold text-slate-800 uppercase tracking-widest">Notifications</h4>
                     {unreadCount > 0 && <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">{unreadCount} New</span>}
