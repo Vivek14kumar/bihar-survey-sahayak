@@ -11,7 +11,7 @@ export async function POST(req) {
     const body = await req.json();
     const { 
       userType, ownerName, shopName, mobileNumber, 
-      email, password, address, district, block, pincode 
+      email, password, address, district, block, pincode, acceptedDeclaration
     } = body;
 
     // 1. Check if user already exists
@@ -44,7 +44,8 @@ export async function POST(req) {
       district,
       block,
       pincode,
-      walletBalance: 0
+      walletBalance: 0,
+      acceptedDeclaration
     });
 
     // 5. Return Success

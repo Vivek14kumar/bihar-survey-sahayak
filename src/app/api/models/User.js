@@ -20,6 +20,11 @@ const UserSchema = new mongoose.Schema({
   pincode: { type: String, required: true },
   walletBalance: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
+  acceptedDeclaration: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   resetPasswordToken: {
     type: String,
     required: false,

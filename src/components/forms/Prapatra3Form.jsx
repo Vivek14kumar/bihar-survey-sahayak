@@ -706,7 +706,7 @@ const updateApplicant = (index, field, value) => {
               }}></div>
             )}
 
-            <div className="relative z-10" style={{ padding: '0mm 15mm' }}>
+            <div className="relative z-10" style={{ padding: '10mm 15mm' }}>
               <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }}>प्रपत्र 3 (1)</div>
               <h2 style={{ textAlign: 'center', fontSize: '22px', fontWeight: 'bold', textDecoration: 'underline', marginTop: '5px', marginBottom: '5px' }}>
                 वंशावली

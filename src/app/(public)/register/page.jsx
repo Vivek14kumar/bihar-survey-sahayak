@@ -40,6 +40,7 @@ export default function Register() {
     district: "",
     block: "",
     pincode: "",
+    acceptedDeclaration: false
   });
 
   const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -54,14 +55,20 @@ export default function Register() {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
+  // 1. Destructure type and checked alongside name and value
+  const { name, value, type, checked } = e.target;
+  
+  // 2. Determine the raw new value (boolean for checkboxes, string for everything else)
+  let newValue = type === "checkbox" ? checked : value;
 
-    setSelectedDistrict(e.target.value);
+  // 3. Handle external state specifically for dropdowns
+  if (name === "district") {
+    setSelectedDistrict(newValue);
     setSelectedBlock(""); // Reset block selection when district changes
+  }
 
-    const { name, value } = e.target;
-    let newValue = value;
-
-    // Strict input masking
+  // 4. Strict input masking (only apply to strings, not booleans)
+  if (type !== "checkbox") {
     if (name === "mobileNumber") {
       newValue = value.replace(/\D/g, "").slice(0, 10);
     } else if (name === "pincode") {
@@ -69,13 +76,20 @@ export default function Register() {
     } else if (name === "password" || name === "confirmPassword") {
       newValue = value.slice(0, 8); // Max 8 chars
     }
+  }
 
-    setFormData({ ...formData, [name]: newValue });
-    
-    // Clear error on typing
-    if (errors[name]) setErrors({ ...errors, [name]: "" });
-    if (apiError) setApiError(""); // Clear database error when user types
-  };
+  // 5. Update the main formData state using the functional update pattern
+  setFormData((prevData) => ({ 
+    ...prevData, 
+    [name]: newValue 
+  }));
+  
+  // 6. Clear errors on typing
+  if (errors[name]) {
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+  }
+  if (apiError) setApiError(""); // Clear database error when user types
+};
 
   const getStrengthScore = () => {
     const p = formData.password;
@@ -373,7 +387,32 @@ export default function Register() {
               </div>
             </div>
 
-            <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl transition-all transform active:scale-[0.98] mt-4 text-xs uppercase tracking-widest disabled:opacity-50">
+            {/* --- Declaration Section --- */}
+            <div className="flex items-start gap-3 mt-6 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+              <div className="flex items-center h-5 mt-1">
+                <input
+                  id="declaration"
+                  name="acceptedDeclaration"
+                  type="checkbox"
+                  checked={formData.acceptedDeclaration || false}
+                  onChange={(e) => setFormData({ ...formData, acceptedDeclaration: e.target.checked })}
+                  className="w-5 h-5 text-blue-600 bg-white border-slate-300 rounded cursor-pointer focus:ring-blue-500"
+                  required
+                />
+              </div>
+              
+              <div className="flex-1 text-sm text-slate-600 leading-relaxed">
+                <label htmlFor="declaration" className="cursor-pointer select-none">
+                  <span className="font-bold text-slate-800 block mb-1">Declaration & Legal Agreement (घोषणा) *</span>
+                    मैं प्रमाणित करता हूँ कि एक साइबर कैफे संचालक / ऑपरेटर और अमीन  के रूप में मेरे द्वारा दी गई सभी जानकारी सत्य है। मैं सहमत हूँ कि Bihar Survey Sahayak केवल एक डिजिटल टूल है। मेरे ग्राहकों के लिए दर्ज किए गए डेटा, जनरेट किए गए दस्तावेज़ों (जैसे वंशावली/बंटवारा) और ग्राहकों के साथ मेरे किसी भी वित्तीय लेन-देन की पूरी ज़िम्मेदारी मेरी होगी, इसके लिए वेबसाइट ज़िम्मेदार नहीं होगी। 
+                    मैंने <a href="/terms-and-conditions" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline font-semibold ml-1" onClick={(e) => e.stopPropagation()}>
+                       Terms & Conditions
+                    </a> पढ़ और स्वीकार कर लिया है।
+                </label>
+                {errors.acceptedDeclaration && <p className="text-[10px] text-red-500 font-medium mt-1">{errors.acceptedDeclaration}</p>}
+              </div>
+            </div>
+            <button type="submit" disabled={loading || !formData.acceptedDeclaration} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl transition-all transform active:scale-[0.98] mt-4 text-xs uppercase tracking-widest disabled:opacity-50">
               {loading ? "Saving to Database..." : "Get Authorized Access"}
             </button>
           </form>

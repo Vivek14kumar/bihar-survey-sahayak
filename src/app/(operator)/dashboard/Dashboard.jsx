@@ -11,6 +11,7 @@ import WalletView from "./components/views/WalletView";
 import LedgerView from "./components/views/LedgerView";
 import SettingsView from "./components/views/SettingsView";
 import FormWrapperView from "./components/views/FormWrapperView";
+import AminProfileForm from "./components/profile/AminProfile";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -73,7 +74,10 @@ export default function Dashboard() {
 
   const handleDocumentGenerated = (newBalance, newTransaction, newDoc) => {
     if (newBalance !== undefined) setWalletBalance(newBalance);
-    if (newTransaction) setTransactions(prev => [newTransaction, ...prev]);
+    if (newTransaction) setTransactions(prev => [
+      newTransaction, 
+      ...(Array.isArray(prev) ? prev : []) // <-- Safely falls back to empty array
+    ]);
     if (newDoc) setGeneratedDocs(prev => [newDoc, ...prev]);
   };
 
@@ -127,6 +131,10 @@ export default function Dashboard() {
           transactions={transactions} 
           onUpdateWallet={handleUpdateWallet} 
         />
+      )}
+
+      {currentView === "amin_profile" && userData?.userType === "amin" && (
+        <AminProfileForm existingData={userData} />
       )}
 
       {currentView === "settings" && (

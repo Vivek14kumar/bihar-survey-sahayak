@@ -274,6 +274,19 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                           {isReward && <span className="text-[8px] font-black text-amber-500 bg-amber-100/50 px-1.5 py-0.5 rounded uppercase tracking-widest">Cashback</span>}
                           {tx.status !== "SUCCESS" && <span className={`inline-flex items-center justify-center text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest whitespace-nowrap ${tx.status === "FAILED" ? "text-rose-600 bg-rose-50 border border-rose-100" : "text-amber-600 bg-amber-50 border border-amber-100"}`}>{tx.status}</span>}
                         </div>
+                        <div>
+                          {tx.status === "SUCCESS" && (tx.amount === 199 || tx.form.includes("Profile Subscription (30 Days)")) && (
+                            <a 
+                              href={`/invoice/${tx.txnId}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-gray-400 transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                              Download Invoice
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
                   );

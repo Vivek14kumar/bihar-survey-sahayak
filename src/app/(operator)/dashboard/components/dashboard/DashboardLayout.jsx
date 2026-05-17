@@ -1,6 +1,6 @@
 import { signOut } from "next-auth/react";
 import { 
-  LayoutDashboard, FileText, Wallet, Settings, LogOut, 
+  LayoutDashboard, FileText, Wallet, Settings, LogOut, IdCard,
   Bell, Search, IndianRupee, Menu, X, RefreshCcw, Target, PanelLeft 
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -110,6 +110,16 @@ export default function DashboardLayout({
             <SidebarItem icon={<LayoutDashboard size={18}/>} label="Dashboard" active={currentView === "dashboard" || currentView.startsWith("form_")} onClick={() => handleNavClick("dashboard")} />
             <SidebarItem icon={<Wallet size={18}/>} label="Wallet & Credits" active={currentView === "wallet"} onClick={() => handleNavClick("wallet")} badge={`₹${walletBalance}`} />
             <SidebarItem icon={<FileText size={18}/>} label="Generated Docs" active={currentView === "documents"} onClick={() => handleNavClick("documents")} badge={generatedDocsCount.toString()} />
+            {/* ✨ NEW: Conditionally rendered Amin Profile Link */}
+              {userData?.userType === "amin" && (
+                <SidebarItem 
+                  icon={<IdCard size={18}/>} 
+                  label="Digital Profile" 
+                  active={currentView === "amin_profile"} 
+                  onClick={() => setCurrentView("amin_profile")} 
+                  badge="Setup"
+                />
+              )}
             <SidebarItem icon={<Settings size={18}/>} label="Account Settings" active={currentView === "settings"} onClick={() => handleNavClick("settings")} />
           </nav>
           
@@ -148,6 +158,7 @@ export default function DashboardLayout({
               <MiniSidebarItem icon={<LayoutDashboard size={22}/>} label="Home" active={currentView === "dashboard" || currentView.startsWith("form_")} onClick={() => setCurrentView("dashboard")} />
               <MiniSidebarItem icon={<Wallet size={22}/>} label="Wallet" active={currentView === "wallet"} onClick={() => setCurrentView("wallet")} />
               <MiniSidebarItem icon={<FileText size={22}/>} label="Docs" active={currentView === "documents"} onClick={() => setCurrentView("documents")} />
+              <MiniSidebarItem icon={<IdCard size={22}/>} label="Digital Profile" active={currentView === "amin_profile"} onClick={() => setCurrentView("amin_profile")} />
               <MiniSidebarItem icon={<Settings size={22}/>} label="Settings" active={currentView === "settings"} onClick={() => setCurrentView("settings")} />
             </nav>
 
@@ -292,6 +303,16 @@ export default function DashboardLayout({
           <MobileNavBtn icon={<LayoutDashboard size={20} />} label="Home" active={currentView === "dashboard" || currentView.startsWith("form_")} onClick={() => setCurrentView("dashboard")} />
           <MobileNavBtn icon={<Wallet size={20} />} label="Wallet" active={currentView === "wallet"} onClick={() => setCurrentView("wallet")} badge={walletBalance} />
           
+          {/* ✨ NEW: Conditionally rendered Amin Profile Tab for Mobile */}
+          {userData?.userType === "amin" && (
+            <MobileNavBtn 
+              icon={<IdCard size={20} />} 
+              label="Profile" 
+              active={currentView === "amin_profile"} 
+              onClick={() => setCurrentView("amin_profile")} 
+            />
+          )}
+
           <div className="flex flex-col items-center justify-center pt-1 pb-2 shrink-0 px-2 cursor-pointer hover:scale-105 transition-transform" onClick={() => setCurrentView("dashboard")} title="Bihar Survey Sahayak">
             <div className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center mb-0.5 shadow-sm border border-slate-200">
                <img src="/images/logo.png" alt="Logo" className="w-5 h-5 object-contain" />
