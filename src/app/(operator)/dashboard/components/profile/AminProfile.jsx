@@ -388,6 +388,7 @@ const loadRazorpayScript = () => {
     
       const payload = {
       ...formData,
+      hasFormalCertificate: !noFormalCert,
       workingHours: `${formData.startDay} - ${formData.endDay}: ${formatTime(formData.startTime)} - ${formatTime(formData.endTime)}`,
       serviceAreas: processedServiceAreas,
       actionType: action,

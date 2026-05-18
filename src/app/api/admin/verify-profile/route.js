@@ -49,7 +49,8 @@ export async function POST(req) {
 
         updateData = { 
           status: 'live', 
-          isProfilePublished: true, // Make profile public
+          isProfilePublished: true,
+          hasPaid: true, // Make profile public
           subscriptionEndsAt: trialExpiry, // Starts the 3-day trial
           rejectionReason: "" // Clear any previous rejection reasons
         };
