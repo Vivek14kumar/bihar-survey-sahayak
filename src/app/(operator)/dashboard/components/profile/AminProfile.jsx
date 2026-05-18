@@ -6,6 +6,7 @@ import {
   CreditCard, Lock, CheckCircle2, Clock, Globe, Loader2,
   UploadCloud, Facebook, Youtube, Instagram, Link as LinkIcon, FileText, AlertCircle, ExternalLink
 } from "lucide-react";
+import ServiceAreaInput from "./ServiceAreaInput";
 
 export default function AminProfileForm({ existingData }) {
   // 1. Core States
@@ -23,6 +24,7 @@ export default function AminProfileForm({ existingData }) {
   
   // NEW: State for Amins without certificates
   const [noFormalCert, setNoFormalCert] = useState(false);
+  const [serviceInput, setServiceInput] = useState("");
 
   // New state to track if a selected file is too large
   const [fileErrors, setFileErrors] = useState({
@@ -37,6 +39,32 @@ export default function AminProfileForm({ existingData }) {
     certificateUrl: null,
     experienceLetterUrl: null
   });
+
+  const handleServiceKeyDown = (e) => {
+  if (e.key === "Enter" || e.key === ",") {
+    e.preventDefault();
+
+    const value = serviceInput.trim();
+    if (!value) return;
+
+    // Prevent duplicate tags
+    if (!formData.serviceAreas.includes(value)) {
+      setFormData((prev) => ({
+        ...prev,
+        serviceAreas: [...prev.serviceAreas, value],
+      }));
+    }
+
+    setServiceInput("");
+  }
+};
+
+const removeServiceArea = (index) => {
+  setFormData((prev) => ({
+    ...prev,
+    serviceAreas: prev.serviceAreas.filter((_, i) => i !== index),
+  }));
+};
 
   const handleWalletPayment = async () => {
   if (!window.confirm("Deduct ₹199 from your wallet for a 30-day subscription?")) return;
@@ -75,7 +103,7 @@ export default function AminProfileForm({ existingData }) {
     endDay: "शनिवार",
     startTime: "09:00",
     endTime: "18:00",
-    serviceAreas: "", 
+    serviceAreas: [], 
     registrationNumber: "",
     certificateNumber: "",
     experience: "",
@@ -309,23 +337,6 @@ const loadRazorpayScript = () => {
     }
   };
 
-  const validateForm = () => {
-    let newErrors = {};
-    const mobileRegex = /^[6-9]\d{9}$/;
-    
-    if (formData.publicMobile && !mobileRegex.test(formData.publicMobile)) {
-      newErrors.publicMobile = "Invalid 10-digit mobile number.";
-    }
-    if (!formData.ownerNameEn.trim()) newErrors.ownerNameEn = "English name required.";
-    if (!formData.ownerNameHi.trim()) newErrors.ownerNameHi = "Hindi name required.";
-    if (!formData.acceptedTerms) {
-      newErrors.acceptedTerms = "आपको आगे बढ़ने के लिए नियम एवं शर्तें स्वीकार करनी होंगी। (You must accept the Terms & Conditions.)";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const formatTime = (time24) => {
     const [hours, minutes] = time24.split(':');
     const h = parseInt(hours, 10);
@@ -334,15 +345,52 @@ const loadRazorpayScript = () => {
     return `${h12}:${minutes} ${ampm}`;
   };
 
+  const validateForm = () => {
+    let newErrors = {};
+    const mobileRegex = /^[6-9]\d{9}$/;
+    
+    if (formData.publicMobile && !mobileRegex.test(formData.publicMobile)) {
+      newErrors.publicMobile = "सही 10-अंकों का मोबाइल नंबर दर्ज करें।";
+    }
+    if (!formData.ownerNameEn?.trim()) {
+      newErrors.ownerNameEn = "English Name (अंग्रेज़ी में नाम) भरना अनिवार्य है।";
+    }
+    if (!formData.ownerNameHi?.trim()) {
+      newErrors.ownerNameHi = "Hindi Name (हिंदी में नाम) भरना अनिवार्य है।";
+    }
+    if (!formData.acceptedTerms) {
+      newErrors.acceptedTerms = "नियम एवं शर्तें (Terms & Conditions) स्वीकार करना अनिवार्य है।";
+    }
+
+    setErrors(newErrors);
+    
+    // ध्यान दें: अब हम true/false की जगह सीधा newErrors का object वापस भेज रहे हैं
+    return newErrors; 
+};
+
   const handleSubmit = async (action) => {
-    if (!validateForm()) return alert("Please fix the errors before saving.");
+   // पहले फॉर्म चेक करें और सारे एरर्स निकालें
+    const validationErrors = validateForm();
+    
+    // अगर कोई भी एरर है (यानी बॉक्स खाली है)
+    if (Object.keys(validationErrors).length > 0) {
+        // सारे एरर मैसेज की एक लिस्ट बनाएं
+        const errorMessages = Object.values(validationErrors).join('\n ');
+        
+        // लिस्ट को अलर्ट में दिखाएं
+        return alert("कृपया फॉर्म सेव करने से पहले निम्नलिखित जानकारी भरें:\n\n " + errorMessages);
+    }
     setIsSaving(true);
     
-    const payload = {
+    const processedServiceAreas = Array.isArray(formData.serviceAreas)
+      ? formData.serviceAreas.filter(Boolean) // अगर पहले से Array है (नए कॉम्पोनेंट से)
+      : formData.serviceAreas.split(',').map(s => s.trim()).filter(Boolean); // अगर पुराना String फॉर्मेट है
+    
+      const payload = {
       ...formData,
       workingHours: `${formData.startDay} - ${formData.endDay}: ${formatTime(formData.startTime)} - ${formatTime(formData.endTime)}`,
-      serviceAreas: formData.serviceAreas.split(',').map(s => s.trim()).filter(Boolean),
-      actionType: action 
+      serviceAreas: processedServiceAreas,
+      actionType: action,
     };
 
     try {
@@ -500,7 +548,7 @@ const loadRazorpayScript = () => {
                 biharsurveysahayak.online/amin/{profileSlug}
               </a>
             </p>
-            <p className="text-xs text-emerald-100 mt-2 font-medium">
+            <p className="text-xs text-emerald-100 mt-2 font-medium ">
                 Access valid until: {subscriptionEndsAt?.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
             </p>
           </div>
@@ -736,10 +784,11 @@ const loadRazorpayScript = () => {
                   <input type="time" name="endTime" value={formData.endTime} onChange={handleChange} className="flex-1 p-2.5 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-emerald-500 text-sm"/>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-600 mb-2">Service Areas (Comma separated)</label>
-                <input type="text" name="serviceAreas" value={formData.serviceAreas} onChange={handleChange} placeholder="Madhepura, Saharsa, Supaul" className="w-full px-4 py-3 rounded-xl border bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none"/>
-              </div>
+              <ServiceAreaInput 
+   formData={formData} 
+   setFormData={setFormData} 
+/>
+              <p>Note:- अगर एक से अधिक (Area) लिखना है तो (Area) का नाम लिखने के बाद  <span>,</span></p>
             </div>
             
             <label className="block text-sm font-semibold text-slate-600 mb-3">Select Services Provided</label>
@@ -795,7 +844,7 @@ const loadRazorpayScript = () => {
                 <h4 className="font-extrabold text-2xl md:text-3xl text-emerald-900 leading-snug mb-3">
                   3-Day Free Trial & Live Profile
                   <span className="block text-lg md:text-xl text-emerald-700 font-semibold mt-1">
-                    (3 दिन का फ्री ट्रायल प्रोफ़ाइल )
+                    (3 दिन का फ्री (Free) ट्रायल प्रोफ़ाइल )
                   </span>
                 </h4>
                 {/* Description */}
@@ -806,7 +855,7 @@ const loadRazorpayScript = () => {
                 </p>
                 {/* Note */}
                 <div className="mt-5 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800">
-                   फ्री ट्रायल समाप्त होने के बाद प्रोफ़ाइल को दोबारा लाइव रखने के लिए भुगतान आवश्यक होगा।
+                   फ्री FREE ट्रायल समाप्त होने के बाद प्रोफ़ाइल को दोबारा लाइव रखने के लिए <span className="font-bold text-green-500">₹199/months</span> का भुगतान आवश्यक होगा।
                 </div>
               </div>
 

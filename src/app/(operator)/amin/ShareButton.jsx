@@ -13,7 +13,7 @@ export default function ShareButton({ aminName }) {
 
   const handleShare = () => {
     // 1. Prepare the professional Hindi message
-    const message = `नमस्ते! यह ${aminName} (विशेष सर्वेक्षण अमीन) का डिजिटल विजिटिंग कार्ड है।\n\nसंपर्क जानकारी और सेवाएँ यहाँ देखें:\n${currentUrl}`;
+    const message = `भूमि सर्वेक्षण से जुड़ी किसी भी प्रकार की समस्या या सलाह के लिए *${aminName}* (अमीन) से संपर्क करें:\n\n🔗 ${currentUrl}`;
     
     // 2. Format it for WhatsApp
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;

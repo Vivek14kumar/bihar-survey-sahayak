@@ -1,70 +1,110 @@
-import dbConnect from "../../utils/dbConnect";
-import AminProfile from "../../models/AminProfile";
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { NextResponse } from 'next/server';
+import connectMongo from '../../utils/dbConnect'; // Adjust this import based on your db utility path
+import AminProfile from '../../models/AminProfile';
 
-// GET: Fetch profiles for the admin dashboard
-export async function GET(req) {
-  await dbConnect();
-  
-  // Optional: Add security check here
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+// ==========================================
+// GET: Fetch profiles for Admin Dashboard
+// ==========================================
+export async function GET() {
   try {
-    // Fetch all profiles that are not in 'draft' mode
-    const profiles = await AminProfile.find({ 
-      status: { $in: ['pending', 'live', 'blocked', 'rejected'] } 
-    }).sort({ createdAt: -1 });
+    await connectMongo();
+    
+    // Fetch all profiles so the admin can see 'draft', 'pending', 'live', 'rejected', etc.
+    // Sorted by newest first
+    const profiles = await AminProfile.find({}).sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, profiles });
   } catch (error) {
-    return NextResponse.json({ success: false, error: "Failed to fetch profiles" }, { status: 500 });
+    console.error("GET Verification Error:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch profiles" }, 
+      { status: 500 }
+    );
   }
 }
 
-// POST: Handle the Admin's decision (Approve, Reject, Block)
+// ==========================================
+// POST: Handle Approve, Reject, or Block
+// ==========================================
 export async function POST(req) {
-  await dbConnect();
-
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
-    const { profileId, action, reason } = await req.json();
+    await connectMongo();
+    const body = await req.json();
+    const { profileId, action, reason } = body;
+
+    if (!profileId || !action) {
+      return NextResponse.json(
+        { success: false, error: "Missing required fields" }, 
+        { status: 400 }
+      );
+    }
 
     let updateData = {};
 
-    if (action === "live") {
-      // Approve & Start 3-Day Trial
-      const trialEnd = new Date();
-      trialEnd.setDate(trialEnd.getDate() + 3);
-      
-      updateData = { 
-        status: "live", 
-        subscriptionEndsAt: trialEnd,
-        rejectionReason: "" // Clear any previous rejections
-      };
-    } else if (action === "reject") {
-      // Reject & Require Fixes
-      updateData = { 
-        status: "rejected", 
-        rejectionReason: reason 
-      };
-    } else if (action === "block") {
-      // Permanently Block
-      updateData = { status: "blocked" };
+    switch (action) {
+      case 'live':
+        // Calculate 3 days from right now for the trial
+        const trialExpiry = new Date();
+        trialExpiry.setDate(trialExpiry.getDate() + 3);
+
+        updateData = { 
+          status: 'live', 
+          isProfilePublished: true, // Make profile public
+          subscriptionEndsAt: trialExpiry, // Starts the 3-day trial
+          rejectionReason: "" // Clear any previous rejection reasons
+        };
+        break;
+
+      case 'reject':
+        if (!reason) {
+          return NextResponse.json(
+            { success: false, error: "Rejection reason is required" }, 
+            { status: 400 }
+          );
+        }
+        updateData = { 
+          status: 'rejected', 
+          isProfilePublished: false, // Ensure it's hidden
+          rejectionReason: reason 
+        };
+        break;
+
+      case 'block':
+        updateData = { 
+          status: 'blocked', 
+          isProfilePublished: false, 
+          rejectionReason: "Account permanently blocked by administrator." 
+        };
+        break;
+
+      default:
+        return NextResponse.json(
+          { success: false, error: "Invalid action type" }, 
+          { status: 400 }
+        );
     }
 
-    await AminProfile.findByIdAndUpdate(profileId, { $set: updateData });
+    // Update the document in the database
+    const updatedProfile = await AminProfile.findByIdAndUpdate(
+      profileId, 
+      updateData, 
+      { new: true } // Returns the updated document
+    );
 
-    return NextResponse.json({ success: true });
+    if (!updatedProfile) {
+      return NextResponse.json(
+        { success: false, error: "Profile not found" }, 
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, profile: updatedProfile });
+    
   } catch (error) {
-    return NextResponse.json({ success: false, error: "Failed to update status" }, { status: 500 });
+    console.error("POST Verification Error:", error);
+    return NextResponse.json(
+      { success: false, error: "Database update failed" }, 
+      { status: 500 }
+    );
   }
 }

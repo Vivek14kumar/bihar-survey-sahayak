@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import mongoose from "mongoose";
@@ -11,8 +12,74 @@ import { cookies } from "next/headers";
 import dbConnect from "@/app/api/utils/dbConnect";
 import AminProfile from "@/app/api/models/AminProfile";
 import User from "@/app/api/models/User";
+import { cache } from 'react';
 import ShareButton from "../ShareButton"; 
 import CleanUrl from "../CleanUrl";
+
+
+// डेटाबेस क्वेरी को cache करने के लिए ताकि पेज और मेटाडेटा के लिए दो बार डेटाबेस कॉल न हो
+const getAminProfile = cache(async (id) => {
+  await dbConnect();
+  let dbProfile = null;
+  
+  if (mongoose.Types.ObjectId.isValid(id) && id.length === 24) {
+    dbProfile = await AminProfile.findOne({ userId: id }).lean();
+  }
+  if (!dbProfile) {
+    dbProfile = await AminProfile.findOne({ slug: id }).lean();
+  }
+  return dbProfile;
+});
+
+// ==========================================
+// DYNAMIC METADATA FOR WHATSAPP/SOCIAL SHARE
+// ==========================================
+export async function generateMetadata(props) {
+  const params = await props.params;
+  const paramIdentifier = params.id;
+
+  const dbProfile = await getAminProfile(paramIdentifier);
+
+  if (!dbProfile) {
+    return {
+      title: "Profile Not Found | Bihar Survey Sahayak",
+      description: "अमीन का प्रोफाइल नहीं मिला।"
+    };
+  }
+
+  const aminName = dbProfile.ownerNameHi || "अमीन";
+  const title = `${aminName} - डिजिटल विजिटिंग कार्ड | Bihar Survey Sahayak`;
+  const description = `भूमि सर्वेक्षण से जुड़ी किसी भी प्रकार की समस्या या सलाह के लिए ${aminName} (विशेष सर्वेक्षण अमीन) से संपर्क करें।`;
+  
+  // अगर अमीन की प्रोफाइल फोटो नहीं है, तो एक डिफ़ॉल्ट बैनर इमेज का URL दें
+  const ogImage = dbProfile.profileImage || "https://biharsurveysahayak.online/default-share-banner.jpg";
+
+  return {
+    title: title,
+    description: description,
+    openGraph: {
+      title: title,
+      description: description,
+      siteName: 'Bihar Survey Sahayak',
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${aminName} Profile Picture`,
+        },
+      ],
+      locale: 'hi_IN',
+      type: 'profile',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: title,
+      description: description,
+      images: [ogImage],
+    },
+  };
+}
 
 export default async function AminMobileApp(props) {
   await dbConnect();
@@ -169,7 +236,7 @@ export default async function AminMobileApp(props) {
   };
 
   return (
-    <div className="bg-indigo-50 min-h-screen relative selection:bg-emerald-200 pb-36 font-sans overflow-hidden">
+    <div className="bg-slate-100 min-h-screen relative selection:bg-emerald-200 pb-36 font-sans overflow-hidden">
       <CleanUrl />
       {/* ================= HEADER (Fixed at Top) ================= */}
       <header className="absolute top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between items-center bg-gradient-to-b from-slate-900/90 via-slate-900/60 to-transparent backdrop-blur-[2px] ">
@@ -193,13 +260,23 @@ export default async function AminMobileApp(props) {
       {/* ================= TOP HERO COVER ================= */}
       <div className="relative h-[55vh] md:h-[65vh] w-full overflow-hidden rounded-b-[40px] shadow-sm z-10">
         <Image
+          src="/images/bg-amin.png" 
+          alt="Profile Cover"
+          fill
+          priority
+          size="100vw"
+          className="hidden md:block object-cover object-center"
+        />
+
+        <Image
           src="/images/bg-amin-mobile.png" 
           alt="Profile Cover"
           fill
           priority
-          className="object-cover object-center"
+          size="100vw"
+          className="block md:hidden object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/10 to-transparent" />
         
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white max-w-3xl mx-auto w-full">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 md:px-4 md:py-1.5 rounded-full bg-emerald-500/90 backdrop-blur-sm text-white text-xs md:text-sm font-bold mb-3 shadow-lg border border-emerald-400/30">

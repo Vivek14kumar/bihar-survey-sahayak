@@ -42,12 +42,12 @@ export default function TermsAndConditions() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ul className="list-disc pl-5 space-y-2">
-                <li><strong className="text-slate-800">For Amins:</strong> You declare that all KYC documents (Government IDs, Certificates, Mukhiya Letters) provided for verification are 100% true. Uploading forged documents is a criminal offense leading to a permanent ban.</li>
+                <li><strong className="text-slate-800">For Amins:</strong> You declare that all documents (Government IDs, Certificates, Mukhiya Letters) provided for verification are 100% true. Uploading forged documents is a criminal offense leading to a permanent ban.</li>
                 <li><strong className="text-slate-800">For Cyber Cafes:</strong> When using the platform to generate forms for clients, you are responsible for ensuring the accuracy of the data entered.</li>
                 <li><strong className="text-slate-800">For Citizens:</strong> You must verify the credentials of any Amin you contact through our platform independently before hiring them.</li>
               </ul>
               <ul className="list-disc pl-5 space-y-2 text-slate-600">
-                <li><strong className="text-slate-800">अमीन के लिए:</strong> आप घोषणा करते हैं कि सत्यापन के लिए दिए गए सभी KYC दस्तावेज़ (आईडी, प्रमाण पत्र) 100% सत्य हैं। जाली दस्तावेज़ अपलोड करना एक आपराधिक कार्य है।</li>
+                <li><strong className="text-slate-800">अमीन के लिए:</strong> आप घोषणा करते हैं कि सत्यापन के लिए दिए गए सभी  दस्तावेज़ (आईडी, प्रमाण पत्र) 100% सत्य हैं। जाली दस्तावेज़ अपलोड करना एक आपराधिक कार्य है।</li>
                 <li><strong className="text-slate-800">साइबर कैफे के लिए:</strong> ग्राहकों के लिए फॉर्म जनरेट करते समय, दर्ज किए गए डेटा की सटीकता सुनिश्चित करने की जिम्मेदारी आपकी होगी।</li>
                 <li><strong className="text-slate-800">नागरिकों के लिए:</strong> प्लेटफ़ॉर्म के माध्यम से संपर्क किए गए किसी भी अमीन को काम पर रखने से पहले आपको उनके क्रेडेंशियल्स को स्वयं सत्यापित करना होगा।</li>
               </ul>
@@ -108,7 +108,7 @@ export default function TermsAndConditions() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <p className="mb-2">
-                  By creating a profile, Amins grant us the right to display their professional details publicly. Uploaded sensitive KYC documents are kept secure strictly for internal verification.
+                  By creating a profile, Amins grant us the right to display their professional details publicly. Uploaded sensitive documents are kept secure strictly for internal verification.
                 </p>
                 <p className="font-semibold text-indigo-700">
                   Jurisdiction: These Terms shall be governed by the laws of India. Any legal disputes shall be subject to the exclusive jurisdiction of the courts located in Patna, Bihar.
@@ -116,7 +116,7 @@ export default function TermsAndConditions() {
               </div>
               <div className="text-slate-600">
                 <p className="mb-2">
-                  प्रोफ़ाइल बनाकर, अमीन हमें अपने पेशेवर विवरण सार्वजनिक रूप से प्रदर्शित करने का अधिकार देते हैं। अपलोड किए गए संवेदनशील KYC दस्तावेज़ केवल आंतरिक सत्यापन के लिए सुरक्षित रखे जाते हैं।
+                  प्रोफ़ाइल बनाकर, अमीन हमें अपने पेशेवर विवरण सार्वजनिक रूप से प्रदर्शित करने का अधिकार देते हैं। अपलोड किए गए संवेदनशील दस्तावेज़ केवल आंतरिक सत्यापन के लिए सुरक्षित रखे जाते हैं।
                 </p>
                 <p className="font-semibold text-indigo-700">
                   अधिकार क्षेत्र: ये शर्तें भारत के कानूनों द्वारा शासित होंगी। कोई भी कानूनी विवाद पटना, बिहार में स्थित अदालतों के विशेष अधिकार क्षेत्र के अधीन होगा।
