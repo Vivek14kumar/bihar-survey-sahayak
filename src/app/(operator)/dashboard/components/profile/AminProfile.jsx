@@ -716,11 +716,11 @@ const loadRazorpayScript = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-semibold text-slate-600 mb-2">Registration No.</label>
-                <input type="text" name="registrationNumber" value={formData.registrationNumber} onChange={handleChange} placeholder="e.g. GM/22D00564" disabled={noFormalCert} className={`w-full px-4 py-3 rounded-xl border ${noFormalCert ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500'} outline-none`}/>
+                <input type="text" name="registrationNumber" value={formData.registrationNumber} onChange={handleChange} placeholder="e.g. GM/12A00000" disabled={noFormalCert} className={`w-full px-4 py-3 rounded-xl border ${noFormalCert ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500'} outline-none`}/>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-600 mb-2">Certificate No.</label>
-                <input type="text" name="certificateNumber" value={formData.certificateNumber} onChange={handleChange} placeholder="e.g. CERT-8821" disabled={noFormalCert} className={`w-full px-4 py-3 rounded-xl border ${noFormalCert ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500'} outline-none`}/>
+                <input type="text" name="certificateNumber" value={formData.certificateNumber} onChange={handleChange} placeholder="" disabled={noFormalCert} className={`w-full px-4 py-3 rounded-xl border ${noFormalCert ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500'} outline-none`}/>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-600 mb-2">Experience (Years)</label>
