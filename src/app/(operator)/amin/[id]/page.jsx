@@ -48,8 +48,8 @@ export async function generateMetadata(props) {
   }
 
   const aminName = dbProfile.ownerNameHi || "अमीन";
-  const title = `${aminName} - डिजिटल विजिटिंग कार्ड | Bihar Survey Sahayak`;
-  const description = `भूमि सर्वेक्षण से जुड़ी किसी भी प्रकार की समस्या या सलाह के लिए ${aminName} (विशेष सर्वेक्षण अमीन) से संपर्क करें।`;
+  const title = `${aminName} - Profile | Bihar Survey Sahayak`; //डिजिटल विजिटिंग कार्ड
+  const description = `भूमि सर्वेक्षण से जुड़ी किसी भी प्रकार की समस्या या सलाह के लिए ${aminName} (अमीन) से संपर्क करें।`;
   
   // अगर अमीन की प्रोफाइल फोटो नहीं है, तो एक डिफ़ॉल्ट बैनर इमेज का URL दें
   const ogImage = dbProfile.profileImage || "https://biharsurveysahayak.online/default-share-banner.jpg";

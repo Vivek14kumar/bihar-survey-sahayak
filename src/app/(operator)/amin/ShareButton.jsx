@@ -12,8 +12,8 @@ export default function ShareButton({ aminName }) {
   }, []);
 
   const handleShare = () => {
-    // 1. Prepare the professional Hindi message
-    const message = `भूमि सर्वेक्षण से जुड़ी किसी भी प्रकार की समस्या या सलाह के लिए *${aminName}* (अमीन) से संपर्क करें:\n\n🔗 ${currentUrl}`;
+    // 1. Prepare the professional Hindi message *${aminName}* (अमीन)
+    const message = `भूमि सर्वेक्षण से जुड़ी किसी भी प्रकार की समस्या या सलाह के लिए से संपर्क करें:\n\n🔗 ${currentUrl}`;
     
     // 2. Format it for WhatsApp
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
