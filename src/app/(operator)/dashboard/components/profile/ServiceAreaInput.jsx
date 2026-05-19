@@ -6,36 +6,48 @@ import { X } from "lucide-react";
 export default function ServiceAreaInput({ formData, setFormData }) {
   const [inputValue, setInputValue] = useState("");
 
-  // सुरक्षित तरीका: यह सुनिश्चित करता है कि serviceAreas हमेशा एक Array ही रहे
   const serviceAreas = (() => {
-  if (Array.isArray(formData?.serviceAreas)) {
-    return formData.serviceAreas;
-  }
-  // अगर डेटाबेस से गलती से String के रूप में डेटा आ जाए, तो उसे Array में बदल दे
-  if (typeof formData?.serviceAreas === 'string' && formData.serviceAreas.trim() !== '') {
-    return formData.serviceAreas.split(',').map(item => item.trim());
-  }
-  return [];
-})();
+    if (Array.isArray(formData?.serviceAreas)) {
+      return formData.serviceAreas;
+    }
+    if (typeof formData?.serviceAreas === 'string' && formData.serviceAreas.trim() !== '') {
+      return formData.serviceAreas.split(',').map(item => item.trim());
+    }
+    return [];
+  })();
 
-  const handleKeyDown = (e) => {
-    // Space, Enter, Tab या Comma (,) दबाने पर
-    if (['Enter', 'Tab', ',', ' '].includes(e.key)) {
-      e.preventDefault(); // फॉर्म को सबमिट होने से रोके
+  const handleChange = (e) => {
+    const value = e.target.value;
+    
+    if (value.endsWith(' ') || value.endsWith(',')) {
+      const newArea = value.slice(0, -1).trim(); 
       
-      const newArea = inputValue.trim();
-      
-      // अगर बॉक्स खाली नहीं है और यह नाम पहले से मौजूद नहीं है
       if (newArea && !serviceAreas.includes(newArea)) {
         setFormData({
           ...formData,
           serviceAreas: [...serviceAreas, newArea]
         });
       }
-      setInputValue(""); // इनपुट बॉक्स खाली करें
+      setInputValue(""); 
+    } else {
+      setInputValue(value); 
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (['Enter', 'Tab'].includes(e.key)) {
+      e.preventDefault(); 
+      
+      const newArea = inputValue.trim();
+      if (newArea && !serviceAreas.includes(newArea)) {
+        setFormData({
+          ...formData,
+          serviceAreas: [...serviceAreas, newArea]
+        });
+      }
+      setInputValue(""); 
     }
     
-    // Backspace से टैग डिलीट करना
     if (e.key === 'Backspace' && inputValue === '' && serviceAreas.length > 0) {
       const newAreas = [...serviceAreas];
       newAreas.pop();
@@ -51,14 +63,13 @@ export default function ServiceAreaInput({ formData, setFormData }) {
   return (
     <div>
       <label className="block text-sm font-semibold text-slate-600 mb-2">
-        Service Areas <span className="text-xs font-normal text-slate-400">(Space या Enter दबाकर जोड़ें)</span>
+        Service Areas <span className="text-xs font-normal text-slate-400">(Space, Comma या Enter दबाकर जोड़ें)</span>
       </label>
       
       <div 
         className="w-full min-h-[52px] p-2 flex flex-wrap gap-2 rounded-xl border bg-slate-50 border-slate-200 focus-within:ring-2 focus-within:ring-emerald-500 transition-all cursor-text"
         onClick={() => document.getElementById("service-area-input")?.focus()}
       >
-        {/* टैग्स (Chips) दिखाना */}
         {serviceAreas.map((area, index) => (
           <span 
             key={index} 
@@ -66,7 +77,7 @@ export default function ServiceAreaInput({ formData, setFormData }) {
           >
             {area}
             <button
-              type="button" // यह बहुत ज़रूरी है ताकि फॉर्म सबमिट न हो
+              type="button" 
               onClick={() => removeArea(index)}
               className="hover:bg-emerald-200 rounded-full p-0.5 transition-colors"
             >
@@ -75,12 +86,11 @@ export default function ServiceAreaInput({ formData, setFormData }) {
           </span>
         ))}
 
-        {/* टाइप करने वाला बॉक्स */}
         <input
           id="service-area-input"
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={serviceAreas.length === 0 ? "Patna, Danapur, Fatuha..." : ""}
           className="flex-1 min-w-[120px] bg-transparent outline-none py-1 px-2 text-slate-700"

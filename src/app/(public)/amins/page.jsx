@@ -1,4 +1,3 @@
-"use-client"
 
 import dbConnect from "@/app/api/utils/dbConnect";
 import Amin from "@/app/api/models/AminProfile";
@@ -96,6 +95,7 @@ export default async function AllAminsPage({ searchParams }) {
 
         {/* ================= FILTER BAR ================= */}
         <form
+          action="/amins"
           className="mb-12 bg-white/80 backdrop-blur-xl border border-white rounded-3xl p-4 sm:p-5 shadow-lg"
         >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

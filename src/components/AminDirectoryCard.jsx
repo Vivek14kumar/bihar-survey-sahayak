@@ -12,7 +12,7 @@ import {
 const AminDirectoryCard = ({ profile }) => {
   // Render only if profile is live
   if (!profile || profile.status !== "live") return null;
-
+  //console.log("What is my frontend receiving?", profile);
   // Active services
   const activeServices = Object.keys(profile.services || {})
     .filter((key) => profile.services[key])
