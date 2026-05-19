@@ -796,7 +796,7 @@ const loadRazorpayScript = () => {
    formData={formData} 
    setFormData={setFormData} 
 />
-              <p>Note:- अगर एक से अधिक (Area) लिखना है तो (Area) का नाम लिखने के बाद  <span>,</span></p>
+
             </div>
             
             <label className="block text-sm font-semibold text-slate-600 mb-3">Select Services Provided</label>
