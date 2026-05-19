@@ -1,12 +1,12 @@
 // src/lib/actions/aminActions.js (Adjust path based on your project)
 import mongoose from "mongoose";
 // Import your database connection and Amin model here
-import { connectToDatabase } from "../../app/api/utils/dbConnect"; 
+import dbConnect from "@/app/api/utils/dbConnect";
 import AminProfile from "../../app/api/models/AminProfile"; 
 
 export async function getLiveAminProfilesForSitemap() {
   try {
-    await connectToDatabase(); // Ensure DB is connected
+    await dbConnect(); // Ensure DB is connected
 
     // Only fetch Amins who are live and published
     // We only select 'slug' and 'updatedAt' because that's all the sitemap needs.
