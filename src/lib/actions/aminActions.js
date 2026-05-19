@@ -8,6 +8,7 @@ export async function getLiveAminProfilesForSitemap() {
   try {
     await dbConnect(); // Ensure DB is connected
 
+    //
     // Only fetch Amins who are live and published
     // We only select 'slug' and 'updatedAt' because that's all the sitemap needs.
     const liveAmins = await AminProfile.find(
