@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 // Import your database connection and Mongoose model
-import dbConnect from "../../utils"; 
+import dbConnect from "../../utils/dbConnect"; 
 import Amin from "../../models/AminProfile";
 
 // PERFORMANCE HACK: Cache this route for 60 seconds.
