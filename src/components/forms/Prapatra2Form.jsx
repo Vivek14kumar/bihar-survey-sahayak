@@ -665,7 +665,7 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
   <button
     onClick={() => handleSecureAction("print")}
     disabled={isPrinting || isGenerating}
-    className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50 shadow-md"
+    className="hidden md:block mt-6 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50 shadow-md"
   >
     <span className="flex items-center gap-2 text-base font-semibold">
       {(isPrinting || isGenerating) ? (

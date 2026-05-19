@@ -453,37 +453,7 @@ export default function Vanshavali() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-emerald-50 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
 
-        {/* HEADER - SEO Optimized */}
-<header className="bg-gradient-to-r from-indigo-700 via-blue-600 to-emerald-600 text-white p-6 sm:p-8 rounded-3xl shadow-2xl mb-8 relative overflow-hidden">
-  
-  {/* Subtle Background Pattern for Professional Look */}
-  <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
-    <Users size={120} />
-  </div>
-
-  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-      <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md inline-flex self-start">
-        <Users size={32} className="text-yellow-300" />
-      </div>
-      
-      <div>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
-          बिहार भूमि सर्वेक्षण वंशावली <span className="text-yellow-300">2026</span> एवं सादा वंशावली
-        </h1>
-        <h2 className="text-sm sm:text-base font-medium text-emerald-50 mt-1 flex items-center gap-2">
-          Online Vanshawali Maker & Family Tree Generator for Bihar Land Survey & Affidavit/Blank
-        </h2>
-      </div>
-    </div>
-
-    {/* Live Status Badge (Good for SEO & Trust) */}
-    <div className="hidden lg:flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm">
-      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-      <span className="text-xs font-semibold uppercase tracking-wider">Official 2026 Format</span>
-    </div>
-  </div>
-</header>
+        
 
        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
   {/* Option 1: Survey Format */}

@@ -36,7 +36,7 @@ const getAminProfile = cache(async (id) => {
 // ==========================================
 export async function generateMetadata(props) {
   const params = await props.params;
-  const paramIdentifier = params.id;
+  const paramIdentifier = params.id; // This will match the "slug" field
 
   const dbProfile = await getAminProfile(paramIdentifier);
 
@@ -47,12 +47,22 @@ export async function generateMetadata(props) {
     };
   }
 
-  const aminName = dbProfile.ownerNameHi || "अमीन";
-  const title = `${aminName} - Profile | Bihar Survey Sahayak`; //डिजिटल विजिटिंग कार्ड
-  const description = `भूमि सर्वेक्षण से जुड़ी किसी भी प्रकार की समस्या या सलाह के लिए ${aminName} (अमीन) से संपर्क करें।`;
+  const aminNameHi = dbProfile.ownerNameHi || "अमीन";
+  const aminNameEn = dbProfile.ownerNameEn || "Amin";
   
-  // अगर अमीन की प्रोफाइल फोटो नहीं है, तो एक डिफ़ॉल्ट बैनर इमेज का URL दें
-  const ogImage = dbProfile.profileImage || "https://biharsurveysahayak.online/default-share-banner.jpg";
+  // Create a location string from the array, e.g., "Patna, Danapur"
+  const locations = dbProfile.serviceAreas && dbProfile.serviceAreas.length > 0 
+    ? dbProfile.serviceAreas.join(", ") //[0]//
+    : "बिहार";
+
+  const title = `${aminNameHi} - Amin in ${locations} | Bihar Survey Sahayak`;
+  
+  // Use their actual "about" text if available, otherwise fallback to default
+  const description = dbProfile.about || `${locations} में भूमि सर्वेक्षण, मापी और वंशावली से जुड़ी किसी भी प्रकार की सहायता के लिए ${aminNameHi} से संपर्क करें।`;
+  
+  // IMPORTANT: Do NOT use aadhaarUrl or certificateUrl as the public OpenGraph image!
+  // If you add a "profileImageUrl" later, use that. Otherwise use a default banner.
+  const ogImage = dbProfile.profileImageUrl || "https://biharsurveysahayak.online/default-share-banner.jpg";
 
   return {
     title: title,
@@ -66,7 +76,7 @@ export async function generateMetadata(props) {
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: `${aminName} Profile Picture`,
+          alt: `${aminNameEn} - Digital Amin Profile`,
         },
       ],
       locale: 'hi_IN',
@@ -182,7 +192,7 @@ export default async function AminMobileApp(props) {
   // ==========================================
   // STEP 5: CONDITIONAL REGISTRATION LOGIC
   // ==========================================
-  const hasFormal = dbProfile.hasFormalCertificate === true;
+  const hasFormal = dbProfile.hasFormalCertificate === false;
   const regOrCertText = dbProfile.registrationNumber || dbProfile.certificateNumber || "N/A";
   
   const displayBadgeText = hasFormal ? "Experienced" : regOrCertText;
@@ -233,6 +243,41 @@ export default async function AminMobileApp(props) {
     facebookUrl: formatUrl(dbProfile.facebookUrl),
     instagramUrl: formatUrl(dbProfile.instagramUrl),
     youtubeUrl: formatUrl(dbProfile.youtubeUrl)
+  };
+
+  // Generate dynamic location for the schema
+  const primaryLocation = dbProfile.serviceAreas && dbProfile.serviceAreas.length > 0 
+    ? dbProfile.serviceAreas[0] 
+    : "Bihar";
+
+  // Create the structured data for Google Local Search
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": dbProfile.ownerNameEn,
+    "alternateName": dbProfile.ownerNameHi,
+    "image": dbProfile.profileImageUrl || "https://biharsurveysahayak.online/default-avatar.png",
+    "@id": `https://biharsurveysahayak.online/amin/${dbProfile.slug}`,
+    "url": `https://biharsurveysahayak.online/amin/${dbProfile.slug}`,
+    "telephone": `+91${dbProfile.publicMobile}`,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": dbProfile.publicAddress,
+      "addressLocality": primaryLocation,
+      "addressRegion": "Bihar",
+      "addressCountry": "IN"
+    },
+    "description": dbProfile.about || "Professional Amin providing land survey assistance.",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+        ],
+        "opens": dbProfile.startTime || "09:00",
+        "closes": dbProfile.endTime || "18:00"
+      }
+    ]
   };
 
   return (
@@ -296,7 +341,12 @@ export default async function AminMobileApp(props) {
 
       {/* ================= MAIN SCROLLABLE CONTENT ================= */}
       <main className="relative max-full mx-auto w-full z-20 mt-2">
-         
+         {/* Inject JSON-LD into the DOM */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
         {/* --- QUICK STATS ROW --- */}
         <div className="flex gap-3 px-6 -mt-6 md:-mt-8 mb-8 md:mb-10">
           <div className="flex-1 bg-white rounded-3xl p-4 md:p-6 shadow-[0_8px_20px_rgb(0,0,0,0.06)] border border-white/50 backdrop-blur-xl flex flex-col items-center justify-center text-center">
@@ -518,7 +568,25 @@ export default async function AminMobileApp(props) {
             "यह प्रोफाइल जानकारी संबंधित अमीन द्वारा प्रदान की गई है।
             <a href="/" className="text-blue-500"> Bihar Survey Sahayak</a> एक डिजिटल प्रोफाइल एवं सर्वे सहायता प्लेटफॉर्म है।"
           </p>
+          {/* --- System Safety Tip (Your Legal Shield) --- */}
+          <div className="mt-4 flex items-center justify-center gap-2 bg-gray-50 p-3 rounded-md border border-gray-100 text-center">
+            {/* Standard Security Shield Icon */}
+            <svg 
+              className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+
+            {/* The Legal/Safety Text */}
+            <p className="text-xs text-gray-500 leading-relaxed ">
+              <span className="font-semibold text-yellow-400">सुरक्षा टिप:</span> यह प्लेटफॉर्म आपको सीधे अमीन से जोड़ने का एक माध्यम है। अमीन और ग्राहक के बीच किए गए लेन-देन और कार्य की जिम्मेदारी <span className="font-medium">'बिहार सर्वे सहायक'</span> प्लेटफॉर्म की नहीं है।
+            </p>
+          </div>
         </div>
+        
         <div className="h-20"/>
       </main>
 

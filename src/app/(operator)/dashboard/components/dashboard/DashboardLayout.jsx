@@ -158,7 +158,7 @@ export default function DashboardLayout({
               <MiniSidebarItem icon={<LayoutDashboard size={22}/>} label="Home" active={currentView === "dashboard" || currentView.startsWith("form_")} onClick={() => setCurrentView("dashboard")} />
               <MiniSidebarItem icon={<Wallet size={22}/>} label="Wallet" active={currentView === "wallet"} onClick={() => setCurrentView("wallet")} />
               <MiniSidebarItem icon={<FileText size={22}/>} label="Docs" active={currentView === "documents"} onClick={() => setCurrentView("documents")} />
-              <MiniSidebarItem icon={<IdCard size={22}/>} label="Digital Profile" active={currentView === "amin_profile"} onClick={() => setCurrentView("amin_profile")} />
+              {userData?.userType === "amin" && (<MiniSidebarItem icon={<IdCard size={22}/>} label="Digital Profile" active={currentView === "amin_profile"} onClick={() => setCurrentView("amin_profile")} />)}
               <MiniSidebarItem icon={<Settings size={22}/>} label="Settings" active={currentView === "settings"} onClick={() => setCurrentView("settings")} />
             </nav>
 

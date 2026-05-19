@@ -168,7 +168,7 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                 <label className="block text-sm font-bold text-slate-700 mb-2">Enter Amount</label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg font-bold">₹</div>
-                  <input type="number" min="10" max="200" required value={addAmount}
+                  <input type="number" min="1" max="200" required value={addAmount}
                     onChange={(e) => { const v = e.target.value; if (v === "" || Number(v) <= 200) setAddAmount(v); }}
                     placeholder="Enter amount between 10 and 200"
                     className="w-full h-12 sm:h-14 pl-10 pr-4 bg-slate-50 border border-slate-200 rounded-xl sm:rounded-2xl text-base sm:text-lg font-bold text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-300"

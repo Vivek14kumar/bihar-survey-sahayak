@@ -1,0 +1,159 @@
+"use client";
+import Link from "next/link";
+import { ShieldCheck, FileText, Languages, CheckCircle, Wallet } from "lucide-react";
+import { motion } from "framer-motion";
+import FAQClient from "./faq/FAQClient";
+import CompactQuickLinks from "@/components/QuickLinksFooter";
+import DistrictSection from "@/components/DistrictSection";
+import PublicStats from "@/components/PublicStats";
+import HeroSection from "@/components/HeroSection";
+import {Users} from "lucide-react";
+import AminDirectoryCard from "@/components/AminDirectoryCard";
+
+export default function Home() {
+  return (
+    <main className="relative">
+      {/* ================= HERO ================= */}
+       <HeroSection/>
+      {/* ================= FEATURES ================= */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 -mt-4 relative z-10">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: <Wallet size={24} className="text-white" />,
+              title: "सुरक्षित वॉलेट सिस्टम",
+              desc: "प्रोफेशनल उपयोग के लिए आसान क्रेडिट और सुरक्षित अकाउंट।",
+              color: "from-purple-500 to-indigo-500",
+            },
+            {
+              icon: <FileText size={24} className="text-white" />,
+              title: "तुरंत PDF",
+              desc: "एक क्लिक में आधिकारिक प्रारूप PDF डाउनलोड।",
+              color: "from-emerald-400 to-green-500",
+            },
+            {
+              icon: <Languages size={24} className="text-white" />,
+              title: "हिंदी टाइपिंग सपोर्ट",
+              desc: "आसान हिंदी टाइपिंग और ऑटो फॉर्मेट।",
+              color: "from-pink-500 to-rose-500",
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: i * 0.2 }}
+              viewport={{ once: true }}
+              className={`backdrop-blur-xl bg-gradient-to-r ${item.color} border border-white/20 
+              rounded-2xl p-6 shadow-xl text-white hover:scale-105 transform transition duration-300`}
+            >
+              <div className="mb-4">{item.icon}</div>
+              <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+              <p className="text-sm">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= TOOL CTA ================= */}
+      <section id="tool" className="max-w-6xl mx-auto mt-28 px-4 sm:px-6 md:px-12 flex justify-center">
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        >
+
+          {/* HEADER - SEO Optimized */}
+
+<header className=" bg-gradient-to-r from-indigo-700 via-blue-600 to-emerald-600 text-white p-6 rounded-3xl shadow-2xl mb-8 relative overflow-hidden">
+  {/* Subtle Background Pattern for Professional Look */}
+  <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
+    <Users size={120} />
+  </div>
+  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+      <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md inline-flex self-start">
+        <Users size={32} className="text-yellow-300" />
+      </div>
+      <div>
+        <h1 className="text-2xl sm:text-3xl md:text-3xl font-extrabold tracking-tight">
+          बिहार भूमि सर्वेक्षण वंशावली <span className="text-yellow-300">2026</span> एवं सादा वंशावली
+        </h1>
+        <h2 className="text-sm sm:text-base font-medium text-emerald-50 mt-1 flex items-center gap-2">
+          Online Vanshawali Maker & Family Tree Generator for Bihar Land Survey & Affidavit/Blank
+        </h2>
+      </div>
+    </div>
+
+    {/* Live Status Badge (Good for SEO & Trust) */}
+    <div className="hidden md:flex flex-col items-start gap-4">
+    <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm">
+      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+      <span className="text-xs font-semibold uppercase tracking-wider">Official 2026 Format</span>
+    </div>
+    <Link href="/vanshavali" className="inline-block w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 rounded-2xl font-bold text-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+            वंशावली बनाएं  
+          </Link>
+  </div>
+  </div>
+</header>
+        </motion.div>
+      </section>
+      <AminDirectoryCard/>
+
+      {/*===================District Links========= */}
+      <section>
+        <DistrictSection />
+      </section>
+
+      {/*=====================Quick Links============*/}
+      <section className="p-10">
+        <CompactQuickLinks/>
+      </section>
+          
+      {/* ================= TRUST ================= */}
+      <section className="max-w-4xl mx-auto mt-24 px-4 sm:px-6 md:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+          className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 sm:p-8"
+        >
+          <h3 className="text-xl sm:text-2xl font-bold mb-6 text-slate-800">
+            लोग इस टूल पर भरोसा क्यों करते हैं?
+          </h3>
+
+          <div className="grid sm:grid-cols-2 gap-6 text-slate-700 text-sm sm:text-base">
+            {[
+              "सुरक्षित यूजर अकाउंट और डैशबोर्ड",
+              "आसान क्रेडिट और वॉलेट सिस्टम",
+              "मोबाइल और लैपटॉप दोनों में सुरक्षित",
+              "सर्वे शिविर में उपयोग योग्य प्रारूप",
+            ].map((text, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <CheckCircle className="text-emerald-600 mt-1" size={18} />
+                {text}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ================= LEGAL ================= */}
+      <section className="max-w-3xl mx-auto mt-16 px-4 sm:px-6 md:px-12">
+        <div className="bg-slate-100 rounded-2xl shadow-md p-6 text-slate-600 text-sm sm:text-base">
+          <h3 className="font-bold text-red-600 text-xl mb-3">कानूनी सूचना</h3>
+          <p>
+            यह एक निजी नागरिक सहायता टूल है। यह कोई सरकारी वेबसाइट नहीं है।
+            उपयोगकर्ता सभी विवरण अपने स्थानीय सर्वे शिविर (अमीन / पर्यवेक्षक) से सत्यापित करें।
+          </p>
+        </div>
+      </section>
+      {/* ================= FAQ ================= */}
+      <FAQClient />
+    </main>
+  );
+}

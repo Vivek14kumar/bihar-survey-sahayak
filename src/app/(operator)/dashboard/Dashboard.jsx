@@ -47,11 +47,19 @@ export default function Dashboard() {
           }
 
           const txRes = await fetch("/api/wallet/transactions");
-          if (txRes.ok) setTransactions(await txRes.json());
-
+          if (txRes.ok) {
+            const txData = await txRes.json();
+            // Ensure you are extracting the array, depending on your API structure.
+            // If your API returns the array directly, keep it as txData. 
+            // If it returns an object, use txData.transactions (or whatever the key is).
+            setTransactions(Array.isArray(txData) ? txData : (txData.transactions || []));
+          }
+          
           const docsRes = await fetch("/api/documents");
-          if (docsRes.ok) setGeneratedDocs(await docsRes.json());
-
+          if (docsRes.ok) {
+            const docsData = await docsRes.json();
+            setGeneratedDocs(Array.isArray(docsData) ? docsData : (docsData.documents || []));
+          }
           const notifRes = await fetch("/api/notifications", { cache: "no-store" });
           if (notifRes.ok) setNotifications(await notifRes.json());
 
@@ -68,18 +76,15 @@ export default function Dashboard() {
 
   // Global Handlers
   const handleUpdateWallet = (newBalance, newTransaction) => {
-    if (newBalance !== undefined) setWalletBalance(newBalance);
-    if (newTransaction) setTransactions(prev => [newTransaction, ...prev]);
-  };
+  if (newBalance !== undefined) setWalletBalance(newBalance);
+  if (newTransaction) setTransactions(prev => [newTransaction, ...(Array.isArray(prev) ? prev : [])]);
+};
 
-  const handleDocumentGenerated = (newBalance, newTransaction, newDoc) => {
-    if (newBalance !== undefined) setWalletBalance(newBalance);
-    if (newTransaction) setTransactions(prev => [
-      newTransaction, 
-      ...(Array.isArray(prev) ? prev : []) // <-- Safely falls back to empty array
-    ]);
-    if (newDoc) setGeneratedDocs(prev => [newDoc, ...prev]);
-  };
+const handleDocumentGenerated = (newBalance, newTransaction, newDoc) => {
+  if (newBalance !== undefined) setWalletBalance(newBalance);
+  if (newTransaction) setTransactions(prev => [newTransaction, ...(Array.isArray(prev) ? prev : [])]);
+  if (newDoc) setGeneratedDocs(prev => [newDoc, ...(Array.isArray(prev) ? prev : [])]);
+};
 
   if (isLoading || status === "loading") {
     return (
@@ -106,6 +111,7 @@ export default function Dashboard() {
           searchQuery={searchQuery} 
           setCurrentView={setCurrentView} 
           onRewardClaimed={handleUpdateWallet}
+          userData={userData}
         />
       )}
 

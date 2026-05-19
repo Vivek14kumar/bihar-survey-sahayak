@@ -1,127 +1,50 @@
-"use client";
+// src/app/(public)/page.js
+// ❌ CRITICAL: Do NOT put "use client" in this file!
 
-import Vanshavali from "@/components/Vanshavali";
-import { ShieldCheck, FileText, Languages, CheckCircle } from "lucide-react";
-import { motion } from "framer-motion";
-import FAQClient from "./faq/FAQClient";
-import VanshawaliTutorial from "@/components/VanshawaliTutorial";
-import CompactQuickLinks from "@/components/QuickLinksFooter";
-import DistrictSection from "@/components/DistrictSection";
-import PublicStats from "@/components/PublicStats";
 import HeroSection from "@/components/HeroSection";
+import HomeClientContent from "@/components/HomeClientContent"; // Your new animated component
+import HomePageAminsSection from "@/components/HomePageAminsSection"; // Your Mongoose Server component
+import DistrictSection from "@/components/DistrictSection";
+import CompactQuickLinks from "@/components/QuickLinksFooter";
+import FAQClient from "./faq/FAQClient";
 
 export default function Home() {
   return (
-    <main className="relative  ">
+    <main className="relative ">
+      {/* 1. Hero Section */}
+      <HeroSection />
 
-      {/* ================= HERO ================= */}
-       <HeroSection/>
+      {/* 2. Features & CTA (Client Component for Animations) */}
+      <HomeClientContent />
 
-      {/* ================= FEATURES ================= */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 -mt-4 relative z-10">
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {/* 3. Amin Directory (Server Component for Fast Load & Mongoose & SEO) */}
+      <HomePageAminsSection />
 
-          {[
-            {
-              icon: <ShieldCheck size={24} className="text-white" />,
-              title: "लोकल डेटा सुरक्षा",
-              desc: "आपका डेटा केवल आपके डिवाइस में रहता है।",
-              color: "from-purple-500 to-indigo-500",
-            },
-            {
-              icon: <FileText size={24} className="text-white" />,
-              title: "तुरंत PDF",
-              desc: "एक क्लिक में आधिकारिक प्रारूप PDF डाउनलोड।",
-              color: "from-emerald-400 to-green-500",
-            },
-            {
-              icon: <Languages size={24} className="text-white" />,
-              title: "हिंदी टाइपिंग सपोर्ट",
-              desc: "आसान हिंदी टाइपिंग और ऑटो फॉर्मेट।",
-              color: "from-pink-500 to-rose-500",
-            },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: i * 0.2 }}
-              viewport={{ once: true }}
-              className={`backdrop-blur-xl bg-gradient-to-r ${item.color} border border-white/20 
-              rounded-2xl p-6 shadow-xl text-white hover:scale-105 transform transition duration-300`}
-            >
-              <div className="mb-4">{item.icon}</div>
-              <h3 className="font-bold text-lg mb-2">{item.title}</h3>
-              <p className="text-sm">{item.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-          
-      {/* ================= TOOL ================= */}
-      <section id="tool" className="max-w-6xl mx-auto mt-28 px-4 sm:px-6 md:px-12">
-        {/* Tutorial Video */}
-  <motion.div
-    initial={{ opacity: 0, y: 60 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.7 }}
-    viewport={{ once: true }}
-    className="bg-white rounded-3xl shadow-2xl p-2 sm:p-2 mb-10"
-  >
-    <VanshawaliTutorial />
-  </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-          className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8"
-        >
-          <Vanshavali />
-        </motion.div>
-      </section>
-
-      {/*===================District Links========= */}
+      {/* 4. Districts & Links */}
       <section>
         <DistrictSection />
       </section>
 
-      {/*=====================Quick Links============*/}
       <section className="p-10">
-        <CompactQuickLinks/>
+        <CompactQuickLinks />
       </section>
-          
-      {/* ================= TRUST ================= */}
+
+      {/* 5. Trust Badges */}
       <section className="max-w-4xl mx-auto mt-24 px-4 sm:px-6 md:px-12">
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-          className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 sm:p-8"
-        >
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 sm:p-8">
           <h3 className="text-xl sm:text-2xl font-bold mb-6 text-slate-800">
             लोग इस टूल पर भरोसा क्यों करते हैं?
           </h3>
-
           <div className="grid sm:grid-cols-2 gap-6 text-slate-700 text-sm sm:text-base">
-            {[
-              "कोई लॉगिन या रजिस्ट्रेशन आवश्यक नहीं",
-              "कोई सर्वर पर डेटा सेव नहीं किया जाता",
-              "मोबाइल और लैपटॉप दोनों में सुरक्षित",
-              "सर्वे शिविर में उपयोग योग्य प्रारूप",
-            ].map((text, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <CheckCircle className="text-emerald-600 mt-1" size={18} />
-                {text}
-              </div>
-            ))}
+            <div className="flex items-start gap-3"> सुरक्षित यूजर अकाउंट और डैशबोर्ड</div>
+            <div className="flex items-start gap-3"> आसान क्रेडिट और वॉलेट सिस्टम</div>
+            <div className="flex items-start gap-3"> मोबाइल और लैपटॉप दोनों में सुरक्षित</div>
+            <div className="flex items-start gap-3"> सर्वे शिविर में उपयोग योग्य प्रारूप</div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ================= LEGAL ================= */}
+      {/* 6. Legal & FAQ */}
       <section className="max-w-3xl mx-auto mt-16 px-4 sm:px-6 md:px-12">
         <div className="bg-slate-100 rounded-2xl shadow-md p-6 text-slate-600 text-sm sm:text-base">
           <h3 className="font-bold text-red-600 text-xl mb-3">कानूनी सूचना</h3>
@@ -132,7 +55,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= FAQ ================= */}
       <FAQClient />
     </main>
   );

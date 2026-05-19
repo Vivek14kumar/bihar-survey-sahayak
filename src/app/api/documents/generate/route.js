@@ -76,8 +76,8 @@ export async function POST(req) {
         user: user._id,
         dateString: todayStr,
         targets: [
-          { formName: "Vanshawali", targetForm: 5, cashbackReward: 10 },
-          { formName: "Prapatra 2", targetForm: 5, cashbackReward: 5 },
+          { formName: "Vanshawali", targetForm: 4, cashbackReward: 10 },
+          { formName: "Prapatra 2", targetForm: 4, cashbackReward: 5 },
           // Add your other forms here
         ]
       });

@@ -163,7 +163,7 @@ export default function Navbar() {
             <span className="text-[10px] font-black uppercase">PDF टूल</span>
           </Link>
 
-          <Link href="/#tool" className="flex flex-col items-center -mt-8">
+          <Link href="/vanshavali" className="flex flex-col items-center -mt-8">
             <div className="bg-indigo-600 text-white p-3 rounded-2xl shadow-xl shadow-indigo-200 ring-4 ring-white">
               <Users size={24} />
             </div>

@@ -8,7 +8,7 @@ export default function PublicLayout({ children }) {
     <>
       <Navbar />
       
-      <main className="min-h-screen">
+      <main className="min-h-screen ">
         {children}
         {/* <MobilePopup /> */} 
         <SubscribePopup />

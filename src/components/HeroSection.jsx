@@ -94,7 +94,7 @@ export default function HeroSection() {
             items-center justify-center gap-4 sm:gap-5 w-full"
           >
             <a
-              href="#tool"
+              href="/vanshavali"
               className="w-full lg:w-auto flex-1
               bg-gradient-to-r from-emerald-500 to-green-600
               text-white font-bold

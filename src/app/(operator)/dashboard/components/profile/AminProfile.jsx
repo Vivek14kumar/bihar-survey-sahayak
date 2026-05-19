@@ -40,6 +40,17 @@ export default function AminProfileForm({ existingData }) {
     experienceLetterUrl: null
   });
 
+  // Auto switch logic
+useEffect(() => {
+  if (noFormalCert) {
+    // If user has NO certificate → select experience mode
+    setHasFormalCertificate(false);
+  } else {
+    // If checkbox unchecked → select certificate mode
+    setHasFormalCertificate(true);
+  }
+}, [noFormalCert]);
+
   const handleServiceKeyDown = (e) => {
   if (e.key === "Enter" || e.key === ",") {
     e.preventDefault();
@@ -159,8 +170,13 @@ const removeServiceArea = (index) => {
     setProfileStatus("draft");
   }
           
-          if (p.experienceLetterUrl && !p.certificateUrl) {
+          // Check backend boolean OR deduce from document URLs
+          if (p.hasFormalCertificate === false || (p.experienceLetterUrl && !p.certificateUrl)) {
              setHasFormalCertificate(false);
+             setNoFormalCert(true); // <-- THIS SYNCS THE CHECKBOX
+          } else {
+             setHasFormalCertificate(true);
+             setNoFormalCert(false); // <-- THIS SYNCS THE CHECKBOX
           }
 
           setFormData({
@@ -204,16 +220,7 @@ const removeServiceArea = (index) => {
     fetchSavedProfile();
   }, [existingData]);
 
-  // Auto switch logic
-useEffect(() => {
-  if (noFormalCert) {
-    // If user has NO certificate → select experience mode
-    setHasFormalCertificate(false);
-  } else {
-    // If checkbox unchecked → select certificate mode
-    setHasFormalCertificate(true);
-  }
-}, [noFormalCert]);
+  
 
 const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -411,7 +418,7 @@ const loadRazorpayScript = () => {
           window.open(`/amin/${result.slug}?preview=true`, "_blank");
         } else if (action === "submitVerification") {
           setProfileStatus("pending");
-          alert("Your profile has been submitted for verification. Admin will check it soon! (आपकी प्रोफ़ाइल सत्यापन के लिए सबमिट कर दी गई है!)");
+          alert("Your profile has been submitted for verification. Team will check it soon! (आपकी प्रोफ़ाइल सत्यापन के लिए सबमिट कर दी गई है!)");
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (action === "pay") {
   const isScriptLoaded = await loadRazorpayScript();

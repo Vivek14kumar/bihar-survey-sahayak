@@ -1,9 +1,25 @@
+export const revalidate = 3600; // Refreshes the sitemap every 1 hour
+
 import { locations } from "@/app/(public)/data/locations";
 import { postSlugs } from "@/app/(public)/data/postSlugs";
 
-export default function sitemap() {
+// 1. Import your DB fetch function
+import { getLiveAminProfilesForSitemap } from "@/lib/actions/aminActions";
+
+export default async function sitemap() {
 
   const baseUrl = "https://biharsurveysahayak.online";
+
+  /* ---------------- 1. FETCH DYNAMIC AMIN PROFILES (DATABASE) ---------------- */
+  const liveAmins = await getLiveAminProfilesForSitemap();
+
+  const aminUrls = liveAmins.map((amin) => ({
+    url: `${baseUrl}/amin/${amin.slug}`,
+    // If updatedAt exists use it, otherwise fallback to current date
+    lastModified: amin.updatedAt ? new Date(amin.updatedAt) : new Date(),
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
 
     /* ---------------- BLOG PAGES ---------------- */
 
@@ -197,9 +213,11 @@ export default function sitemap() {
       priority: 0.85
     },
 
+    // Spread the dynamic arrays into the final list
     ...blogUrls,
     ...districtUrls,
     ...blockUrls,
+    ...aminUrls,
 
     {
       url: `${baseUrl}/privacy-policy`,

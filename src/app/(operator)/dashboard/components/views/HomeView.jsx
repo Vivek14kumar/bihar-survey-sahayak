@@ -15,11 +15,14 @@ const availableForms = [
   { id: "cancelJama", category: "all", title: "Jamabandhi Cancellation", desc: "Cancellation details format.", icon: <FileText size={24}/>, cost: "5", view: "form_cancelJama" }
 ];
 
-export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed }) {
+export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed, userData }) {
   const [activeTab, setActiveTab] = useState("all");
   const [dailyTargets, setDailyTargets] = useState([]);
   const [leaderboard, setLeaderboard] = useState({ topShops: [], userRank: "Loading..." });
 
+  // Optional: Extract userType for cleaner code
+  const userType = userData?.userType || 'operator';
+  
   useEffect(() => {
     const fetchGamificationData = async () => {
       try {
@@ -27,6 +30,7 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed 
           fetch("/api/targets/daily", { cache: 'no-store' }),
           fetch("/api/leaderboard", { cache: 'no-store' })
         ]);
+        
         const tData = await targetRes.json();
         const lData = await leaderRes.json();
         if (tData?.targets) setDailyTargets(tData.targets);
@@ -70,10 +74,11 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed 
             <span className="text-[11px] text-slate-500 font-bold">बिहार सर्वे सहायक</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">
-            OPERATOR'S <span className="text-blue-600">DASHBOARD</span>
+            {userType === 'amin' ? "AMIN'S" : "OPERATOR'S"}{' '}
+            <span className="text-blue-600">DASHBOARD</span>
           </h2>
           <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed font-medium">
-            ग्राहकों के लिए लीगल फॉर्म बनाने के लिए नीचे दिए गए टेम्पलेट का चयन करें। (Select a template below to draft official forms.)
+            ग्राहकों के लिए सर्वे फॉर्म बनाने के लिए नीचे दिए गए टेम्पलेट का चयन करें। (Select a template below to draft survey forms.)
           </p>
         </div>
         
