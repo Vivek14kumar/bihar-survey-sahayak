@@ -1,8 +1,8 @@
 // src/lib/actions/aminActions.js (Adjust path based on your project)
 import mongoose from "mongoose";
 // Import your database connection and Amin model here
-import { connectToDatabase } from "@/lib/db"; 
-import AminProfile from "@/models/AminProfile"; 
+import { connectToDatabase } from "@/app/api/utils/dbConnect"; 
+import AminProfile from "@/aap/api/models/AminProfile"; 
 
 export async function getLiveAminProfilesForSitemap() {
   try {
