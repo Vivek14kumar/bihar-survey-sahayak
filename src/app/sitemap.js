@@ -4,7 +4,7 @@ import { locations } from "@/app/(public)/data/locations";
 import { postSlugs } from "@/app/(public)/data/postSlugs";
 
 // 1. Import your DB fetch function
-import { getLiveAminProfilesForSitemap } from "@/lib/actions/aminActions";
+import { getLiveAminProfilesForSitemap } from "../lib/actions/aminActions";
 
 export default async function sitemap() {
 
