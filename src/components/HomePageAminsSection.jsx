@@ -1,5 +1,6 @@
 // components/HomePageAminsSection.js
 // ✅ Server Component
+export const dynamic = "force-dynamic";
 
 import dbConnect from "@/app/api/utils/dbConnect";
 import Amin from "@/app/api/models/AminProfile";
