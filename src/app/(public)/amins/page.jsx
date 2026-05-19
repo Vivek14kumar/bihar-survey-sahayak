@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 
 import dbConnect from "@/app/api/utils/dbConnect";
 import Amin from "@/app/api/models/AminProfile";
@@ -12,6 +13,7 @@ import {
 
 import AminDirectoryCard from "@/components/AminDirectoryCard";
 
+
 export const metadata = {
   title: "Bihar Amin Directory",
   description:
@@ -20,6 +22,8 @@ export const metadata = {
 
 export default async function AllAminsPage({ searchParams }) {
   await dbConnect();
+
+  const params = await searchParams;
 
   const search = searchParams?.search || "";
   const service = searchParams?.service || "";
