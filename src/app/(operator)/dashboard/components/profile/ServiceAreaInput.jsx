@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 
 export default function ServiceAreaInput({ formData, setFormData }) {
   const [inputValue, setInputValue] = useState("");
+  const MAX_TAGS = 3; // Set the maximum number of tags allowed
 
   const serviceAreas = (() => {
     if (Array.isArray(formData?.serviceAreas)) {
@@ -22,7 +23,8 @@ export default function ServiceAreaInput({ formData, setFormData }) {
     if (value.endsWith(' ') || value.endsWith(',')) {
       const newArea = value.slice(0, -1).trim(); 
       
-      if (newArea && !serviceAreas.includes(newArea)) {
+      // Check if tag is valid, unique, AND limit hasn't been reached
+      if (newArea && !serviceAreas.includes(newArea) && serviceAreas.length < MAX_TAGS) {
         setFormData({
           ...formData,
           serviceAreas: [...serviceAreas, newArea]
@@ -39,7 +41,8 @@ export default function ServiceAreaInput({ formData, setFormData }) {
       e.preventDefault(); 
       
       const newArea = inputValue.trim();
-      if (newArea && !serviceAreas.includes(newArea)) {
+      // Check if tag is valid, unique, AND limit hasn't been reached
+      if (newArea && !serviceAreas.includes(newArea) && serviceAreas.length < MAX_TAGS) {
         setFormData({
           ...formData,
           serviceAreas: [...serviceAreas, newArea]
@@ -63,7 +66,7 @@ export default function ServiceAreaInput({ formData, setFormData }) {
   return (
     <div>
       <label className="block text-sm font-semibold text-slate-600 mb-2">
-        Service Areas <span className="text-xs font-normal text-slate-400">(Space, Comma या Enter दबाकर जोड़ें)</span>
+        Service Areas <span className="text-xs font-normal text-slate-400">(Space, Comma या Enter दबाकर जोड़ें - Max {MAX_TAGS})</span>
       </label>
       
       <div 
@@ -86,15 +89,18 @@ export default function ServiceAreaInput({ formData, setFormData }) {
           </span>
         ))}
 
-        <input
-          id="service-area-input"
-          type="text"
-          value={inputValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder={serviceAreas.length === 0 ? "Patna, Danapur, Fatuha..." : ""}
-          className="flex-1 min-w-[120px] bg-transparent outline-none py-1 px-2 text-slate-700"
-        />
+        {/* Conditionally hide the input when max tags are reached */}
+        {serviceAreas.length < MAX_TAGS && (
+          <input
+            id="service-area-input"
+            type="text"
+            value={inputValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder={serviceAreas.length === 0 ? "Patna, Danapur, Fatuha..." : ""}
+            className="flex-1 min-w-[120px] bg-transparent outline-none py-1 px-2 text-slate-700"
+          />
+        )}
       </div>
     </div>
   );
