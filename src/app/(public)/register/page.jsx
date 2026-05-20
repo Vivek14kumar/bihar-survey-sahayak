@@ -212,7 +212,7 @@ export default function Register() {
               <p className="text-xs font-bold text-blue-400 uppercase mb-4 tracking-widest">Why Join Us?</p>
               <div className="space-y-4">
                 <FeatureItem icon={<Printer size={16}/>} title="High-Speed Printing" desc="Prapatra 2, 3, and Vanshavali in one click." />
-                <FeatureItem icon={<IndianRupee size={16}/>} title="Earning Potential" desc="Charge for professional survey documentation." />
+                <FeatureItem icon={<IndianRupee size={16}/>} title="Earning Potential" desc="Increase your earning + " />
                 {/*<FeatureItem icon={<CheckCircle2 size={16}/>} title="Verified ID" desc="Get a unique ID for your shop or profile." />*/}
               </div>
             </div>
