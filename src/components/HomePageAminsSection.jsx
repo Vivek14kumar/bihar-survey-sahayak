@@ -1,6 +1,5 @@
 // components/HomePageAminsSection.js
 // ✅ Server Component
-export const revalidate = 60;
 
 import dbConnect from "@/app/api/utils/dbConnect";
 import Amin from "@/app/api/models/AminProfile";
