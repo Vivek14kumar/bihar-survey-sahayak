@@ -18,11 +18,19 @@ export default function AminSearchGrid({ initialAmins }) {
 
   // Filter the random amins array locally as the user types or clicks
   const filteredAmins = initialAmins.filter((profile) => {
-    // 1. Filter by Search Term (Matches English Name, Hindi Name, or Address)
+    
+    // Convert search term to lowercase once for better performance
+    const searchLower = searchTerm.toLowerCase();
+
+    // 1. Filter by Search Term (Name, Address, OR District/Service Area)
     const matchesSearch =
-      profile.ownerNameEn?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.ownerNameEn?.toLowerCase().includes(searchLower) ||
       profile.ownerNameHi?.includes(searchTerm) ||
-      profile.publicAddress?.toLowerCase().includes(searchTerm.toLowerCase());
+      profile.publicAddress?.toLowerCase().includes(searchLower) ||
+      // ADDED: Check if any district inside the serviceAreas array matches the search
+      (profile.serviceAreas && profile.serviceAreas.some((area) => 
+        area.toLowerCase().includes(searchLower)
+      ));
 
     // 2. Filter by Service Type
     const dbServiceKey = serviceMapping[selectedService];

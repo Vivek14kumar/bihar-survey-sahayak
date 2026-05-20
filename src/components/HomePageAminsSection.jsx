@@ -1,6 +1,6 @@
 // components/HomePageAminsSection.js
 // ✅ Server Component
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 import dbConnect from "@/app/api/utils/dbConnect";
 import Amin from "@/app/api/models/AminProfile";
@@ -8,7 +8,6 @@ import AminSearchGrid from "./AminSearchGrid"; // Import client wrapper
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 
-export const revalidate = 60;
 
 export default async function HomePageAminsSection() {
   await dbConnect();
