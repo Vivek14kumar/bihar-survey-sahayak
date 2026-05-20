@@ -520,7 +520,7 @@ const loadRazorpayScript = () => {
               <Eye size={20} className="text-blue-400" /> Draft Mode (ड्राफ्ट मोड)
             </h3>
             <p className="text-slate-300 text-sm md:text-base">
-              Your profile is currently hidden. <b>Please complete the form, upload your KYC documents at the bottom, and submit for verification.</b>
+              Your profile is currently hidden. <b>Please complete the form, upload your documents at the bottom, and submit for verification.</b>
             </p>
           </div>
         </div>
