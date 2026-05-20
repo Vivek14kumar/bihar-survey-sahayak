@@ -159,7 +159,7 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                 {walletBalance} <span className="text-xl sm:text-2xl font-medium text-blue-300">Credits</span>
               </h3>
               <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
-                <Info size={12} /> 1 Credit = ₹1 INR • Used strictly for form generation.
+                <Info size={12} />  ₹1 INR = 1 Credit • Used strictly for form generation.
               </p>
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                 <label className="block text-sm font-bold text-slate-700 mb-2">Select Amount to Pay (INR)</label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg font-bold">₹</div>
-                  <input type="number" min="1" max="200" required value={addAmount}
+                  <input type="number" min="10" max="200" required value={addAmount}
                     onChange={(e) => { const v = e.target.value; if (v === "" || Number(v) <= 200) setAddAmount(v); }}
                     placeholder="Enter amount between 10 and 200"
                     className="w-full h-12 sm:h-14 pl-10 pr-4 bg-slate-50 border border-slate-200 rounded-xl sm:rounded-2xl text-base sm:text-lg font-bold text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-300"
@@ -209,7 +209,7 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                 <div className="flex items-start gap-3 text-amber-800">
                   <AlertTriangle size={20} className="shrink-0 mt-0.5 text-amber-600" />
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest mb-1.5 text-amber-900">Non-Refundable Platform Tokens</p>
+                    <p className="text-xs font-black uppercase tracking-widest mb-1.5 text-amber-900">Non-Refundable Platform Tokens/Credits</p>
                     <p className="text-[11px] font-semibold leading-relaxed mb-1.5">Purchased credits are strictly non-refundable and hold no monetary value outside of this website. They cannot be transferred to bank accounts or other users. Min ₹10, Max ₹200.</p>
                     <p className="text-[11px] font-semibold leading-relaxed text-amber-700 pt-1.5 border-t border-amber-200/50"><span className="font-black">महत्वपूर्ण:</span> खरीदे गए क्रेडिट केवल इसी वेबसाइट पर फॉर्म जनरेट के लिए मान्य हैं। इन्हें वापस (Refund) या किसी बैंक खाते में ट्रांसफर नहीं किया जा सकता है।</p>
                   </div>
