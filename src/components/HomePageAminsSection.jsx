@@ -38,7 +38,7 @@ export default async function HomePageAminsSection() {
 
         {/* INTERACTIVE SEARCH & GRID SYSTEM */}
         <AminSearchGrid initialAmins={amins} />
-
+        
         {/* CTA */}
         <div className="mt-14 text-center">
           <Link

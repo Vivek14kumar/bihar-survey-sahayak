@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Search } from "lucide-react";
 import AminDirectoryCard from "./AminDirectoryCard";
+import AminCompactCard from "./AminCompactCard";
 
 export default function AminSearchGrid({ initialAmins }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,8 +83,9 @@ export default function AminSearchGrid({ initialAmins }) {
         </div>
       </div>
 
-      {/* ================= CARDS GRID ================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 place-items-center">
+      {/* ================= DESKTOP VIEW (Premium Large Cards) ================= */}
+      {/* 'hidden sm:grid' means: Hide on mobile, show as grid on tablet/desktop */}
+      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 place-items-center">
         {filteredAmins.length > 0 ? (
           filteredAmins.map((profile) => (
             <AminDirectoryCard key={profile._id} profile={profile} />
@@ -95,6 +97,28 @@ export default function AminSearchGrid({ initialAmins }) {
               <p className="mt-2 text-slate-500">आपके खोज के अनुसार कोई प्रोफाइल मैच नहीं हुई।</p>
             </div>
           </div>
+        )}
+      </div>
+
+      {/* ================= MOBILE VIEW (Compact YouTube Shorts Style) ================= */}
+      {/* 'grid sm:hidden' means: Show as grid on mobile, hide on tablet/desktop */}
+      <div 
+        className="
+          grid sm:hidden
+          grid-rows-2 grid-flow-col gap-3 pb-6 -mx-4 px-4
+          overflow-x-auto snap-x snap-mandatory
+          auto-cols-[46vw] 
+          [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+        "
+      >
+        {filteredAmins.length > 0 ? (
+          filteredAmins.map((profile) => (
+            <div key={profile._id} className="snap-start h-full">
+              <AminCompactCard profile={profile} />
+            </div>
+          ))
+        ) : (
+          <p className="text-slate-500 text-sm pl-2">कोई अमीन नहीं मिला</p>
         )}
       </div>
     </>
