@@ -533,7 +533,7 @@ const loadRazorpayScript = () => {
               <Clock size={20} /> Under Verification (सत्यापन प्रक्रिया में)
             </h3>
             <p className="text-amber-50 text-sm md:text-base">
-              Your documents have been submitted. <b>Our admin is reviewing your profile.</b> Once approved, your 3-Day Free Trial will begin automatically and your link will be live.
+              Your documents have been submitted. <b>Our team is reviewing your profile.</b> Once approved, your 3-Day Free Trial will begin automatically and your link will be live.
             </p>
           </div>
         </div>
@@ -573,16 +573,16 @@ const loadRazorpayScript = () => {
               <XCircle size={24} className="text-red-200" /> Verification Rejected (सत्यापन अस्वीकृत)
             </h3>
             
-            {/* Admin Reason Box */}
+            {/* Admin Reason Box Admin Message: */}
             <div className="bg-white/10 p-4 rounded-xl border border-red-400/50 backdrop-blur-sm my-3">
-              <p className="text-xs text-black font-bold uppercase tracking-wider mb-1">Admin Message:</p>
+              <p className="text-xs text-black font-bold uppercase tracking-wider mb-1"> Message:</p> 
               <p className="text-white font-medium ">
                 {rejectionReason || "Please check your uploaded documents and details."}
               </p>
             </div>
             
             <p className="text-red-100 text-sm">
-              Please fix the issue mentioned above. You can upload new documents below if required, then click <b>"Submit for Verification"</b> again to send it back to the admin. 
+              Please fix the issue mentioned above. You can upload new documents below if required, then click <b>"Submit for Verification"</b> again to send it back to the verifcation team. 
               <br/>(कृपया उपरोक्त समस्या को ठीक करें और पुनः सबमिट करें।)
             </p>
           </div>
