@@ -11,9 +11,9 @@ import { Eye, EyeOff, User, Store, Phone, Mail, MapPin, Lock, CheckCircle2, Tren
 // User types with descriptions for the "Earnings" feel
 {/* id: "csc", label: "CSC Operator", icon: <Briefcase size={16}/>*/}
 const userTypes = [
-  
-  { id: "cyber_cafe", label: "Cyber Cafe", icon: <Store size={16}/> },
   { id: "amin", label: "Amin", icon: <FileText size={16}/> },
+  { id: "cyber_cafe", label: "Cyber Cafe", icon: <Store size={16}/> },
+  
   { id: "normal", label: "Citizen / Normal User", icon: <Users size={16}/> },
 ];
 
@@ -29,7 +29,7 @@ export default function Register() {
   const [apiError, setApiError] = useState("");
 
   const [formData, setFormData] = useState({
-    userType: "cyber_cafe", // Default
+    userType: "amin", // Default
     ownerName: "",
     shopName: "",
     mobileNumber: "",
@@ -213,7 +213,7 @@ export default function Register() {
               <div className="space-y-4">
                 <FeatureItem icon={<Printer size={16}/>} title="High-Speed Printing" desc="Prapatra 2, 3, and Vanshavali in one click." />
                 <FeatureItem icon={<IndianRupee size={16}/>} title="Earning Potential" desc="Charge for professional survey documentation." />
-                <FeatureItem icon={<CheckCircle2 size={16}/>} title="Verified ID" desc="Get a unique ID for your shop or profile." />
+                {/*<FeatureItem icon={<CheckCircle2 size={16}/>} title="Verified ID" desc="Get a unique ID for your shop or profile." />*/}
               </div>
             </div>
             <div className="bg-blue-600/20 border border-blue-500/30 p-4 rounded-2xl">
