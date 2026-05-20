@@ -29,7 +29,7 @@ export default function Register() {
   const [apiError, setApiError] = useState("");
 
   const [formData, setFormData] = useState({
-    userType: "amin", // Default
+    userType: "", // Default
     ownerName: "",
     shopName: "",
     mobileNumber: "",
@@ -139,6 +139,12 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.userType) {
+        // Handle the error (e.g., set an error state, show a toast notification)
+        alert("Please select a Registration Category");
+        return;
+    }
     if (!validateForm()) return;
 
     setLoading(true);
@@ -251,6 +257,7 @@ export default function Register() {
                   onChange={handleChange}
                   className="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all appearance-none"
                 >
+                  <option value="" disabled>Select Registration Category</option>
                   {userTypes.map(type => (
                     <option key={type.id} value={type.id}>{type.label}</option>
                   ))}
