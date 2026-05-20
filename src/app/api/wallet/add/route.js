@@ -69,11 +69,11 @@ export async function POST(req) {
         id: transaction._id,
         txnId: transaction.txnId,
         form: transaction.form,
-        amount: `+₹${transaction.amount}`, 
+        amount: transaction.amount , //`+₹${transaction.amount}`
         isCredit: transaction.isCredit,
         time: transaction.time ? transaction.time.toLocaleString() : new Date().toLocaleString()
       } 
-    });
+    }); 
   } catch (error) {
     console.error("Wallet Top-up Error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

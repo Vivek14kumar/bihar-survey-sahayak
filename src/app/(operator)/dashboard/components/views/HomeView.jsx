@@ -116,7 +116,7 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed,
                 </div>
                 <div className="mt-auto pt-4 border-t border-black/5 flex items-center justify-between">
                    <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md flex items-center gap-1 border border-slate-200">
-                     <Wallet size={12} className="text-blue-600"/> Cost: ₹{form.cost}
+                     <Wallet size={12} className="text-blue-600"/> Cost:{form.cost} Credits
                    </span>
                 </div>
              </div>

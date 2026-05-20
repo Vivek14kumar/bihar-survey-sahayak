@@ -111,7 +111,7 @@ export async function POST(req) {
         await Notification.create({
           user: user._id, // Must match your Notification schema
           title: ` ${formName} Target Achieved!`,
-          message: `Congratulations! You generated ${formTarget.targetAmount} forms today. ₹${formTarget.cashbackReward} cashback has been added to your wallet.`,
+          message: `Congratulations! You generated ${formTarget.targetAmount} forms today. ${formTarget.cashbackReward} Crs cashback has been added to your wallet.`,
           type: "SUCCESS"
         });
 
@@ -131,7 +131,7 @@ export async function POST(req) {
         id: transaction._id,
         txnId: transaction.txnId,
         form: transaction.form,
-        amount: `-₹${transaction.amount}`, 
+        amount: transaction.amount, //`-₹${transaction.amount}`, 
         isCredit: transaction.isCredit,
         time: transaction.time.toLocaleString()
       },

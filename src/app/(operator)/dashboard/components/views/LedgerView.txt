@@ -34,14 +34,14 @@ export default function LedgerView({ generatedDocs, setGeneratedDocs }) {
   const sortedFilteredDates = Object.keys(groupedDocs).sort((a, b) => new Date(b) - new Date(a));
 
   const handleRequestRefund = async (docId) => {
-    if (!window.confirm("Did you experience an error while generating this document? Click OK to request a credit refund.")) return;
+    if (!window.confirm("Did you experience an error while generating this document? Click OK to request a refund.")) return;
     try {
       const res = await fetch("/api/documents/refund-request", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ docId })
       });
       const data = await res.json();
       if (data.success) {
-        alert("Credit refund requested successfully. The admin will review it shortly.");
+        alert("Refund requested successfully. The admin will review it shortly.");
         setGeneratedDocs(prevDocs => prevDocs.map(doc => (doc._id === docId || doc.id === docId) ? { ...doc, status: "REFUND_REQUESTED" } : doc));
       } else {
         alert(data.error || "Failed to request refund.");
@@ -68,7 +68,6 @@ export default function LedgerView({ generatedDocs, setGeneratedDocs }) {
           </div>
         )}
       </header>
-      
       {generatedDocs.length > 0 && (
         <div className="mb-6 flex items-center gap-3 overflow-x-auto pb-2 custom-scrollbar">
           <button onClick={() => setDocFilter("All")} className={`px-4 py-2 rounded-xl text-xs font-bold shrink-0 flex items-center gap-2 shadow-sm transition-all ${docFilter === "All" ? "bg-slate-800 text-white border-transparent" : "bg-white border-slate-200 text-slate-600 border"}`}>
@@ -81,7 +80,6 @@ export default function LedgerView({ generatedDocs, setGeneratedDocs }) {
           ))}
         </div>
       )}
-
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex-1 flex flex-col">
         {filteredDocs.length === 0 ? (
           <div className="text-center py-16">
@@ -112,12 +110,7 @@ export default function LedgerView({ generatedDocs, setGeneratedDocs }) {
                         </div>
                       </div>
                       <div className="shrink-0 text-right flex flex-col items-end gap-1.5">
-                        
-                        {/* CHANGED HERE: Replaced ₹ with Crs */}
-                        <span className={`text-xs font-black px-2.5 py-1.5 rounded-lg border ${doc.status === "REFUNDED" ? "text-slate-500 bg-slate-100 border-slate-200 line-through" : "text-emerald-600 bg-emerald-50 border-emerald-100"}`}>
-                          {doc.cost || "NA"} Crs
-                        </span>
-                        
+                        <span className={`text-xs font-black px-2.5 py-1.5 rounded-lg border ${doc.status === "REFUNDED" ? "text-slate-500 bg-slate-100 border-slate-200 line-through" : "text-emerald-600 bg-emerald-50 border-emerald-100"}`}>₹{doc.cost || "NA"}</span>
                         <div className="mt-2 text-right shrink-0">
                           {doc.status === "REFUND_REQUESTED" ? <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-200 shadow-sm"><Clock size={10} className="animate-pulse" /> Review Pending</span>
                            : doc.status === "REFUNDED" ? <span className="inline-flex items-center gap-1 text-[9px] font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-md border border-rose-200 shadow-sm"><CheckCircle2 size={10} /> Refunded</span>

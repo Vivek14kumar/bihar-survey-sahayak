@@ -78,7 +78,7 @@ const removeServiceArea = (index) => {
 };
 
   const handleWalletPayment = async () => {
-  if (!window.confirm("Deduct ₹199 from your wallet for a 30-day subscription?")) return;
+  if (!window.confirm("Deduct 199 Crs from your wallet for a 30-day subscription?")) return;
   
   setIsSaving(true);
   try {
@@ -621,7 +621,7 @@ const loadRazorpayScript = () => {
                 <CreditCard size={20} /> Pay via Wallet
               </button>
               <span className={`text-xs font-bold ${(existingData?.walletBalance || 0) >= 199 ? "text-emerald-600" : "text-red-500"}`}>
-                Wallet Balance: ₹{existingData?.walletBalance || 0}
+                Wallet Balance: {existingData?.walletBalance || 0} Crs
               </span>
             </div>
               
@@ -1124,7 +1124,7 @@ const loadRazorpayScript = () => {
                       <CreditCard size={18} /> Extend via Wallet
                     </button>
                     <span className={`text-xs font-bold ${(existingData?.walletBalance || 0) >= 199 ? "text-emerald-600" : "text-red-500"}`}>
-                      Bal: ₹{existingData?.walletBalance || 0}
+                      Bal: {existingData?.walletBalance || 0} Crs
                     </span>
                   </div>
                     
@@ -1152,7 +1152,7 @@ const loadRazorpayScript = () => {
                       <CreditCard size={20} /> Pay via Wallet
                     </button>
                     <span className={`text-[11px] font-bold ${(existingData?.walletBalance || 0) >= 199 ? "text-emerald-600" : "text-red-500"}`}>
-                      Wallet Balance: ₹{existingData?.walletBalance || 0}
+                      Wallet Balance: {existingData?.walletBalance || 0} Crs
                     </span>
                   </div>
                     

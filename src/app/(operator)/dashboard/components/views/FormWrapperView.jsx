@@ -34,7 +34,7 @@ export default function FormWrapperView({ currentView, setCurrentView, walletBal
 
   const handleGenerateForm = async (formName, cost, fallbackName = "", fallbackMobile = "") => {
     if (walletBalance < cost) {
-      alert(`Insufficient balance! This form requires ₹${cost}. Please recharge your wallet.`);
+      alert(`Insufficient balance! This form requires ${cost} Crs. Please recharge your wallet.`);
       setCurrentView("wallet");
       return false; 
     }
@@ -79,7 +79,7 @@ export default function FormWrapperView({ currentView, setCurrentView, walletBal
           <ArrowLeft size={16} /> Back to Dashboard
         </button>
         <div className="bg-slate-100 px-4 py-2 rounded-lg border border-slate-200 text-center">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Generation Cost <span className="text-lg font-black text-slate-800">&nbsp;₹{activeForm.cost}</span></p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Generation Cost <span className="text-lg font-black text-slate-800">&nbsp;{activeForm.cost} Crs</span></p>
           {/*<p className="text-lg font-black text-slate-800">₹{activeForm.cost}</p>*/}
         </div>
       </div>

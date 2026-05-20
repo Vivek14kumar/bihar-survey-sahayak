@@ -17,13 +17,13 @@ export function MotivationWidget({ dailyTargets = [], leaderboard = { topShops: 
               <div key={target._id} className={`p-2.5 rounded-lg border ${isMet ? 'bg-emerald-50 border-emerald-100' : 'bg-slate-50 border-slate-100'}`}>
                 <div className="flex justify-between items-start mb-1.5">
                   <h4 className="text-[11px] font-bold text-slate-700 capitalize flex items-center gap-1">{isMet && <CheckCircle2 size={12} className="text-emerald-500" />} {target.formName}</h4>
-                  <span className={`text-[10px] font-black px-1.5 py-0.5 rounded flex items-center gap-0.5 ${isMet ? 'text-emerald-700 bg-emerald-100/50' : 'text-blue-700 bg-blue-100/50'}`}>₹{target.cashbackReward}</span>
+                  <span className={`text-[10px] font-black px-1.5 py-0.5 rounded flex items-center gap-0.5 ${isMet ? 'text-emerald-700 bg-emerald-100/50' : 'text-blue-700 bg-blue-100/50'}`}>{target.cashbackReward} Crs</span>
                 </div>
                 <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1.5 overflow-hidden"><div className={`h-1.5 rounded-full transition-all duration-1000 ${isMet ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${progressPercent}%` }}></div></div>
                 <div className="flex justify-between items-center">
                   <p className="text-[9px] font-bold text-slate-500">{target.currentProgress} / {target.targetForm} Done</p>
                   <div className={`text-[9px] font-bold ${isMet ? 'text-emerald-600' : 'text-slate-400'}`}>
-                    {isMet ? (target.isRewardClaimed ? "Claimed ✓" : <button onClick={() => onClaim(target._id)} className="bg-emerald-500 text-white px-2 py-1 rounded shadow-sm hover:bg-emerald-600 active:scale-95 transition-all animate-pulse">Claim ₹{target.cashbackReward}</button>) : (`${remaining} more left`)}
+                    {isMet ? (target.isRewardClaimed ? "Claimed ✓" : <button onClick={() => onClaim(target._id)} className="bg-emerald-500 text-white px-2 py-1 rounded shadow-sm hover:bg-emerald-600 active:scale-95 transition-all animate-pulse">Claim {target.cashbackReward} Crs</button>) : (`${remaining} more left`)}
                   </div>
                 </div>
               </div>

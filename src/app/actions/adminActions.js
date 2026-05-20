@@ -86,7 +86,7 @@ export async function approveRefundRequest(docId) {
   await Notification.create({
     user: user._id, 
     title: " Refund Approved",
-    message: `Your refund request for ${doc.title} (₹${doc.cost}) has been approved.`,
+    message: `Your refund request for ${doc.title} (${doc.cost} Crs) has been approved.`,
     type: "SUCCESS"
   });
 
@@ -153,7 +153,7 @@ export async function rejectRefundRequest(docId) {
   await Notification.create({
     user: user._id, // <-- CHANGED THIS LINE
     title: " Refund Processed",
-    message: `A refund of ₹${originalDoc.cost} for document '${originalDoc.title}' has been credited back to your wallet.`,
+    message: `A refund of ${originalDoc.cost} Crs for document '${originalDoc.title}' has been credited back to your wallet.`,
     type: "SUCCESS"
   });
 

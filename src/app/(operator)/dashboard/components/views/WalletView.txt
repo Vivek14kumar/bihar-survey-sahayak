@@ -1,14 +1,57 @@
-import { useState } from "react";
-import { Wallet, CreditCard, CheckCircle2, AlertTriangle, History, Calendar, FileText, Gift, ArrowDownRight, Filter, Sparkles } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { 
+  Wallet, CreditCard, CheckCircle2, AlertTriangle, History, Calendar, 
+  FileText, Gift, ArrowDownRight, Filter, Sparkles, ChevronDown, Loader2 
+} from "lucide-react";
 
-export default function WalletView({ walletBalance, transactions, onUpdateWallet }) {
+export default function WalletView({ walletBalance, onUpdateWallet }) {
+  // Payment States
   const [addAmount, setAddAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   
+  // Data & Pagination States
+  const [localTransactions, setLocalTransactions] = useState([]);
   const [txFilter, setTxFilter] = useState("ALL");
   const [dateFilter, setDateFilter] = useState("ALL");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // --- Transaction Fetching Logic ---
+  const fetchTransactions = useCallback(async (pageNum, currentData = []) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/wallet/transactions?page=${pageNum}&limit=6&type=${txFilter}&date=${dateFilter}`);
+      if (res.ok) {
+        const json = await res.json();
+        // If it's page 1, replace the data. Otherwise, append to existing data.
+        setLocalTransactions(pageNum === 1 ? json.data : [...currentData, ...json.data]);
+        setHasMore(json.hasMore);
+      } else {
+        console.error("Failed to fetch transactions");
+      }
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [txFilter, dateFilter]);
+
+  // Refetch from Page 1 whenever filters change
+  useEffect(() => {
+    setPage(1);
+    fetchTransactions(1, []);
+  }, [txFilter, dateFilter, fetchTransactions]);
+
+  // Load More Button Handler
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchTransactions(nextPage, localTransactions);
+  };
+
+  // --- Razorpay Payment Logic ---
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -59,6 +102,10 @@ export default function WalletView({ walletBalance, transactions, onUpdateWallet
               onUpdateWallet(data.newBalance, data.transaction); 
               setAddAmount("");
               setPaymentSuccess(true);
+              
+              // Refresh transaction list after successful payment
+              fetchTransactions(1, []);
+              
               setTimeout(() => setPaymentSuccess(false), 4000);
             } else {
               alert("Payment received, but wallet update failed. Contact Admin.");
@@ -77,33 +124,6 @@ export default function WalletView({ walletBalance, transactions, onUpdateWallet
     } catch (error) { console.error("Payment setup error:", error); } 
     finally { setIsProcessing(false); }
   };
-
-  // Transaction Filtering
-  const filteredTransactions = (transactions || []).filter(tx => {
-    if (!tx) return false;
-    const isReward = tx.form?.toLowerCase().includes("reward") || tx.note?.toLowerCase().includes("auto-claim");
-    const isRefund = tx.form?.toLowerCase().includes("refund") || tx.note?.toLowerCase().includes("refund");
-    
-    let typeMatch = true;
-    if (txFilter === "REWARD") typeMatch = isReward;
-    else if (txFilter === "REFUND") typeMatch = isRefund;
-    else if (txFilter === "CREDIT") typeMatch = tx.isCredit && !isReward && !isRefund;
-    else if (txFilter === "DEBIT") typeMatch = !tx.isCredit;
-
-    let dateMatch = true;
-    const rawDate = tx.time || tx.createdAt || tx.date;
-    if (!rawDate) return dateFilter === "ALL"; 
-    
-    const txDate = new Date(rawDate);
-    if (isNaN(txDate.getTime())) return dateFilter === "ALL";
-
-    const now = new Date();
-    if (dateFilter === "TODAY") dateMatch = txDate.toDateString() === now.toDateString();
-    else if (dateFilter === "WEEK") dateMatch = txDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    else if (dateFilter === "MONTH") dateMatch = txDate >= new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-
-    return typeMatch && dateMatch; 
-  });
 
   return (
     <div className="w-full max-w-7xl mx-auto animate-in fade-in duration-300">
@@ -148,7 +168,7 @@ export default function WalletView({ walletBalance, transactions, onUpdateWallet
                 <label className="block text-sm font-bold text-slate-700 mb-2">Enter Amount</label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg font-bold">₹</div>
-                  <input type="number" min="10" max="200" required value={addAmount}
+                  <input type="number" min="1" max="200" required value={addAmount}
                     onChange={(e) => { const v = e.target.value; if (v === "" || Number(v) <= 200) setAddAmount(v); }}
                     placeholder="Enter amount between 10 and 200"
                     className="w-full h-12 sm:h-14 pl-10 pr-4 bg-slate-50 border border-slate-200 rounded-xl sm:rounded-2xl text-base sm:text-lg font-bold text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-300"
@@ -184,7 +204,7 @@ export default function WalletView({ walletBalance, transactions, onUpdateWallet
         </div>
 
         {/* RIGHT SECTION: Transactions */}
-        <div className="border-b border-slate-100 p-4 mb-4 sticky top-0 bg-white z-10 flex flex-col h-full overflow-hidden">
+        <div className="border border-slate-200 rounded-2xl sm:rounded-3xl p-4 sm:p-5 sticky top-5 bg-white z-10 flex flex-col h-full lg:max-h-[850px] shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <h3 className="flex items-center gap-2 text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-[0.2em] min-w-0">
               <History size={15} className="text-blue-500 shrink-0" />
@@ -208,8 +228,13 @@ export default function WalletView({ walletBalance, transactions, onUpdateWallet
             ))}
           </div>
 
-          <div className="space-y-3 overflow-y-auto max-h-[500px] mt-4 custom-scrollbar pr-1 flex-1">
-            {filteredTransactions.length === 0 ? (
+          <div className="space-y-3 overflow-y-auto mt-4 custom-scrollbar pr-1 flex-1">
+            {/* Initial Loading State */}
+            {isLoading && page === 1 ? (
+               <div className="py-12 flex items-center justify-center">
+                 <Loader2 size={24} className="text-blue-500 animate-spin" />
+               </div>
+            ) : localTransactions.length === 0 ? (
               <div className="py-12 text-center animate-in fade-in flex flex-col items-center justify-center">
                 <div className="w-16 h-16 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4 shadow-inner"><Filter size={24} className="text-slate-300" /></div>
                 <p className="text-sm font-bold text-slate-700">No matching transactions</p>
@@ -219,38 +244,67 @@ export default function WalletView({ walletBalance, transactions, onUpdateWallet
                 )}
               </div>
             ) : (
-              filteredTransactions.map((tx) => {
-                const isReward = tx.form?.toLowerCase().includes("reward") || tx.note?.toLowerCase().includes("auto-claim");
-                return (
-                  <div key={tx.id || tx._id} className={`flex justify-between items-start gap-3 p-3 sm:p-4 rounded-2xl border transition-all overflow-hidden group ${isReward ? 'bg-gradient-to-r from-amber-50 to-yellow-50/50 border-amber-200 shadow-sm hover:shadow-md' : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-sm hover:bg-slate-50'}`}>
-                    <div className="flex gap-3 min-w-0 flex-1">
-                      <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${isReward ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-inner" : tx.isCredit ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-slate-50 text-slate-500 border border-slate-200"}`}>
-                        {isReward ? <Gift size={18} className="animate-pulse" /> : tx.isCredit ? <ArrowDownRight size={18} strokeWidth={2.5} /> : <FileText size={16} />}
+              <>
+                {/* Render Server Data */}
+                {localTransactions.map((tx) => {
+                  const isReward = tx.form?.toLowerCase().includes("reward") || tx.note?.toLowerCase().includes("auto-claim") || tx.type === "REWARD";
+                  return (
+                    <div key={tx.id || tx._id || tx.txnId} className={`flex justify-between items-start gap-3 p-3 sm:p-4 rounded-2xl border transition-all overflow-hidden group ${isReward ? 'bg-gradient-to-r from-amber-50 to-yellow-50/50 border-amber-200 shadow-sm hover:shadow-md' : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-sm hover:bg-slate-50'}`}>
+                      <div className="flex gap-3 min-w-0 flex-1">
+                        <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${isReward ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-inner" : tx.isCredit ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-slate-50 text-slate-500 border border-slate-200"}`}>
+                          {isReward ? <Gift size={18} className="animate-pulse" /> : tx.isCredit ? <ArrowDownRight size={18} strokeWidth={2.5} /> : <FileText size={16} />}
+                        </div>
+                        <div className="min-w-0 flex-1 flex flex-col justify-center">
+                          <p className={`text-xs sm:text-sm font-bold truncate flex items-center gap-1.5 ${isReward ? 'text-amber-900' : 'text-slate-800'}`}>
+                            {tx.form || (tx.isCredit ? "Wallet Top-up" : "Form Generation")}
+                            {isReward && <Sparkles size={12} className="text-amber-500" />}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium">{new Date(tx.time || tx.createdAt || tx.date).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+                            <span className="w-1 h-1 rounded-full bg-slate-200"></span>
+                            <span className="w-fit max-w-[80px] sm:max-w-full truncate text-[9px] sm:text-[10px] font-mono font-bold text-slate-400">{tx.txnId}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="min-w-0 flex-1 flex flex-col justify-center">
-                        <p className={`text-xs sm:text-sm font-bold truncate flex items-center gap-1.5 ${isReward ? 'text-amber-900' : 'text-slate-800'}`}>
-                          {tx.form || (tx.isCredit ? "Wallet Top-up" : "Form Generation")}
-                          {isReward && <Sparkles size={12} className="text-amber-500" />}
+                      <div className="text-right shrink-0 flex flex-col justify-center items-end">
+                        <p className={`text-sm sm:text-base font-black whitespace-nowrap tracking-tight ${isReward ? "text-amber-600" : tx.isCredit ? "text-emerald-600" : "text-slate-800"}`}>
+                          {tx.isCredit ? "+" : "-"}₹{tx.amount?.toString().replace("-₹", "").replace("+₹", "")}
                         </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium">{new Date(tx.time || tx.createdAt || tx.date).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
-                          <span className="w-1 h-1 rounded-full bg-slate-200"></span>
-                          <span className="w-fit max-w-[80px] sm:max-w-full truncate text-[9px] sm:text-[10px] font-mono font-bold text-slate-400">{tx.txnId}</span>
+                        <div className="mt-1 flex flex-col items-end gap-1">
+                          {isReward && <span className="text-[8px] font-black text-amber-500 bg-amber-100/50 px-1.5 py-0.5 rounded uppercase tracking-widest">Cashback</span>}
+                          {tx.status !== "SUCCESS" && <span className={`inline-flex items-center justify-center text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest whitespace-nowrap ${tx.status === "FAILED" ? "text-rose-600 bg-rose-50 border border-rose-100" : "text-amber-600 bg-amber-50 border border-amber-100"}`}>{tx.status}</span>}
+                        </div>
+                        <div>
+                          {tx.status === "SUCCESS" && (tx.amount === 199 || tx.form.includes("Profile Subscription (30 Days)")) && (
+                            <a 
+                              href={`/invoice/${tx.txnId}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-gray-400 transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                              Download Invoice
+                            </a>
+                          )}
                         </div>
                       </div>
                     </div>
-                    <div className="text-right shrink-0 flex flex-col justify-center items-end">
-                      <p className={`text-sm sm:text-base font-black whitespace-nowrap tracking-tight ${isReward ? "text-amber-600" : tx.isCredit ? "text-emerald-600" : "text-slate-800"}`}>
-                        {tx.isCredit ? "+" : "-"}₹{tx.amount?.toString().replace("-₹", "").replace("+₹", "")}
-                      </p>
-                      <div className="mt-1 flex flex-col items-end gap-1">
-                        {isReward && <span className="text-[8px] font-black text-amber-500 bg-amber-100/50 px-1.5 py-0.5 rounded uppercase tracking-widest">Cashback</span>}
-                        {tx.status !== "SUCCESS" && <span className={`inline-flex items-center justify-center text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest whitespace-nowrap ${tx.status === "FAILED" ? "text-rose-600 bg-rose-50 border border-rose-100" : "text-amber-600 bg-amber-50 border border-amber-100"}`}>{tx.status}</span>}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
+                  );
+                })}
+
+                {/* Load More Button */}
+                {hasMore && (
+                  <button 
+                    onClick={handleLoadMore}
+                    disabled={isLoading}
+                    className="w-full mt-2 py-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-slate-600 hover:text-blue-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+                  >
+                    {isLoading ? <Loader2 size={14} className="animate-spin" /> : (
+                      <>Load More <ChevronDown size={14} className="group-hover:translate-y-0.5 transition-transform" /></>
+                    )}
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>

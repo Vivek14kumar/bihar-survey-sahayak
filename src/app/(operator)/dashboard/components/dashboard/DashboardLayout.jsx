@@ -108,7 +108,7 @@ export default function DashboardLayout({
 
           <nav className="flex-1 p-4 space-y-2 overflow-y-auto mt-2 custom-scrollbar">
             <SidebarItem icon={<LayoutDashboard size={18}/>} label="Dashboard" active={currentView === "dashboard" || currentView.startsWith("form_")} onClick={() => handleNavClick("dashboard")} />
-            <SidebarItem icon={<Wallet size={18}/>} label="Wallet & Credits" active={currentView === "wallet"} onClick={() => handleNavClick("wallet")} badge={`₹${walletBalance}`} />
+            <SidebarItem icon={<Wallet size={18}/>} label="Wallet & Credits" active={currentView === "wallet"} onClick={() => handleNavClick("wallet")} badge={`${walletBalance} Crs`} /> {/** badge={`₹${walletBalance}`}*/}
             <SidebarItem icon={<FileText size={18}/>} label="Generated Docs" active={currentView === "documents"} onClick={() => handleNavClick("documents")} badge={generatedDocsCount.toString()} />
             {/* ✨ NEW: Conditionally rendered Amin Profile Link */}
               {userData?.userType === "amin" && (
@@ -124,12 +124,19 @@ export default function DashboardLayout({
           </nav>
           
           <div className="p-4 border-t border-slate-700">
-            <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Balance</p>
-              <h3 className="text-2xl font-black text-white flex items-center gap-1"><IndianRupee size={20} className="text-blue-500"/>{walletBalance}</h3>
-              <button onClick={() => handleNavClick("wallet")} className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded-lg transition-colors">+ Add Funds</button>
-            </div>
-          </div>
+  <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Available Credits</p>
+    <h3 className="text-2xl font-black text-white flex items-baseline gap-1.5">
+      {walletBalance} <span className="text-sm font-bold text-blue-400">Crs</span>
+    </h3>
+    <button 
+      onClick={() => handleNavClick("wallet")} 
+      className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded-lg transition-colors"
+    >
+      + Buy Credits
+    </button>
+  </div>
+</div>
 
           <div className="p-4 border-t border-slate-700 pb-safe">
             <button onClick={() => signOut({ callbackUrl: '/login' })} className="flex items-center justify-center gap-3 w-full p-3 text-sm font-bold text-white bg-red-500 border border-red-500/20 rounded-xl hover:bg-red-600 transition-colors">
@@ -273,7 +280,7 @@ export default function DashboardLayout({
 
             <div className="flex items-center gap-1.5 sm:gap-2 bg-blue-50 sm:bg-slate-50 px-2.5 sm:px-3 py-1.5 rounded-full border border-blue-100 sm:border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors shrink-0" onClick={() => setCurrentView("wallet")}>
               <Wallet size={16} className="text-blue-600"/>
-              <span className="text-xs sm:text-sm font-bold text-slate-700">₹{walletBalance}</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-700">{walletBalance} Crs</span>
             </div>
 
             {/*<button onClick={() => signOut({ callbackUrl: "/login" })} className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors flex-shrink-0" title="Logout">
@@ -374,7 +381,7 @@ function MobileNavBtn({ icon, label, active, onClick, badge, notif, isDanger }) 
     >
       <div className="relative mb-1">
         {icon}
-        {badge !== undefined && <span className="absolute -top-1.5 -right-4 bg-emerald-100 text-emerald-700 border border-emerald-200 text-[9px] font-bold px-1.5 rounded-full shadow-sm">₹{badge}</span>}
+        {badge !== undefined && <span className="absolute -top-1.5 -right-4 bg-emerald-100 text-emerald-700 border border-emerald-200 text-[9px] font-bold px-1.5 rounded-full shadow-sm">{badge} </span>}
         {notif && <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white shadow-sm">{notif > 99 ? '99+' : notif}</span>}
       </div>
       <span className={`text-[10px] ${active ? "font-bold" : "font-medium"}`}>{label}</span>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { 
   Wallet, CreditCard, CheckCircle2, AlertTriangle, History, Calendar, 
-  FileText, Gift, ArrowDownRight, Filter, Sparkles, ChevronDown, Loader2 
+  FileText, Gift, ArrowDownRight, Filter, Sparkles, ChevronDown, Loader2, Info 
 } from "lucide-react";
 
 export default function WalletView({ walletBalance, onUpdateWallet }) {
@@ -89,7 +89,10 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: orderData.amount, currency: "INR", name: "Bihar Survey Sahayak", description: "Wallet Top-Up",
+        amount: orderData.amount, 
+        currency: "INR", 
+        name: "Bihar Survey Sahayak", 
+        description: `Purchase ${amount} Survey Credits`, // Updated to say Credits
         order_id: orderData.id,
         handler: async function (response) {
           try {
@@ -108,7 +111,7 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
               
               setTimeout(() => setPaymentSuccess(false), 4000);
             } else {
-              alert("Payment received, but wallet update failed. Contact Admin.");
+              alert("Payment received, but credit update failed. Contact Admin.");
             }
           } catch (err) { console.error("Wallet update error:", err); }
         },
@@ -127,10 +130,19 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
 
   return (
     <div className="w-full max-w-7xl mx-auto animate-in fade-in duration-300">
+      
+      {/* Migration Notice Banner */}
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl flex items-center gap-3 text-blue-800">
+        <Info size={20} className="shrink-0 text-blue-600" />
+        <p className="text-xs sm:text-sm font-semibold">
+          <span className="font-bold">System Update:</span> We have upgraded to a credit system. Your previous balance has been securely converted at a <span className="font-bold">1:1 ratio (₹1 = 1 Credit)</span>.
+        </p>
+      </div>
+
       <header className="mb-5 sm:mb-6 lg:mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-xl xs:text-2xl sm:text-3xl font-black text-slate-800 uppercase tracking-tight leading-tight break-words">Wallet Management</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">Add credits and manage transactions securely.</p>
+          <h2 className="text-xl xs:text-2xl sm:text-3xl font-black text-slate-800 uppercase tracking-tight leading-tight break-words">Account Credits</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">Manage and purchase credits for generating forms.</p>
         </div>
       </header>
 
@@ -142,8 +154,13 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
             <div className="absolute -top-16 -right-16 w-44 h-44 bg-blue-500/20 rounded-full blur-3xl"></div>
             <div className="absolute right-2 top-2 sm:right-4 sm:top-4 opacity-10"><Wallet className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32" /></div>
             <div className="relative z-10 min-w-0">
-              <p className="text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-blue-300 mb-2">Available Credits</p>
-              <h3 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight break-all">₹{walletBalance}</h3>
+              <p className="text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-blue-300 mb-2">Available Balance</p>
+              <h3 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight break-all">
+                {walletBalance} <span className="text-xl sm:text-2xl font-medium text-blue-300">Credits</span>
+              </h3>
+              <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
+                <Info size={12} /> 1 Credit = ₹1 INR • Used strictly for form generation.
+              </p>
             </div>
           </div>
 
@@ -151,21 +168,21 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
             <div className="flex items-start sm:items-center gap-3 mb-5 sm:mb-6">
               <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0"><CreditCard size={20} className="text-blue-700" /></div>
               <div className="min-w-0">
-                <h3 className="text-base sm:text-lg md:text-xl font-black text-slate-800 break-words">Recharge Wallet</h3>
-                <p className="text-[11px] sm:text-sm text-slate-500">Add money instantly using secure payment.</p>
+                <h3 className="text-base sm:text-lg md:text-xl font-black text-slate-800 break-words">Buy Credits</h3>
+                <p className="text-[11px] sm:text-sm text-slate-500">Purchase credits securely via Indian Rupees (INR).</p>
               </div>
             </div>
 
             {paymentSuccess && (
               <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-start gap-3 text-emerald-700">
                 <CheckCircle2 size={20} className="shrink-0 mt-0.5" />
-                <p className="text-xs sm:text-sm font-bold leading-relaxed">Payment Successful! Credits added to your wallet.</p>
+                <p className="text-xs sm:text-sm font-bold leading-relaxed">Payment Successful! Credits added to your account.</p>
               </div>
             )}
 
             <form onSubmit={handleAddMoney} className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Enter Amount</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Select Amount to Pay (INR)</label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg font-bold">₹</div>
                   <input type="number" min="1" max="200" required value={addAmount}
@@ -174,6 +191,9 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                     className="w-full h-12 sm:h-14 pl-10 pr-4 bg-slate-50 border border-slate-200 rounded-xl sm:rounded-2xl text-base sm:text-lg font-bold text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-300"
                   />
                 </div>
+                {addAmount && (
+                  <p className="text-xs text-blue-600 font-bold mt-1.5">You will receive: {addAmount} Credits</p>
+                )}
               </div>
 
               <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -189,15 +209,15 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                 <div className="flex items-start gap-3 text-amber-800">
                   <AlertTriangle size={20} className="shrink-0 mt-0.5 text-amber-600" />
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest mb-1.5 text-amber-900">Strict No Refund Policy</p>
-                    <p className="text-[11px] font-semibold leading-relaxed mb-1.5">Added funds cannot be refunded or transferred to any bank account under any circumstances. You can add a minimum of ₹10 and a maximum of ₹200 per transaction.</p>
-                    <p className="text-[11px] font-semibold leading-relaxed text-amber-700 pt-1.5 border-t border-amber-200/50"><span className="font-black">महत्वपूर्ण:</span> वॉलेट में जोड़े गए पैसे किसी भी स्थिति में वापस (Refund) या बैंक खाते में ट्रांसफर नहीं किए जाएंगे। एक बार में कम से कम ₹10 और अधिकतम ₹200 ही जोड़ सकते हैं।</p>
+                    <p className="text-xs font-black uppercase tracking-widest mb-1.5 text-amber-900">Non-Refundable Platform Tokens</p>
+                    <p className="text-[11px] font-semibold leading-relaxed mb-1.5">Purchased credits are strictly non-refundable and hold no monetary value outside of this website. They cannot be transferred to bank accounts or other users. Min ₹10, Max ₹200.</p>
+                    <p className="text-[11px] font-semibold leading-relaxed text-amber-700 pt-1.5 border-t border-amber-200/50"><span className="font-black">महत्वपूर्ण:</span> खरीदे गए क्रेडिट केवल इसी वेबसाइट पर फॉर्म जनरेट के लिए मान्य हैं। इन्हें वापस (Refund) या किसी बैंक खाते में ट्रांसफर नहीं किया जा सकता है।</p>
                   </div>
                 </div>
               </div>
 
               <button type="submit" disabled={isProcessing} className="w-full h-12 sm:h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-[0.18em] text-[11px] sm:text-xs shadow-lg transition-all active:scale-[0.98] disabled:opacity-50">
-                {isProcessing ? "Processing Payment..." : "Proceed to Add"}
+                {isProcessing ? "Processing Payment..." : "Proceed to Buy Credits"}
               </button>
             </form>
           </div>
@@ -208,7 +228,7 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
           <div className="flex items-center justify-between mb-3">
             <h3 className="flex items-center gap-2 text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-[0.2em] min-w-0">
               <History size={15} className="text-blue-500 shrink-0" />
-              <span className="truncate">Recent Transactions</span>
+              <span className="truncate">Credit Logs</span>
             </h3>
             <div className="relative flex items-center bg-slate-50 border border-slate-200 hover:border-blue-300 transition-colors rounded-lg px-2 py-1 cursor-pointer">
                <Calendar size={12} className="text-blue-500 mr-1.5" />
@@ -223,7 +243,8 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
               <button key={tab} onClick={() => setTxFilter(tab)}
                 className={`text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap transition-all flex items-center gap-1.5 ${txFilter === tab ? tab === "REWARD" ? "bg-amber-100 text-amber-700 shadow-sm" : tab === "REFUND" ? "bg-indigo-100 text-indigo-700 shadow-sm" : "bg-slate-800 text-white shadow-sm" : "bg-slate-50 text-slate-500 hover:bg-slate-100"}`}>
                 {tab === "REWARD" && txFilter === tab && <Sparkles size={12} className="text-amber-500" />}
-                {tab === "DEBIT" ? "PAID" : tab === "CREDIT" ? "TOP-UPS" : tab}
+                {/* Changed labels for Credit system, but keys remain backend-friendly */}
+                {tab === "DEBIT" ? "USED" : tab === "CREDIT" ? "PURCHASED" : tab}
               </button>
             ))}
           </div>
@@ -237,7 +258,7 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
             ) : localTransactions.length === 0 ? (
               <div className="py-12 text-center animate-in fade-in flex flex-col items-center justify-center">
                 <div className="w-16 h-16 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4 shadow-inner"><Filter size={24} className="text-slate-300" /></div>
-                <p className="text-sm font-bold text-slate-700">No matching transactions</p>
+                <p className="text-sm font-bold text-slate-700">No matching logs</p>
                 <p className="text-xs text-slate-400 mt-1 max-w-[200px] mx-auto">We couldn't find any {txFilter !== "ALL" ? txFilter.toLowerCase() : ""} records for this time period.</p>
                 {(txFilter !== "ALL" || dateFilter !== "ALL") && (
                   <button onClick={() => { setTxFilter("ALL"); setDateFilter("ALL"); }} className="mt-4 text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">Clear Filters</button>
@@ -256,7 +277,7 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                         </div>
                         <div className="min-w-0 flex-1 flex flex-col justify-center">
                           <p className={`text-xs sm:text-sm font-bold truncate flex items-center gap-1.5 ${isReward ? 'text-amber-900' : 'text-slate-800'}`}>
-                            {tx.form || (tx.isCredit ? "Wallet Top-up" : "Form Generation")}
+                            {tx.form || (tx.isCredit ? "Credit Purchase" : "Form Generation")}
                             {isReward && <Sparkles size={12} className="text-amber-500" />}
                           </p>
                           <div className="flex items-center gap-2 mt-1">
@@ -268,10 +289,10 @@ export default function WalletView({ walletBalance, onUpdateWallet }) {
                       </div>
                       <div className="text-right shrink-0 flex flex-col justify-center items-end">
                         <p className={`text-sm sm:text-base font-black whitespace-nowrap tracking-tight ${isReward ? "text-amber-600" : tx.isCredit ? "text-emerald-600" : "text-slate-800"}`}>
-                          {tx.isCredit ? "+" : "-"}₹{tx.amount?.toString().replace("-₹", "").replace("+₹", "")}
+                          {tx.isCredit ? "+" : "-"}{tx.amount?.toString().replace("-₹", "").replace("+₹", "")} Crs
                         </p>
                         <div className="mt-1 flex flex-col items-end gap-1">
-                          {isReward && <span className="text-[8px] font-black text-amber-500 bg-amber-100/50 px-1.5 py-0.5 rounded uppercase tracking-widest">Cashback</span>}
+                          {isReward && <span className="text-[8px] font-black text-amber-500 bg-amber-100/50 px-1.5 py-0.5 rounded uppercase tracking-widest">Bonus</span>}
                           {tx.status !== "SUCCESS" && <span className={`inline-flex items-center justify-center text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest whitespace-nowrap ${tx.status === "FAILED" ? "text-rose-600 bg-rose-50 border border-rose-100" : "text-amber-600 bg-amber-50 border border-amber-100"}`}>{tx.status}</span>}
                         </div>
                         <div>
