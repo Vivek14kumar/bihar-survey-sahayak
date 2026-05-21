@@ -64,6 +64,7 @@ export const authOptions = {
     },
     async session({ session, token }) {
       if (token) {
+        session.user.id = token.sub; // <-- ADD THIS LINE (passes Mongo _id to session)
         session.user.role = token.role; 
         session.user.userId = token.userId;
         session.user.userType = token.userType;

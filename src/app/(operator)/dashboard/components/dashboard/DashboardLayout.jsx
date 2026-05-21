@@ -4,7 +4,7 @@ import {
   Bell, Search, IndianRupee, Menu, X, RefreshCcw, Target, PanelLeft 
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-
+import TermsModal from "./TermsModal";
 export default function DashboardLayout({ 
   children, currentView, setCurrentView, userData, walletBalance, 
   generatedDocsCount, searchQuery, setSearchQuery, notifications, setNotifications 
@@ -47,6 +47,16 @@ export default function DashboardLayout({
     };
   }, [showNotifications]);
 
+  const [localUserData, setLocalUserData] = useState(userData);
+
+  // Callback function when user successfully clicks "I Agree"
+  const handleTermsAccepted = () => {
+    setLocalUserData((prev) => ({
+      ...prev,
+      acceptedDeclaration: true
+    }));
+  };
+
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
   };
@@ -67,6 +77,11 @@ export default function DashboardLayout({
   };
 
   return (
+    <>
+    <TermsModal 
+        userData={localUserData} 
+        onTermsAccepted={handleTermsAccepted} 
+      />
     <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
       
       {/* MOBILE / TABLET SIDEBAR OVERLAY */}
@@ -334,6 +349,7 @@ export default function DashboardLayout({
         </nav>
       </main>
     </div>
+    </>
   );
 }
 

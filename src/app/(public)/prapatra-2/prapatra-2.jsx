@@ -669,6 +669,10 @@ const handleSecureAction = async (actionType) => {
                                         onKeyDown={handleKeyDown}
                                         className="w-full min-h-[30px] leading-tight outline-none resize-none bg-transparent placeholder:italic "
                                       />
+                                      {/* 'block' ensures it takes its own line, 'text-left' aligns it left */}
+                                      <span className="font-bold  block  border-t border-dotted border-gray-300 text-left ">
+                                        पिता/पति :
+                                      </span>
                                       <textarea 
                                         placeholder="पिता / पति का नाम"
                                         value={ryot.fatherName}

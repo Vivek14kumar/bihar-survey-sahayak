@@ -7,7 +7,7 @@ const availableForms = [
   { id: "prapatra2", category: "forms", title: "Prapatra 2", desc: "Self Declaration Form.", icon: <FileSignature size={24}/>, cost: "5", badge: "Popular", badgeColor: "bg-rose-100 text-rose-700", view: "form_prapatra2" },
   { id: "prapatra3", category: "all", title: "Prapatra 3(1)", desc: "Claim details format.", icon: <FileText size={24}/>, cost: "5", view: "form_prapatra3" },
   { id: "vanshavali", category: "forms", title: "Vanshavali", desc: "Family tree layouts.", icon: <Users size={24}/>, cost: "10", badge: "High Margin", badgeColor: "bg-emerald-100 text-emerald-700", view: "form_vanshavali" },
-  { id: "batwara", category: "forms", title: "Batwara Application", desc: "Land partition form.", icon: <Activity size={24}/>, cost: "30", badge: "High Margin", badgeColor: "bg-emerald-100 text-emerald-700", view: "form_batwara" },
+  { id: "batwara", category: "forms", title: "Batwara Application", desc: "Land partition form.", icon: <Activity size={24}/>, cost: "30", badge: "High Margin", badgeColor: "bg-emerald-100 text-emerald-700", view: "form_batwara",allowedUserIds: [ "6a043eb3efcf4db1755b141c"] },
   { id: "shapath", category: "all", title: "Shapath Patra", desc: "General affidavit format from Notary.", icon: <Scale size={24}/>, cost: "3", view: "form_shapath" },
   { id: "deathCertiAfi", category: "affidavits", title: "Death Certificate Affidavit", desc: "Death affidavit format.", icon: <Scale size={24}/>, cost: "5", view: "form_deathCertiAfi" },
   { id: "deathCertiDec", category: "affidavits", title: "Death Certificate (Mukhiya/Sarpanch)", desc: "Mukhiya / Sarpanch affidavit format.", icon: <Scale size={24}/>, cost: "5", view: "form_DeathCertiDec" },
@@ -54,6 +54,49 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed,
   };
 
   const filteredForms = availableForms.filter((form) => {
+
+    // Get the user ID (checking common database ID fields)
+    const currentUserId = userData?._id || userData?.userId; 
+
+    // --- ACCESS CONTROL CHECK ---
+    let hasAccess = true;
+
+    if (form.id === "batwara") {
+      // For Batwara: Allow if they are an 'amin' OR if their ID is explicitly whitelisted
+      const isAmin = userType === "amin";
+      const isWhitelisted = form.allowedUserIds && form.allowedUserIds.includes(currentUserId);
+      
+      if (!isAmin && !isWhitelisted) {
+        hasAccess = false; // Block if they are neither an amin nor in the allowed list
+      }
+    } 
+    else if (form.allowedUserIds && form.allowedUserIds.length > 0) {
+      // For any other forms that have allowedUserIds restrictions
+      if (!form.allowedUserIds.includes(currentUserId)) {
+        hasAccess = false;
+      }
+    }
+
+    // If they failed the access check, hide the form
+    if (!hasAccess) {
+      return false;
+    }
+    /* --- 1. ROLE-BASED ACCESS CONTROL ---
+    if (form.id === "batwara" && userType !== "amin") {
+      return false;
+    }
+    
+    // --- 2. USER ID-BASED ACCESS CONTROL ---
+    // If the form has an allowedUserIds array, check if the current user's ID is in it
+    if (form.allowedUserIds && form.allowedUserIds.length > 0) {
+      // Use userData?.id or userData?._id depending on your database setup
+      const currentUserId = userData?.userId || userData?._id; 
+      
+      if (!form.allowedUserIds.includes(currentUserId)) {
+        return false; // Hide if their ID is not in the allowed list
+      }
+    }*/
+
     const matchesTab = activeTab === 'all' || form.category === activeTab;
     const query = searchQuery ? searchQuery.toLowerCase() : "";
     const matchesSearch = !query || form.title.toLowerCase().includes(query) || form.desc.toLowerCase().includes(query);

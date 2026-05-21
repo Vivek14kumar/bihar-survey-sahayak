@@ -498,6 +498,10 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
                                         onKeyDown={handleKeyDown}
                                         className="w-full min-h-[30px] leading-tight outline-none resize-none bg-transparent placeholder:italic "
                                       />
+                                      {/* 'block' ensures it takes its own line, 'text-left' aligns it left */}
+                                      <span className="font-bold  block  border-t border-dotted border-gray-300 text-left ">
+                                        पिता/पति :
+                                      </span>
                                       <textarea 
                                         placeholder="पिता / पति का नाम"
                                         value={ryot.fatherName}
@@ -505,8 +509,9 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
                                         onFocus={() => setCurrentCell({ entryId: entry.id, shareholderIndex: rIdx, field: 'fatherName' })}
                                         onChange={(e) => handleShareholderChange(entry.id, rIdx, 'fatherName', e.target.value)}
                                         onKeyDown={handleKeyDown}
-                                        className="w-full min-h-[30px] leading-tight outline-none resize-none bg-transparent text-gray-700 border-t border-dotted border-gray-300 placeholder:italic"
+                                        className="w-full min-h-[30px] leading-tight outline-none resize-none bg-transparent text-gray-700  placeholder:italic"
                                       />
+                                      
                                     </div>
                                     
                                     {entry.ryotDetails.length > 1 && (
