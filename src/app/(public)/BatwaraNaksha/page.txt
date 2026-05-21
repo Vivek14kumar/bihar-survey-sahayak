@@ -1,0 +1,173 @@
+"use client";
+
+import React, { useState, useRef } from 'react';
+// import html2canvas from 'html2canvas';
+// import jsPDF from 'jspdf';
+
+export default function BatwaraNaksha() {
+  const mapRef = useRef(null);
+
+  // 1. Metadata State (Top of the page)
+  const [meta, setMeta] = useState({
+    mauja: 'रैयाम',
+    thana: '169',
+    district: 'मधुबनी',
+    aminName: 'विवेक कुमार (अमीन)',
+    mobile: '8434190653'
+  });
+
+  // 2. Main Plot Dimensions
+  const [plot, setPlot] = useState({
+    totalLength: 90, // Vertical length (North to South)
+    totalWidth: 80,  // Horizontal width (East to West)
+    northRoad: true,
+    southRoad: true
+  });
+
+  // 3. Shareholders State (The Brothers/Hissedar)
+  const [shareholders, setShareholders] = useState([
+    { id: 1, name: 'सुमन राम', shareLength: 20 },
+    { id: 2, name: 'शिव राम', shareLength: 25 },
+    { id: 3, name: 'राजा राम', shareLength: 45 },
+  ]);
+
+  // Handle Input Changes
+  const handleAddShareholder = () => {
+    const newId = shareholders.length + 1;
+    setShareholders([...shareholders, { id: newId, name: 'नया हिस्सेदार', shareLength: 10 }]);
+  };
+
+  const handleShareChange = (id, field, value) => {
+    setShareholders(shareholders.map(s => 
+      s.id === id ? { ...s, [field]: value } : s
+    ));
+  };
+
+  // SVG Drawing Constants
+  const svgWidth = 400;
+  const svgHeight = 600;
+  let currentY = 0; // Tracks the Y position for the "stack"
+
+  // (Optional) PDF Generation Logic
+  const handleDownloadPDF = async () => {
+    /* const canvas = await html2canvas(mapRef.current);
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    pdf.addImage(imgData, 'PNG', 10, 10, 190, 250);
+    pdf.save('Batwara_Naksha.pdf');
+    // TODO: Trigger wallet deduction API here!
+    */
+    alert("PDF Download will trigger here and deduct ₹100 from wallet.");
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row gap-8 p-6 bg-gray-50 min-h-screen">
+      
+      {/* LEFT COLUMN: Data Entry Form */}
+      <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">बंटवारा नक्शा (Batwara Entry)</h2>
+        
+        {/* Metadata Inputs */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <input className="border p-2 rounded" value={meta.mauja} onChange={(e) => setMeta({...meta, mauja: e.target.value})} placeholder="मौजा" />
+          <input className="border p-2 rounded" value={meta.thana} onChange={(e) => setMeta({...meta, thana: e.target.value})} placeholder="थाना नं." />
+          <input className="border p-2 rounded" value={meta.district} onChange={(e) => setMeta({...meta, district: e.target.value})} placeholder="जिला" />
+        </div>
+
+        {/* Parent Plot Inputs */}
+        <div className="mb-6 bg-blue-50 p-4 rounded border border-blue-100">
+          <h3 className="font-bold mb-2">मुख्य प्लॉट की लंबाई (Total Length in ft)</h3>
+          <input type="number" className="border p-2 rounded w-full" value={plot.totalLength} onChange={(e) => setPlot({...plot, totalLength: Number(e.target.value)})} />
+        </div>
+
+        {/* Shareholders List */}
+        <h3 className="font-bold mb-2">हिस्सेदार (Shareholders)</h3>
+        {shareholders.map((person, index) => (
+          <div key={person.id} className="flex gap-4 mb-3 items-center">
+            <span className="font-bold text-gray-500 w-6">{index + 1}.</span>
+            <input 
+              className="border p-2 rounded flex-1" 
+              value={person.name} 
+              onChange={(e) => handleShareChange(person.id, 'name', e.target.value)} 
+            />
+            <input 
+              type="number" 
+              className="border p-2 rounded w-24" 
+              value={person.shareLength} 
+              onChange={(e) => handleShareChange(person.id, 'shareLength', Number(e.target.value))} 
+              title="हिस्से की लंबाई (ft)"
+            />
+          </div>
+        ))}
+        
+        <button onClick={handleAddShareholder} className="mt-2 text-blue-600 font-bold hover:underline">
+          + नया हिस्सेदार जोड़ें
+        </button>
+
+        <button onClick={handleDownloadPDF} className="w-full mt-8 bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700">
+          Generate PDF & Deduct ₹100
+        </button>
+      </div>
+
+      {/* RIGHT COLUMN: The Live SVG Preview */}
+      <div className="w-full md:w-1/2 flex justify-center items-start">
+        <div ref={mapRef} className="bg-white p-8 border-2 border-gray-300 shadow-lg w-full max-w-lg" style={{ fontFamily: 'sans-serif' }}>
+          
+          {/* Official Header */}
+          <div className="text-center mb-6 border-b-2 border-gray-800 pb-4">
+            <h1 className="text-2xl font-bold underline">बंटवारा का खाका चित्र :- नज़री नक्शा</h1>
+            <p className="mt-2">मौजा: {meta.mauja} | थाना नं: {meta.thana} | जिला: {meta.district}</p>
+          </div>
+
+          {/* Map Container */}
+          <div className="flex justify-center relative">
+            <svg width={svgWidth} height={svgHeight} className="border-2 border-gray-800 bg-yellow-50">
+              
+              {/* Dynamic Stack Rendering */}
+              {shareholders.map((person, i) => {
+                // Calculate the proportional height of this specific slice
+                const sliceHeight = (person.shareLength / plot.totalLength) * svgHeight;
+                const yPos = currentY;
+                currentY += sliceHeight; // Move the Y-cursor down for the next brother
+
+                return (
+                  <g key={person.id}>
+                    {/* The Plot Box */}
+                    <rect 
+                      x="0" 
+                      y={yPos} 
+                      width={svgWidth} 
+                      height={sliceHeight} 
+                      fill={i % 2 === 0 ? "#fdfbf7" : "#f4f1e1"} // Alternating colors
+                      stroke="#333" 
+                      strokeWidth="2"
+                    />
+                    
+                    {/* Text Details Inside the Box */}
+                    <text x={svgWidth / 2} y={yPos + (sliceHeight / 2)} textAnchor="middle" fontSize="18" fontWeight="bold" fill="#a33">
+                      {person.name}
+                    </text>
+                    <text x={svgWidth / 2} y={yPos + (sliceHeight / 2) + 20} textAnchor="middle" fontSize="14" fill="#555">
+                      लंबाई: {person.shareLength}' | चौड़ाई: {plot.totalWidth}'
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+
+          {/* Footer Signature */}
+          <div className="mt-12 flex justify-end">
+            <div className="text-right">
+              <p className="font-bold border-b border-black pb-1 mb-1">पैमाइशकर्ता</p>
+              <p>{meta.aminName}</p>
+              <p>मो० - {meta.mobile}</p>
+              <p>दिनांक: {new Date().toLocaleDateString('en-GB')}</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}

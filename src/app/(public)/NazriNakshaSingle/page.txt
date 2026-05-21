@@ -1,0 +1,215 @@
+"use client";
+import React, { useState, useRef, useEffect } from 'react';
+import { Stage, Layer, Line, Rect, Image as KonvaImage } from 'react-konva';
+import * as pdfjsLib from 'pdfjs-dist';
+
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+}
+
+export default function ProfessionalCADStudioMulti() {
+  const stageRef = useRef(null);
+  
+  // --- STATE ---
+  const [mode, setMode] = useState('trace'); 
+  const [zoom, setZoom] = useState(1);
+  const [bgOpacity, setBgOpacity] = useState(0.6);
+  
+  // --- MULTI-SHAPE DRAWING STATE ---
+  const [completedShapes, setCompletedShapes] = useState([]); // Array of arrays [[x,y,x,y], [x,y,x,y]]
+  const [currentPoints, setCurrentPoints] = useState([]); // The shape currently being drawn
+  
+  // --- FILE UPLOAD STATE ---
+  const [bgImage, setBgImage] = useState(null);
+  const [imageObj, setImageObj] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // --- UNIVERSAL FILE UPLOAD ---
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsLoading(true);
+
+    if (file.type === 'application/pdf') {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2.0 });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        await page.render({ canvasContext: context, viewport: viewport }).promise;
+        setBgImage(canvas.toDataURL('image/png'));
+      } catch (error) {
+        alert("Error loading PDF.");
+      }
+    } else if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => setBgImage(event.target.result);
+      reader.readAsDataURL(file);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    if (bgImage) {
+      const img = new window.Image();
+      img.src = bgImage;
+      img.onload = () => setImageObj(img);
+    }
+  }, [bgImage]);
+
+  // --- UNLIMITED DRAWING LOGIC ---
+  const handleStageClick = (e) => {
+    if (mode !== 'trace') return;
+    
+    const stage = stageRef.current;
+    const pointer = stage.getPointerPosition();
+    const x = (pointer.x - stage.x()) / stage.scaleX();
+    const y = (pointer.y - stage.y()) / stage.scaleY();
+
+    // Magnet Snap Logic to CLOSE the current shape
+    if (currentPoints.length > 4) {
+      const dist = Math.sqrt(Math.pow(x - currentPoints[0], 2) + Math.pow(y - currentPoints[1], 2));
+      if (dist < 15 / zoom) {
+        // Shape is closed! Push to completed array and reset current drawing.
+        setCompletedShapes([...completedShapes, currentPoints]);
+        setCurrentPoints([]); // Ready for the next shape instantly
+        return;
+      }
+    }
+    
+    // Add point to the active shape
+    setCurrentPoints([...currentPoints, x, y]);
+  };
+
+  // Undo the last shape drawn
+  const handleUndoLastShape = () => {
+    setCompletedShapes(completedShapes.slice(0, -1));
+  };
+
+  return (
+    <div className="flex h-screen bg-[#1e1e1e] text-gray-300 font-sans overflow-hidden">
+      
+      {/* LEFT SIDEBAR: Tools Panel */}
+      <div className="w-80 bg-[#252526] border-r border-[#333] flex flex-col shadow-2xl z-10">
+        <div className="p-4 bg-[#333333] border-b border-[#111]">
+          <h1 className="text-white font-bold text-xl tracking-wider text-yellow-500">MAPI STUDIO PRO</h1>
+          <p className="text-xs text-gray-400">अमीन डिजिटल नज़री नक्शा</p>
+        </div>
+
+        <div className="p-4 space-y-5 flex-1 overflow-y-auto">
+          
+          <div className="bg-[#1e1e1e] p-3 rounded border border-[#444]">
+            <h3 className="text-sm font-bold text-white mb-2 uppercase tracking-wide border-b border-gray-600 pb-1">1. Import Naksha</h3>
+            <label className="block w-full text-center bg-blue-700 hover:bg-blue-600 text-white text-sm py-2.5 rounded cursor-pointer transition font-bold">
+              {isLoading ? 'Processing...' : 'Upload PDF / Map Image'}
+              <input type="file" accept="application/pdf, image/png, image/jpeg" className="hidden" onChange={handleFileUpload} />
+            </label>
+          </div>
+
+          <div className="bg-[#1e1e1e] p-3 rounded border border-[#444]">
+            <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wide border-b border-gray-600 pb-1">2. Drafting Tools</h3>
+            
+            <div className="flex gap-2 mb-4">
+              <button onClick={() => setMode('trace')} className={`flex-1 py-2 text-sm rounded font-bold ${mode === 'trace' ? 'bg-yellow-600 text-white shadow-inner' : 'bg-[#333] hover:bg-[#444]'}`}>
+                ✏️ Trace Shape
+              </button>
+              <button onClick={() => setMode('pan')} className={`flex-1 py-2 text-sm rounded font-bold ${mode === 'pan' ? 'bg-gray-500 text-white shadow-inner' : 'bg-[#333] hover:bg-[#444]'}`}>
+                ✋ Move Map
+              </button>
+            </div>
+            
+            {/* Added Undo functionality for Multi-Shape */}
+            <div className="flex gap-2 mb-4">
+              <button onClick={handleUndoLastShape} disabled={completedShapes.length === 0} className="flex-1 py-2 text-xs rounded bg-orange-900/50 text-orange-400 border border-orange-800 hover:bg-orange-800 hover:text-white transition disabled:opacity-50">
+                ↩️ Undo Last Plot
+              </button>
+              <button onClick={() => { setCompletedShapes([]); setCurrentPoints([]); }} className="flex-1 py-2 text-xs rounded bg-red-900/50 text-red-400 border border-red-800 hover:bg-red-800 hover:text-white transition">
+                🗑️ Clear All
+              </button>
+            </div>
+
+            <label className="text-xs block mb-1 text-gray-400">Background Opacity (X-Ray)</label>
+            <input type="range" min="0" max="1" step="0.1" value={bgOpacity} onChange={(e) => setBgOpacity(e.target.value)} className="w-full accent-yellow-500" />
+            
+            <div className="mt-2 text-xs text-green-400 text-right font-bold">
+              Plots Traced: {completedShapes.length}
+            </div>
+          </div>
+
+          <div className="bg-[#1e1e1e] p-3 rounded border border-[#444] text-center">
+            <h3 className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide text-left">पैमाना (Scale)</h3>
+            <img src="/scale-reference.png" alt="16 inch to 1 mile Scale" className="w-full filter invert opacity-80 rounded" />
+          </div>
+
+        </div>
+
+        <div className="p-4 bg-[#252526] border-t border-[#333]">
+           <button className={`w-full font-bold py-3 rounded shadow-lg transition ${completedShapes.length > 0 ? 'bg-green-700 hover:bg-green-600 text-white' : 'bg-gray-600 text-gray-400 cursor-not-allowed'}`} disabled={completedShapes.length === 0}>
+             Generate Report (₹150)
+           </button>
+        </div>
+      </div>
+
+      {/* MAIN CANVAS */}
+      <div className="flex-1 relative bg-[#090909] overflow-hidden">
+        <Stage 
+          width={window.innerWidth - 320} height={window.innerHeight} ref={stageRef}
+          onClick={handleStageClick} draggable={mode === 'pan'}
+          onWheel={(e) => {
+             e.evt.preventDefault();
+             const scaleBy = 1.05;
+             setZoom(e.evt.deltaY > 0 ? zoom / scaleBy : zoom * scaleBy);
+          }}
+          scaleX={zoom} scaleY={zoom} cursor={mode === 'trace' ? 'crosshair' : 'grab'}
+        >
+          <Layer>
+            {/* Grid */}
+            {Array.from({ length: 60 }).map((_, i) => (
+              <React.Fragment key={i}>
+                <Line points={[0, i * 50, 3000, i * 50]} stroke="#1a1a1a" strokeWidth={1} />
+                <Line points={[i * 50, 0, i * 50, 3000]} stroke="#1a1a1a" strokeWidth={1} />
+              </React.Fragment>
+            ))}
+
+            {/* Uploaded PDF Map */}
+            {imageObj && <KonvaImage image={imageObj} opacity={parseFloat(bgOpacity)} />}
+
+            {/* 1. Draw ALL Completed Shapes (Gold) */}
+            {completedShapes.map((shapePoints, index) => (
+              <Line
+                key={`completed-${index}`}
+                points={shapePoints}
+                fill="rgba(255, 215, 0, 0.2)"
+                stroke="#FFD700"
+                strokeWidth={2 / zoom}
+                closed={true}
+              />
+            ))}
+
+            {/* 2. Draw the CURRENT shape being traced (Green) */}
+            {currentPoints.length > 0 && (
+              <Line
+                points={currentPoints}
+                stroke="#00FF00"
+                strokeWidth={2 / zoom}
+                closed={false}
+              />
+            )}
+
+            {/* Vertices/Nodes for the CURRENT shape only */}
+            {currentPoints.map((_, i) => {
+              if (i % 2 === 0) return (
+                <Rect key={`node-${i}`} x={currentPoints[i] - 3 / zoom} y={currentPoints[i + 1] - 3 / zoom} width={6 / zoom} height={6 / zoom} fill={i === 0 ? "#00FF00" : "#FFD700"} />
+              );
+              return null;
+            })}
+          </Layer>
+        </Stage>
+      </div>
+    </div>
+  );
+}

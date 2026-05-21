@@ -198,10 +198,15 @@ export default function LegalPanchnama() {
   const observerRef = useRef(null);
 
   const [commonData, setCommonData] = useState({
-    // ⚡ ऑटोमैटिक हिंदी डेट हटाकर कैलेंडर का डिफ़ॉल्ट डेट लगा दिया 
+    // ⚡ ऑटोमैटिक हिंदी डेट हटाकर कैलेंडर का डिफ़ॉल्ट डेट लगा दिया moolRaiyat: '', moolRelation: 'पिता', moolRelativeName: '',
     date: new Date().toISOString().split('T')[0], 
-    place: '', moolRaiyat: '', moolRelation: 'पिता', moolRelativeName: '', caste: '', pincode: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
+    place: '',  caste: '', pincode: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
   });
+
+  // ⚡ नया स्टेट: एक से अधिक मूल रैयत जोड़ने के लिए
+  const [moolRaiyats, setMoolRaiyats] = useState([
+    { id: 1, name: '', relation: 'पिता', relativeName: '' }
+  ]);
 
   // ⚡ PlotVillage & PlotThana added to Initial States ⚡
   const initialTotalPlot = { id: Date.now(), jamabandi: '', khata: '', khesra: '', plotVillage: '', plotThana: '', rakbaAcre: '', rakbaDecimal: '', boundaries: { north: '', south: '', east: '', west: '' } };
@@ -287,6 +292,29 @@ useEffect(() => {
   const handleCommonChange = (e) => {
     setCommonData({ ...commonData, [e.target.name]: e.target.value });
     if(errors[e.target.name]) setErrors({...errors, [e.target.name]: null});
+  };
+
+  // ⚡ नए मूल रैयत हैंडलर्स
+  const handleMoolRaiyatChange = (id, field, value) => {
+    setMoolRaiyats(prev => prev.map(mr => mr.id === id ? { ...mr, [field]: value } : mr));
+    if (errors[`moolRaiyat_${id}_name`]) {
+      setErrors(errs => ({ ...errs, [`moolRaiyat_${id}_name`]: null }));
+    }
+  };
+
+  const addMoolRaiyat = () => {
+    // ⚡ अधिकतम 5 मूल रैयत की लिमिट सेट की गई है
+    if (moolRaiyats.length < 6) {
+      setMoolRaiyats([...moolRaiyats, { id: Date.now(), name: '', relation: 'पिता', relativeName: '' }]);
+    } else {
+      alert("अधिकतम 5 मूल रैयत ही जोड़े जा सकते हैं।");
+    }
+  };
+
+  const removeMoolRaiyat = (id) => {
+    if (moolRaiyats.length > 1) {
+      setMoolRaiyats(moolRaiyats.filter(mr => mr.id !== id));
+    }
   };
 
   const handleTotalPlotChange = (id, field, e) => {
@@ -555,7 +583,13 @@ useEffect(() => {
     let isValid = true;
 
     // 1. पारिवारिक जानकारी (Section 1)
-    if (!commonData.moolRaiyat || String(commonData.moolRaiyat).trim() === "") { newErrors.moolRaiyat = "दादा/पिता का नाम ज़रूरी है"; isValid = false; }
+    // 1. पारिवारिक जानकारी (Section 1)
+    moolRaiyats.forEach((mr) => {
+      if (!mr.name || String(mr.name).trim() === "") { 
+        newErrors[`moolRaiyat_${mr.id}_name`] = "मूल रैयत का नाम ज़रूरी है"; 
+        isValid = false; 
+      }
+    });
     if (!commonData.village || String(commonData.village).trim() === "") { newErrors.village = "गाँव का नाम भरें"; isValid = false; }
 
     // ⚡ 2. कुल पैतृक संपत्ति (Section 2) - अब अनिवार्य (Mandatory) है ⚡
@@ -884,7 +918,10 @@ useEffect(() => {
 
   // ⚡ NEW: चेक करें कि क्या किसी भी प्लॉट में दूसरा गाँव या थाना भरा गया है? ⚡
   const hasOtherVillages = totalPlots.some(p => p.plotVillage || p.plotThana) || parties.some(party => party.plots.some(p => p.plotVillage || p.plotThana));
-
+  // ⚡ प्रिंट में दिखाने के लिए मूल रैयतों के नाम का टेक्स्ट तैयार करना
+  const formattedMoolRaiyatText = moolRaiyats.map(mr => `${mr.name || '...........'} (${mr.relation}- ${mr.relativeName || '...........'})`).join(', ');
+  const fallbackMoolRaiyatName = moolRaiyats[0]?.name || '...........';
+  
   return (
     <div className="p-2 md:p-6 max-w-[1400px] mx-auto bg-gray-100 flex flex-col lg:flex-row gap-6 font-sans">
       
@@ -928,35 +965,47 @@ useEffect(() => {
                 className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm" 
               />
             </div>
-          <HindiInput label="मूल रैयत (दादा/पिता) का नाम" name="moolRaiyat" value={commonData.moolRaiyat} onChange={handleCommonChange} required={true} errorMsg={errors.moolRaiyat} helpText="जिनके नाम से खतियान है" />
-          <div className="grid grid-cols-[110px_1fr] gap-3">
-              {/* पहला बॉक्स: संबंध चुनने के लिए */}
-              <div className="relative mb-4">
-                <label className="block mb-1 text-sm font-bold text-gray-800">संबंध</label>
-                {/* ऊँचाई बराबर रखने के लिए अदृश्य (invisible) टेक्स्ट */}
-                <p className="text-[11px] text-transparent mb-1 leading-tight select-none">.</p>
-                <select 
-                  name="moolRelation" 
-                  value={commonData.moolRelation} 
-                  onChange={handleCommonChange}
-                  className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm transition-colors cursor-pointer"
-                >
-                  <option value="पिता">पिता</option>
-                  <option value="पति">पति</option>
-                </select>
-              </div>
-
-              {/* दूसरा बॉक्स: नाम भरने के लिए */}
-              <HindiInput 
-                label="पिता / पति का नाम" 
-                name="moolRelativeName" 
-                value={commonData.moolRelativeName} 
-                onChange={handleCommonChange}
-                placeholder="उनका नाम लिखें..." 
-                helpText="&nbsp;"
+          {/* ⚡ मल्टिपल मूल रैयत जोड़ने का नया UI ⚡ */}
+          <div className="mb-4">
+            <label className="block mb-2 text-sm font-bold text-gray-800 border-b border-blue-200 pb-1">मूल रैयत का विवरण (जिनके नाम से खतियान है)</label>
+            {moolRaiyats.map((mr, index) => (
+              <div key={mr.id} className="p-3 bg-white rounded-xl border border-blue-200 mb-3 relative shadow-sm">
+                {moolRaiyats.length > 1 && (
+                  <button onClick={() => removeMoolRaiyat(mr.id)} className="absolute top-2 right-2 text-red-500 text-xs font-bold hover:underline">हटाएं ✕</button>
+                )}
+                <HindiInput label={`मूल रैयत ${index + 1} का नाम`} name="name" value={mr.name} onChange={(e) => handleMoolRaiyatChange(mr.id, 'name', e.target.value)} required={true} errorMsg={errors[`moolRaiyat_${mr.id}_name`]} helpText="दादा/पिता/परदादा का नाम" />
                 
-                errorMsg={errors.moolRelativeName} 
-              />
+                <div className="grid grid-cols-[110px_1fr] gap-3">
+                  <div className="relative mb-2">
+                    <label className="block mb-1 text-sm font-bold text-gray-800">संबंध</label>
+                    <select
+                      value={mr.relation}
+                      onChange={(e) => handleMoolRaiyatChange(mr.id, 'relation', e.target.value)}
+                      className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm transition-colors cursor-pointer"
+                    >
+                      <option value="पिता">पिता</option>
+                      <option value="पति">पति</option>
+                    </select>
+                  </div>
+                  <HindiInput
+                    label="पिता / पति का नाम"
+                    name="relativeName"
+                    value={mr.relativeName}
+                    onChange={(e) => handleMoolRaiyatChange(mr.id, 'relativeName', e.target.value)}
+                    placeholder="उनका नाम लिखें..."
+                  />
+                </div>
+              </div>
+            ))}
+            {moolRaiyats.length < 6 ? (
+              <button onClick={addMoolRaiyat} className="text-blue-700 bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-200 transition-colors">
+                + एक और मूल रैयत जोड़ें
+              </button>
+            ) : (
+              <p className="text-xs text-red-500 font-semibold mt-2">
+                 अधिकतम सीमा (6 मूल रैयत) पूरी हो चुकी है।
+              </p>
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <HindiInput label="मुख्य गाँव/मौजा का नाम" name="village" value={commonData.village} onChange={handleCommonChange} required={true} errorMsg={errors.village} />
@@ -1235,6 +1284,8 @@ useEffect(() => {
     <button
       onClick={() => {
           if (!validateForm()) return;
+          const confirmMsg = "घोषणा: मैंने फॉर्म में भरी गई सभी जानकारी (नाम, खाता, खेसरा, रकबा आदि) की अच्छे से जांच कर ली है और सब सही है।\n\nभविष्य में किसी भी त्रुटि या गलती के लिए यह वेबसाइट जिम्मेदार नहीं होगी।\n\nक्या आप सुरक्षित रूप से पेमेंट पेज पर जाना चाहते हैं?";
+          if (!window.confirm(confirmMsg)) return;
           openRazorpay(() => {
              downloadPDF(true); // ⚡ TRUE मतलब प्रीमियम (वाटरमार्क हटाओ)
           });
@@ -1389,7 +1440,7 @@ useEffect(() => {
               {parties.map((party) => (
                 <p key={`intro-${party.id}`} style={{ marginBottom: '12px', lineHeight: '1.6' }}>
                   <strong>{party.title} पक्ष:</strong> श्री/श्रीमती {party.name || '...................'}, 
-                  <span> {party.relation || 'पिता'}- {party.relativeName || commonData.moolRaiyat || '...................'}</span>, 
+                  <span> {party.relation || 'पिता'}- {party.relativeName || fallbackMoolRaiyatName || '...................'}</span>, 
                   उम्र- {party.age || '......'} वर्ष, जाति- {commonData.caste || '.....................'}, 
                   <strong>आधार क्र.- {party.aadhaar || '................'}</strong>, 
                   निवासी- ग्राम {commonData.village || '...................'}, 
@@ -1402,7 +1453,7 @@ useEffect(() => {
             <h3 style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '19px', borderBottom: '2px solid #333', paddingBottom: '5px', pageBreakInside: 'avoid' }}>1. बंटवारे की पृष्ठभूमि और कानूनी शर्तें:</h3>
             <ol style={{ paddingLeft: '25px', marginBottom: '35px', textAlign: 'justify', lineHeight: '1.7' }}>
               <li style={{ marginBottom: '12px' }}>
-                <strong>पैतृक संपत्ति:</strong> हम सभी पक्षकार आपस में सगे संबंधी हैं। हमारी पारिवारिक/पैतृक भूमि  <strong>{commonData.moolRaiyat || '...................'} , {commonData.moolRelation}- {commonData.moolRelativeName}</strong> के नाम से ग्राम <strong>{commonData.village || '...........'}</strong>, थाना नंबर <strong>{commonData.thanaNo || '...........'}</strong>, अंचल <strong>{commonData.anchal || '...........'}</strong>, जिला <strong>{commonData.district || '...........'}</strong>{hasOtherVillages ? ' (तथा अन्य मौजों/थानों)' : ''} में पैतृक भूमि स्थित है, जिसका उपभोग हम संयुक्त रूप से करते आ रहे थे।
+                <strong>पैतृक संपत्ति:</strong> हम सभी पक्षकार आपस में सगे संबंधी हैं। हमारी पारिवारिक/पैतृक भूमि  <strong>{formattedMoolRaiyatText}</strong> के नाम से ग्राम <strong>{commonData.village || '...........'}</strong>, थाना नंबर <strong>{commonData.thanaNo || '...........'}</strong>, अंचल <strong>{commonData.anchal || '...........'}</strong>, जिला <strong>{commonData.district || '...........'}</strong>{hasOtherVillages ? ' (तथा अन्य मौजों/थानों)' : ''} में पैतृक भूमि स्थित है, जिसका उपभोग हम संयुक्त रूप से करते आ रहे थे।
               </li>
               <li style={{ marginBottom: '12px' }}><strong>बंटवारे का कारण:</strong> परिवार के विस्तार, शांतिपूर्ण उपभोग और वर्तमान <strong>बिहार विशेष भूमि सर्वेक्षण (Land Survey)</strong> तथा अंचल कार्यालय में <strong>दाखिल-खारिज (Mutation)</strong> के कार्यों को सुचारु रूप से संपन्न करने हेतु हम सभी पक्षकार अपनी पूर्ण आपसी सहमति से संपत्ति का बंटवारा कर रहे हैं।</li>
               <li style={{ marginBottom: '12px' }}><strong>स्वामित्व और अधिकार:</strong> इस पंचनामे के लागू होने के पश्चात, जो संपत्ति जिस पक्ष के हिस्से में आई है, वह उस पर पूर्ण रूप से अपना मालिकाना हक (स्वामित्व) रखेगा। उसे उस भूमि को बेचने, दान करने या निर्माण करने का पूर्ण अधिकार होगा।</li>
@@ -1464,7 +1515,7 @@ useEffect(() => {
               </div>
             )}
 
-            <div style={{ 
+            <div  style={{ 
               filter: showWatermark ? 'blur(1px)' : 'none', 
               userSelect: showWatermark ? 'none' : 'auto', // कॉपी करने से रोकेगा
               pointerEvents: showWatermark ? 'none' : 'auto', // क्लिक करने से रोकेगा
@@ -1476,7 +1527,7 @@ useEffect(() => {
             {parties.map((party) => (
               <div key={`details-${party.id}`} style={{ marginBottom: '25px', padding: '15px', border: '1px solid #666', borderRadius: '4px', pageBreakInside: 'avoid' }}>
                 <p style={{ marginBottom: '15px', fontSize: '16px' }}>
-                  <strong>{party.title} पक्ष (श्री/श्रीमती {party.name || '...................'}, {party.relation || 'पिता'}- {party.relativeName || commonData.moolRaiyat || '...................'}) के पूर्ण अधिकार में आई संपत्ति का विवरण:</strong>
+                  <strong>{party.title} पक्ष (श्री/श्रीमती {party.name || '...................'}, {party.relation || 'पिता'}- {party.relativeName || fallbackMoolRaiyatName || '...................'}) के पूर्ण अधिकार में आई संपत्ति का विवरण:</strong>
                 </p>
                 
                 <table style={{ width: '100%', marginBottom: '12px', borderCollapse: 'collapse', fontSize: '14px' }}>
@@ -1654,6 +1705,10 @@ useEffect(() => {
     <button
      onClick={async () => {
        if (!validateForm()) return;
+        
+       // ⚡ अलर्ट मैसेज (Disclaimer)
+          const confirmMsg = "घोषणा: मैंने फॉर्म में भरी गई सभी जानकारी (नाम, खाता, खेसरा, रकबा आदि) की अच्छे से जांच कर ली है और सब सही है।\n\nभविष्य में किसी भी त्रुटि या गलती के लिए यह वेबसाइट जिम्मेदार नहीं होगी।\n\nक्या आप सुरक्षित रूप से पेमेंट पेज पर जाना चाहते हैं?";
+          if (!window.confirm(confirmMsg)) return;
 
          try {
           fetch("/api/batwara", {
