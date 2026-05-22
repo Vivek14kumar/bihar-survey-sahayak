@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, FileText, Download, Eye, Search } from "lucide-react";
+import { ArrowLeft, FileText, Download, Eye, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -8,9 +8,8 @@ export default function PaperFormatPage() {
   const router = useRouter();
   const [pdfList, setPdfList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
-  const [selectedPdf, setSelectedPdf] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [counts, setCounts] = useState({}); // store preview/download counts
+  const [counts, setCounts] = useState({});
 
   useEffect(() => {
     fetch("/api/get-pdf")
@@ -39,145 +38,157 @@ export default function PaperFormatPage() {
     setFilteredList(filtered);
   }, [searchTerm, pdfList]);
 
-  // 👁 Preview Click
-  const handlePreview = (pdf) => {
-    setSelectedPdf(pdf);
-    updateCount(pdf, "preview");
-  };
-
-  // ⬇ Download Click
-  const handleDownload = (pdf) => {
-    updateCount(pdf, "download");
-  };
-
-  // 🔥 Update Count API
+  // 👁 & ⬇ Update Count API
   const updateCount = async (pdf, type) => {
-    await fetch("/api/update-count", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pdf, type }),
-    });
+    try {
+      await fetch("/api/update-count", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pdf, type }),
+      });
 
-    setCounts((prev) => ({
-      ...prev,
-      [pdf]: {
-        preview:
-          type === "preview"
-            ? (prev[pdf]?.preview || 0) + 1
-            : prev[pdf]?.preview || 0,
-        download:
-          type === "download"
-            ? (prev[pdf]?.download || 0) + 1
-            : prev[pdf]?.download || 0,
-      },
-    }));
+      setCounts((prev) => ({
+        ...prev,
+        [pdf]: {
+          preview:
+            type === "preview"
+              ? (prev[pdf]?.preview || 0) + 1
+              : prev[pdf]?.preview || 0,
+          download:
+            type === "download"
+              ? (prev[pdf]?.download || 0) + 1
+              : prev[pdf]?.download || 0,
+        },
+      }));
+    } catch (error) {
+      console.error("Error updating count:", error);
+    }
+  };
+
+  // Helper to format filenames for a cleaner look
+  const formatFileName = (name) => {
+    if (!name) return "";
+    return name.replace(/\.pdf$/i, "").replace(/[-_]/g, " ");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-100 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 py-8 sm:py-12 px-3 sm:px-8 z-0">
+      
+      {/* 🌟 Soft Ambient Background Blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute -top-[10%] -left-[10%] w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-indigo-200/30 blur-[80px] sm:blur-[120px] mix-blend-multiply"></div>
+        <div className="absolute top-[20%] -right-[10%] w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full bg-blue-200/30 blur-[80px] sm:blur-[120px] mix-blend-multiply"></div>
+      </div>
 
+      <div className="max-w-7xl mx-auto relative z-10">
+        
         {/* HEADER */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 sm:mb-10 gap-4 sm:gap-6">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-indigo-600 font-medium hover:underline"
+            className="group flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-all bg-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full border border-slate-200 shadow-sm hover:shadow-md w-max"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={16} className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:-translate-x-1 transition-transform" />
             वापस जाएं
           </button>
+
+          <div className="text-left md:text-right">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">
+              दस्तावेज़ <span className="text-indigo-600">संग्रह</span>
+            </h1>
+            <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium mt-1">सभी आवश्यक फॉर्म और प्रपत्र यहाँ उपलब्ध हैं</p>
+          </div>
         </div>
 
         {/* 🔍 MODERN SEARCH BAR */}
-        <div className="mb-8 flex justify-center">
-          <div className="relative w-full max-w-xl">
-            <Search className="absolute left-4 top-3 text-gray-400" size={20} />
+        <div className="mb-8 sm:mb-12 max-w-3xl mx-auto">
+          <div className="relative group shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-full bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(79,70,229,0.08)]">
+            <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
+              <Search className="text-slate-400 group-focus-within:text-indigo-500 transition-colors w-5 h-5 sm:w-6 sm:h-6" />
+            </div>
             <input
               type="text"
-              placeholder="Search paper format..."
+              placeholder="फॉर्म का नाम खोजें..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-full border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"
+              className="w-full pl-12 sm:pl-14 pr-12 py-3 sm:py-4 rounded-full bg-transparent border-2 border-slate-100 focus:outline-none focus:border-indigo-100 focus:ring-4 focus:ring-indigo-50 text-slate-700 text-sm sm:text-lg placeholder:text-slate-400 transition-all duration-300"
             />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm("")}
+                className="absolute inset-y-0 right-0 pr-4 sm:pr-6 flex items-center text-slate-400 hover:text-rose-500 transition-colors"
+              >
+                <X size={20} className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+            )}
           </div>
         </div>
 
-        {/* PDF GRID */}
+        {/* PDF GRID (Mobile: 2 cols, Tablet: 3 cols, Desktop: 4 cols) */}
         {filteredList.length === 0 ? (
-          <div className="text-center text-gray-500">
-            No PDF Found
+          <div className="text-center py-16 sm:py-24 bg-white/60 backdrop-blur-sm rounded-[2rem] border border-slate-200 border-dashed mx-2 sm:mx-0">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="text-slate-300 w-8 h-8 sm:w-10 sm:h-10" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-slate-700 mb-2">कोई दस्तावेज़ नहीं मिला</h3>
+            <p className="text-xs sm:text-sm text-slate-500">कृपया अपनी खोज को बदल कर पुनः प्रयास करें।</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {filteredList.map((pdf, index) => (
               <div
                 key={index}
-                className="bg-white rounded-2xl shadow-lg border border-slate-200 p-5 hover:shadow-2xl transition duration-300"
+                className="group flex flex-col bg-white rounded-2xl sm:rounded-[2rem] p-3 sm:p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1 hover:border-indigo-100 transition-all duration-300 relative overflow-hidden"
               >
+                {/* Decorative Top Accent */}
+                <div className="absolute top-0 left-0 w-full h-1 sm:h-1.5 bg-gradient-to-r from-indigo-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
                 {/* ICON */}
-                <div className="flex justify-center mb-4">
-                  <div className="bg-indigo-100 p-5 rounded-full">
-                    <FileText size={40} className="text-indigo-600" />
+                <div className="flex justify-start mb-3 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-indigo-50 border border-indigo-100/50 flex items-center justify-center group-hover:bg-indigo-600 group-hover:scale-105 transition-all duration-500">
+                    <FileText className="text-indigo-500 group-hover:text-white transition-colors duration-500 w-5 h-5 sm:w-7 sm:h-7" />
                   </div>
                 </div>
 
                 {/* TITLE */}
-                <h3 className="text-center font-semibold text-gray-800 mb-2 truncate">
-                  {pdf}
-                </h3>
+                <div className="flex-grow">
+                  <h3 className="font-bold text-slate-800 text-[13px] sm:text-lg leading-snug mb-1 group-hover:text-indigo-600 transition-colors line-clamp-2 capitalize">
+                    {formatFileName(pdf)}
+                  </h3>
+                  <p className="text-[9px] sm:text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3 sm:mb-6">
+                    .PDF Format
+                  </p>
+                </div>
 
-                {/* 📊 COUNTS 
-                <div className="text-xs text-gray-500 text-center mb-3">
-                  👁 {counts[pdf]?.preview || 0} Views • ⬇ {counts[pdf]?.download || 0} Downloads
-                </div>*/}
-
-                {/* ACTION BUTTONS */}
-                <div className="flex gap-3">
-
-                  {/* Preview */}
-                  <button
-                    onClick={() => handlePreview(pdf)}
-                    className="flex-1 bg-indigo-500 hover:bg-indigo-700 text-white py-2 rounded-full flex items-center justify-center gap-2 text-sm"
+                {/* ACTION BUTTONS (Responsive gap and text) */}
+                <div className="flex flex-row gap-2 sm:gap-3 mt-auto pt-3 border-t border-slate-50">
+                  
+                  {/* Preview Button (Opens native mobile viewer or new desktop tab) */}
+                  <a
+                    href={`/pdf/${pdf}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => updateCount(pdf, "preview")}
+                    className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-slate-50 text-slate-600 text-[10px] sm:text-sm font-semibold hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
                   >
-                    <Eye size={16} />
-                    
-                  </button>
+                    <Eye className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                    <span>देखें</span>
+                  </a>
 
-                  {/* Download */}
+                  {/* Download Button */}
                   <a
                     href={`/pdf/${pdf}`}
                     download
-                    onClick={() => handleDownload(pdf)}
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-full flex items-center justify-center gap-2 text-sm"
+                    onClick={() => updateCount(pdf, "download")}
+                    className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-slate-50 text-slate-600 text-[10px] sm:text-sm font-semibold hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
                   >
-                    <Download size={16} />
-                    
+                    <Download className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                    <span>डाउनलोड</span>
                   </a>
 
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* PDF MODAL */}
-        {selectedPdf && (
-          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-            <div className="bg-white w-[90%] h-[90%] rounded-2xl shadow-2xl relative">
-              <button
-                onClick={() => setSelectedPdf(null)}
-                className="absolute top-4 right-4 bg-red-500 text-white px-4 py-1 rounded-lg"
-              >
-                Close
-              </button>
-
-              <iframe
-                src={`/pdf/${selectedPdf}`}
-                width="100%"
-                height="100%"
-                className="rounded-2xl"
-              />
-            </div>
           </div>
         )}
 

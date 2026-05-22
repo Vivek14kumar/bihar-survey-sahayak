@@ -35,5 +35,7 @@ export const postSlugs = [
   "tips-to-avoid-mutation-rejection-bihar",
   "revenue-officers-strike-ends-bihar-2026",
   "disputed-land-partition-without-consent-bihar",
-  "bihar-land-survey-ai-technology-update"
+  "bihar-land-survey-ai-technology-update",
+  "revenue-department-anti-corruption-eou-team",
+  "lpc-online-facility-benefits-bihar"
 ];
