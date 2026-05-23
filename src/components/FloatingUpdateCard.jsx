@@ -10,7 +10,7 @@ export default function FloatingViralUpdateCard() {
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-20 md:bottom-3  left-3 right-3 z-50 md:left-auto md:right-4 md:w-auto">
+    <div className="fixed bottom-20 md:bottom-3 left-3 right-3 z-50 md:left-auto md:right-4 md:w-auto">
 
       <div className="relative flex items-center gap-3 overflow-hidden rounded-2xl border border-red-200 bg-white/95 px-3 py-2.5 shadow-[0_8px_30px_rgba(255,0,0,0.15)] backdrop-blur-xl">
 
