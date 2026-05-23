@@ -9,12 +9,23 @@ export async function POST(req) {
 
   try {
     await connectDB();
-    const { docId } = await req.json();
+    
+    // Extract docId and the new reason sent from the frontend
+    const { docId, reason } = await req.json();
 
-    // Update the document status to REFUND_REQUESTED
+    if (!docId || !reason) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // Update the document status to REFUND_REQUESTED and store the reason
     const updatedDoc = await Document.findByIdAndUpdate(
       docId, 
-      { $set: { status: "REFUND_REQUESTED" } },
+      { 
+        $set: { 
+          status: "REFUND_REQUESTED",
+          refundReason: reason // Saves the selected/typed reason here
+        } 
+      },
       { new: true }
     );
 
@@ -22,10 +33,9 @@ export async function POST(req) {
       return NextResponse.json({ error: "Document not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, doc: updatedDoc });
   } catch (error) {
     console.error("Refund Request Error:", error);
     return NextResponse.json({ error: "Server Error" }, { status: 500 });
   }
 }
-

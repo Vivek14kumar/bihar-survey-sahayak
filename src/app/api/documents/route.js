@@ -24,6 +24,7 @@ export async function GET() {
     ref: doc.ref,
     txnId: doc.txnId || "N/A",
     status: doc.status || "COMPLETED",
+    adminMessage: doc.adminMessage,
     date: doc.date.toLocaleDateString('en-IN',{day: 'numeric', month: 'short', year: 'numeric',hour: '2-digit', minute: '2-digit'})
   }));
 

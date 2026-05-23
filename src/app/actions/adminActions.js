@@ -95,7 +95,7 @@ export async function approveRefundRequest(docId) {
 }
 
 // ❌ REJECT REFUND
-export async function rejectRefundRequest(docId) {
+export async function rejectRefundRequest(docId, adminReason) {
   await dbConnect();
   
   const doc = await Document.findById(docId);
@@ -105,13 +105,14 @@ export async function rejectRefundRequest(docId) {
 
   // Change status back to Paid (or you could use "REFUND_REJECTED" if you prefer)
   doc.status = "REFUND_REJECTED"; 
+  doc.adminMessage = adminReason; // Save the reason to the document
   await doc.save();
 
-  // (Optional) Notify Operator
+  // (Optional) Notify Operator message: `Your refund request for ${doc.title} was denied. Reason: "${adminReason}"`,
   await Notification.create({
     user: user._id,
     title: " Refund Denied",
-    message: `Your refund request for ${doc.title} was reviewed and denied by the admin.`,
+    message: `Your refund request for ${doc.title} was reviewed and denied .`,
     type: "ERROR"
   });
 

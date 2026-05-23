@@ -26,6 +26,7 @@ async function getLedgerData() {
     clientMobile: doc.clientMobile,
     cost: doc.cost,
     status: doc.status || "PAID",
+    refundReason: doc.refundReason || "N/A",
     date: doc.date ? doc.date.toISOString() : new Date().toISOString(),
     operator: doc.user ? {
       shopName: doc.user.shopName,

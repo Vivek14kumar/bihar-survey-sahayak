@@ -8,6 +8,7 @@ import HomePageAminsSection from "@/components/HomePageAminsSection"; // Your Mo
 import DistrictSection from "@/components/DistrictSection";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
 import FAQClient from "./faq/FAQClient";
+import FloatingUpdateCard from "@/components/FloatingUpdateCard";
 
 export default function Home() {
   return (
@@ -55,7 +56,7 @@ export default function Home() {
           </p>
         </div>
       </section>
-
+      <FloatingUpdateCard/>
       <FAQClient />
     </main>
   );

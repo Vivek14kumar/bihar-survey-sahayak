@@ -15,6 +15,8 @@ const DocumentSchema = new mongoose.Schema({
     enum: ["COMPLETED", "REFUND_REQUESTED", "REFUNDED", "REFUND_REJECTED"], 
     default: "COMPLETED" 
   },
+  refundReason : {type: String, required: true},
+  adminMessage: {type: String},
 });
 
 // This prevents Mongoose from crashing in Next.js hot-reloads

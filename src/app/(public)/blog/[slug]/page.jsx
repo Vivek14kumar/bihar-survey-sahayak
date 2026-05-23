@@ -6,7 +6,6 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 
 // Import your data from the new file!
 import { posts } from "@/app/(public)/data/posts"; 
-
 // Remove the static metadata block and add this:
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -115,6 +114,46 @@ export default async function BlogPost({ params }) {
           </div>
         );
       })}
+
+      {/* 👉 यहाँ पर Conditional Rendering लगायें 👈 */}
+        {slug === "minister-daily-monitoring-revenue-department" && (
+  <div className="my-10">
+
+    <Link
+      href="/district-review-updates"
+      className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-red-200 bg-gradient-to-r from-red-50 via-white to-orange-50 p-5 shadow-[0_10px_35px_rgba(255,0,0,0.10)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(255,0,0,0.18)]"
+    >
+
+      {/* Glow */}
+      <div className="absolute -top-10 -right-10 h-28 w-28 rounded-full bg-red-500/10 blur-3xl" />
+
+      {/* Left Content */}
+      <div className="relative flex items-center gap-4">
+
+        
+        <div>
+
+        
+
+          <h3 className="text-lg font-black leading-tight text-gray-900 md:text-xl">
+            आज किन जिलों में होगी जिलेवार समीक्षा कलेंडर देखे ?
+          </h3>
+
+          <p className="mt-1 text-sm text-gray-600">
+            मंत्री जी का जिलेवार समीक्षा एवं निगरानी कार्यक्रम देखें
+          </p>
+        </div>
+      </div>
+
+      {/* Button */}
+      <div className="relative hidden items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-orange-500 px-5 py-3 text-sm font-black text-white shadow-lg transition-all duration-300 group-hover:scale-105 md:flex">
+        View Schedule
+        
+      </div>
+
+    </Link>
+  </div>
+)}
 
       {/* TOOL CTA */}
       <div className="mt-14 bg-blue-50 border border-blue-200 rounded-2xl p-8 text-center">

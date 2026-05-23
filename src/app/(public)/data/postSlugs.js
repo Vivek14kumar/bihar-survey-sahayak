@@ -37,5 +37,6 @@ export const postSlugs = [
   "disputed-land-partition-without-consent-bihar",
   "bihar-land-survey-ai-technology-update",
   "revenue-department-anti-corruption-eou-team",
-  "lpc-online-facility-benefits-bihar"
+  "lpc-online-facility-benefits-bihar",
+  "minister-daily-monitoring-revenue-department"
 ];
