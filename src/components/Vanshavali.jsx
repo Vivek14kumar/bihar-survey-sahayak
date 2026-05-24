@@ -75,12 +75,39 @@ export default function Vanshavali() {
     }, 300);
   };
 
-  const handleInputChange = (value, setter) => {
+  /*const handleInputChange = (value, setter) => {
     setter(value);
     const words = value.split(" ");
     const lastWord = words[words.length - 1];
     if (lastWord.trim()) debounceFetch(lastWord);
     else setSuggestions([]);
+  };*/
+  const handleInputChange = (value, setter) => {
+    // MOBILE FIX: Detect if the last typed character is a space 
+    // and if we have active suggestions waiting to be applied.
+    if (value.endsWith(" ") && suggestions.length > 0) {
+      const words = value.split(" ");
+      
+      // 'words' will look like ["mera", ""] because of the trailing space.
+      // We replace the last typed English word (index: length - 2) with the top suggestion.
+      words[words.length - 2] = suggestions[0];
+      
+      // Join it back together (this automatically keeps the trailing space)
+      setter(words.join(" "));
+      setSuggestions([]);
+      return;
+    }
+
+    // Standard typing logic (no space pressed)
+    setter(value);
+    const words = value.split(" ");
+    const lastWord = words[words.length - 1];
+    
+    if (lastWord.trim()) {
+      debounceFetch(lastWord);
+    } else {
+      setSuggestions([]);
+    }
   };
 
   const selectSuggestion = (selectedWord) => {

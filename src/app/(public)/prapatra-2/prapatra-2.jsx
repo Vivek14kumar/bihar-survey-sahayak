@@ -209,6 +209,15 @@ const handleHindiChange = (entryId, plotIndex, field, value, isNumeric = false) 
     return;
   }
 
+  // --- MOBILE SPACEBAR FIX ---
+  // Detect if the user pressed space on mobile while suggestions are open
+  // value.endsWith(" ") catches the space added by mobile keyboards
+  if (value.endsWith(" ") && suggestions.length > 0) {
+    // Apply the active suggestion and return immediately to stop standard updating
+    selectSuggestion(suggestions[activeIndex || 0]);
+    return; 
+  }
+  
   // 1. Update the state
   if (plotIndex === null) {
     setEntries(prev => prev.map(e => e.id === entryId ? { ...e, [field]: value } : e));
