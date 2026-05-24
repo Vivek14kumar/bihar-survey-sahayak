@@ -131,7 +131,7 @@ export async function POST(req) {
         id: transaction._id,
         txnId: transaction.txnId,
         form: transaction.form,
-        amount: transaction.amount, //`-₹${transaction.amount}`, 
+        amount: `Crs ${transaction.amount}`, //`-₹${transaction.amount}`, 
         isCredit: transaction.isCredit,
         time: transaction.time.toLocaleString()
       },

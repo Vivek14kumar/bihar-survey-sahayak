@@ -15,7 +15,7 @@ const DocumentSchema = new mongoose.Schema({
     enum: ["COMPLETED", "REFUND_REQUESTED", "REFUNDED", "REFUND_REJECTED"], 
     default: "COMPLETED" 
   },
-  refundReason : {type: String, required: true},
+  refundReason : {type: String},
   adminMessage: {type: String},
 });
 
