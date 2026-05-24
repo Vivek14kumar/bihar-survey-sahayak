@@ -203,6 +203,44 @@ const handleShareholderChange = (entryId, index, field, value) => {
     } catch { setSuggestions([]); }
   };
 
+/*const handleHindiChange = (entryId, plotIndex, field, value, isNumeric = false) => {
+  // If numeric, only allow digits (0-9). If not a digit, stop.
+  if (isNumeric && value !== "" && !/^\d+$/.test(value)) {
+    return;
+  }
+  
+  // 1. Update the state
+  if (plotIndex === null) {
+    setEntries(prev => prev.map(e => e.id === entryId ? { ...e, [field]: value } : e));
+  } else {
+    setEntries(prev => prev.map(e => {
+      if (e.id === entryId) {
+        const newPlots = [...e.plots];
+        newPlots[plotIndex][field] = value;
+        return { ...e, plots: newPlots };
+      }
+      return e;
+    }));
+  }
+
+  // 2. Hindi Suggestion Logic
+  // SKIP if field is numeric OR value is empty
+  if (isNumeric || !value.trim()) {
+    setSuggestions([]);
+    return;
+  }
+
+  const words = value.split(" ");
+  const lastWord = words[words.length - 1];
+  
+  if (lastWord.trim()) {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
+  } else {
+    setSuggestions([]);
+  }
+};*/
+
 const handleHindiChange = (entryId, plotIndex, field, value, isNumeric = false) => {
   // If numeric, only allow digits (0-9). If not a digit, stop.
   if (isNumeric && value !== "" && !/^\d+$/.test(value)) {
@@ -217,7 +255,8 @@ const handleHindiChange = (entryId, plotIndex, field, value, isNumeric = false) 
     selectSuggestion(suggestions[activeIndex || 0]);
     return; 
   }
-  
+  // ---------------------------
+
   // 1. Update the state
   if (plotIndex === null) {
     setEntries(prev => prev.map(e => e.id === entryId ? { ...e, [field]: value } : e));
