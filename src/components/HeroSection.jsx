@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function HeroSection() {
   return (
@@ -93,7 +94,7 @@ export default function HeroSection() {
             className="mt-8 sm:mt-10 flex flex-col lg:flex-row
             items-center justify-center gap-4 sm:gap-5 w-full"
           >
-            <a
+            <Link
               href="/vanshavali"
               className="w-full lg:w-auto flex-1
               bg-gradient-to-r from-emerald-500 to-green-600
@@ -106,9 +107,9 @@ export default function HeroSection() {
               font-[var(--font-hind)] text-base sm:text-lg text-center"
             >
               अभी वंशावली बनाएं
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/prapatra-2"
               className="w-full lg:w-auto flex-1
               bg-white/90 backdrop-blur-sm
@@ -120,9 +121,9 @@ export default function HeroSection() {
               font-[var(--font-hind)] text-base sm:text-lg text-center"
             >
               प्रपत्र-2 भरें →
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/batwara-application-bihar"
               className="w-full lg:w-auto flex-1
               bg-gradient-to-r from-emerald-500 to-green-600
@@ -135,7 +136,7 @@ export default function HeroSection() {
               font-[var(--font-hind)] text-base sm:text-lg text-center"
             >
               अभी बंटवारा पत्र बनाएं
-            </a>
+            </Link>
           </div>
         </div>
 

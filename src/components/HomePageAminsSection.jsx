@@ -48,6 +48,14 @@ export default async function HomePageAminsSection() {
             सभी अमीन देखें
           </Link>
         </div>
+        <div className="text-center">
+          <Link
+            href="/register"
+            className="inline-flex  items-center gap-2 mt-6 text-lg font-semibold text-slate-800 hover:text-blue-600 transition-colors duration-300"
+          >
+             अपनी Amin Service को हजारों लोगों तक पहुँचाएं — <spam className=" text-indigo-500 p-1 rounded-xl">अभी जुड़ें</spam>
+          </Link>
+        </div>
       </div>
     </section>
   );

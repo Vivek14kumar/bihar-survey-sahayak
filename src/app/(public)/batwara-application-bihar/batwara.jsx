@@ -1514,7 +1514,7 @@ useEffect(() => {
                 </table>
               </div>
             )}
-
+            
             <div  style={{ 
               filter: showWatermark ? 'blur(1px)' : 'none', 
               userSelect: showWatermark ? 'none' : 'auto', // कॉपी करने से रोकेगा
@@ -1668,7 +1668,11 @@ useEffect(() => {
 
     {/* ⚡ PREMIUM BUTTON (Updated with ₹30 & Pricing Trick) ⚡ */}
     <button
-      onClick={() => openRazorpay(handlePrint)}
+      onClick={() => {
+        const confirmMsg = "घोषणा: मैंने फॉर्म में भरी गई सभी जानकारी (नाम, खाता, खेसरा, रकबा आदि) की अच्छे से जांच कर ली है और सब सही है।\n\nभविष्य में किसी भी त्रुटि या गलती के लिए यह वेबसाइट जिम्मेदार नहीं होगी।\n\nक्या आप सुरक्षित रूप से पेमेंट पेज पर जाना चाहते हैं?";
+          if (!window.confirm(confirmMsg)) return;
+          openRazorpay(handlePrint)
+      }}
        disabled={isDownloading}
        className="relative flex flex-col items-center justify-center gap-1
        bg-gradient-to-r from-yellow-400 to-amber-500 text-black
