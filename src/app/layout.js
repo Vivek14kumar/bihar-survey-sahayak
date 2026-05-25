@@ -71,7 +71,19 @@ export default function RootLayout({ children }) {
         </Script>
         
         <Script src="https://www.google.com/inputtools/request?itc=hi-t-i0-und&num=1" strategy="lazyOnload" />
-        
+        {/* Google Tag Manager - Global base code */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=AW-YOUR_TAG_ID`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18020043700');
+          `}
+        </Script>
         <VisitTracker />
         <Analytics/>
         <Toaster position="top-right" reverseOrder={false} />
