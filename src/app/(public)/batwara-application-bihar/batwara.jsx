@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { Printer, Download, FileText, Crown, CheckCircle } from "lucide-react";
+import { Printer, Download, FileText, Crown, CheckCircle, RotateCcw } from "lucide-react";
 
 // ⚡ नया फंक्शन जो कैलेंडर से चुनी तारीख को हिंदी में बदलेगा
 const getFormattedHindiDate = (dateString) => {
@@ -620,6 +620,70 @@ useEffect(() => {
     return isValid;
   };
 
+  // ⚡ 1. पेज लोड होने पर Local Storage से डेटा वापस लाना (Load Data)
+  useEffect(() => {
+    const savedData = localStorage.getItem('batwaraFormData');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.commonData) setCommonData(parsed.commonData);
+        if (parsed.moolRaiyats) setMoolRaiyats(parsed.moolRaiyats);
+        if (parsed.totalPlots) setTotalPlots(parsed.totalPlots);
+        if (parsed.parties) setParties(parsed.parties);
+        if (parsed.selectedDocs) setSelectedDocs(parsed.selectedDocs);
+        if (parsed.witnessCount) setWitnessCount(parsed.witnessCount);
+        if (parsed.isStampPaper !== undefined) setIsStampPaper(parsed.isStampPaper);
+      } catch (e) {
+        console.error("Local storage डेटा लोड करने में समस्या:", e);
+      }
+    }
+  }, []); // खाली Array का मतलब है यह सिर्फ एक बार लोड होगा
+
+  // ⚡ 2. फॉर्म में कुछ भी टाइप होने पर उसे Local Storage में सेव करना (Save Data)
+  useEffect(() => {
+    // पहली बार लोड होने पर खाली डेटा सेव होने से रोकने के लिए छोटी सी शर्त
+    if (commonData.village !== '' || moolRaiyats[0].name !== '') {
+      const dataToSave = {
+        commonData, moolRaiyats, totalPlots, parties, selectedDocs, witnessCount, isStampPaper
+      };
+      localStorage.setItem('batwaraFormData', JSON.stringify(dataToSave));
+    }
+  }, [commonData, moolRaiyats, totalPlots, parties, selectedDocs, witnessCount, isStampPaper]);
+
+  // ⚡ 3. सारा डेटा डिलीट करने का फंक्शन (Reset Form)
+  const handleReset = () => {
+    const confirmReset = window.confirm("⚠️ चेतावनी: क्या आप वाकई फॉर्म का सारा डेटा मिटाना चाहते हैं? यह वापस नहीं आएगा।");
+    if (!confirmReset) return;
+
+    // Local Storage खाली करें
+    localStorage.removeItem('batwaraFormData');
+
+    // सारे स्टेट्स को वापस डिफ़ॉल्ट (खाली) कर दें
+    setCommonData({
+      date: new Date().toISOString().split('T')[0], 
+      place: '', caste: '', pincode: '', village: '', thanaNo: '', anchal: '', district: '', customConditions: ''
+    });
+    setMoolRaiyats([{ id: 1, name: '', relation: 'पिता', relativeName: '' }]);
+    
+    setTotalPlots([{ id: Date.now(), jamabandi: '', khata: '', khesra: '', plotVillage: '', plotThana: '', rakbaAcre: '', rakbaDecimal: '', boundaries: { north: '', south: '', east: '', west: '' } }]);
+    
+    const basePlot = { jamabandi: '', khata: '', khesra: '', plotVillage: '', plotThana: '', rakbaAcre: '', rakbaDecimal: '', boundaries: { north: '', south: '', east: '', west: '' }, isAutoDivide: false, totalRakbaAcre: '', totalRakbaDecimal: '' };
+    
+    setParties([
+      { id: 1, title: 'प्रथम', name: '', relation: 'पिता', relativeName: '', age: '', aadhaar: '', plots: [{ ...basePlot, id: Date.now() + 1 }] },
+      { id: 2, title: 'द्वितीय', name: '',relation: 'पिता', relativeName: '', age: '', aadhaar: '', plots: [{ ...basePlot, id: Date.now() + 2 }] }
+    ]);
+    
+    setSelectedDocs({ aadhaar: true, witnessId: true, vanshavali: true, khatiyan: true, receipt: true, prapatra2: true });
+    setWitnessCount(4);
+    setIsStampPaper(false);
+    setErrors({});
+    
+    // पेज को ऊपर स्क्रॉल करें
+    const formContainer = document.getElementById("form-container");
+    if(formContainer) formContainer.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 850) {
@@ -928,9 +992,16 @@ useEffect(() => {
       {/* LEFT SIDE: Input Form */}
       <div id="form-container" className="w-full lg:w-1/3 bg-white p-4 md:p-6 shadow-xl rounded-xl h-auto lg:h-[88vh] overflow-y-auto border-t-[6px] border-blue-600 scroll-smooth">
         
-        <div className="text-center mb-6 border-b pb-4">
+        <div className="text-center mb-6 border-b pb-4 relative">
           <h2 className="text-2xl md:text-3xl font-extrabold text-blue-800 tracking-tight">ऑनलाइन बंटवारा पंचनामा</h2>
           <p className="text-sm text-gray-500 mt-2">अपना पुश्तैनी बंटवारा फॉर्म तैयार करें</p>
+          {/* ⚡ Reset Button ⚡ */}
+          <button 
+            onClick={handleReset} 
+            className="mt-4  bg-red-500  text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-700 transition-colors shadow-sm flex items-center gap-1 mx-auto "
+          >
+            <span className="text-base"><RotateCcw size={12}/></span> नया फॉर्म भरें (Reset)
+          </button>
         </div>
         
         <div className="bg-orange-50 p-4 rounded-3xl border border-orange-200 mb-6 flex items-center justify-between shadow-sm">
