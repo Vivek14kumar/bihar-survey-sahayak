@@ -1,3 +1,4 @@
+import { number } from "framer-motion";
 import mongoose from "mongoose";
 
 const AminProfileSchema = new mongoose.Schema({
@@ -60,6 +61,10 @@ const AminProfileSchema = new mongoose.Schema({
   facebookUrl: { type: String, default: "" },
   youtubeUrl: { type: String, default: "" },
   instagramUrl: { type: String, default: "" },
+
+  views: { type: Number, default: 0 },
+  whatsAppClicks:{ type: Number, default: 0},
+  callClicks: {type: Number, default: 0},
 
   // 10. Legal & Compliance
   acceptedTerms: { 

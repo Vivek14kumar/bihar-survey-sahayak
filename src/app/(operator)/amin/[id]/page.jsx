@@ -15,7 +15,8 @@ import User from "@/app/api/models/User";
 import { cache } from 'react';
 import ShareButton from "../ShareButton"; 
 import CleanUrl from "../CleanUrl";
-
+import ContactButtons from "../ContactButtons";
+import ViewTracker from "../ViewTracker";
 
 // डेटाबेस क्वेरी को cache करने के लिए ताकि पेज और मेटाडेटा के लिए दो बार डेटाबेस कॉल न हो
 const getAminProfile = cache(async (id) => {
@@ -283,6 +284,7 @@ export default async function AminMobileApp(props) {
   return (
     <div className="bg-slate-100 min-h-screen relative selection:bg-emerald-200 pb-36 font-sans overflow-hidden">
       <CleanUrl />
+      <ViewTracker slug={dbProfile.slug} />
       {/* ================= HEADER (Fixed at Top) ================= */}
       <header className="absolute top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between items-center bg-gradient-to-b from-slate-900/90 via-slate-900/60 to-transparent backdrop-blur-[2px] ">
         <ShareButton aminName={amin.ownerNameHi} />
@@ -591,41 +593,17 @@ export default async function AminMobileApp(props) {
       </main>
 
       {/* ================= FLOATING BOTTOM ACTION BAR ================= */}
-<div className="fixed bottom-1 md:bottom-4 left-0 right-0 z-[100] pointer-events-none pb-safe pt-4 flex justify-center">
-  <div className="w-full max-w-3xl px-4 md:px-6 pointer-events-auto">
-    
-    <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-2 md:p-3 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.18)] flex gap-2 md:gap-4">
+      <div className="fixed bottom-1 md:bottom-4 left-0 right-0 z-[100] pointer-events-none pb-safe pt-4 flex justify-center">
+        <div className="w-full max-w-3xl px-4 md:px-6 pointer-events-auto">
 
-      {/* CALL BUTTON */}
-      <a
-        href={`tel:${amin.mobileNumber}`}
-        className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full py-3.5 md:py-4 flex items-center justify-center gap-2 font-bold text-sm md:text-base active:scale-[0.98] transition-all shadow-lg shadow-blue-500/30"
-      >
-        <Phone size={18} className="md:w-5 md:h-5" />
-        कॉल करें
-      </a>
+          <ContactButtons
+            mobileNumber={amin.mobileNumber}
+            whatsappNumber={amin.whatsappNumber}
+            slug={dbProfile.slug}
+          />
 
-      {/* WHATSAPP BUTTON */}
-      <a
-        href={`https://wa.me/91${amin.whatsappNumber}?text=नमस्ते, मैंने Bihar Survey Sahayak पर आपकी प्रोफाइल देखी है।`}
-        target="_blank"
-        rel="noreferrer"
-        className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-600 hover:to-green-700 text-white rounded-full py-3.5 md:py-4 flex items-center justify-center gap-2 font-bold text-sm md:text-base active:scale-[0.98] transition-all shadow-lg shadow-green-500/30"
-      >
-
-        {/* Real WhatsApp Icon */}
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
-          alt="WhatsApp"
-          className="w-5 h-5 md:w-6 md:h-6"
-        />
-
-        WhatsApp
-      </a>
-
-    </div>
-  </div>
-</div>
+        </div>
+      </div>
       <footer className="bg-slate-900 text-slate-300 ">
               <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-3 gap-10">
                 <div>
