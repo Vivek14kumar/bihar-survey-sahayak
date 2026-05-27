@@ -380,9 +380,9 @@ export default async function AminMobileApp(props) {
   
   {/* --- Background Watermark Text --- */}
   {/* Positioned absolutely so it sits behind the main text without breaking the layout */}
-  <div className="absolute -top-9 left-4 md:-top-16 md:left-6 pointer-events-none select-none z-0">
+  <div className="absolute  left-2 -top-16 md:left-6 pointer-events-none select-none z-0">
     <div className={kalam.className}>
-      <div className="text-white/20 md:text-white/20 text-[6rem] md:text-[10rem] font-bold leading-none drop-shadow-sm">
+      <div className="mb-2 text-white/30 md:text-white/30 text-[8rem] md:text-[10rem] font-bold leading-none drop-shadow-sm">
         अमीन
       </div>
     </div>
