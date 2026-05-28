@@ -14,7 +14,7 @@ export default function HeroSection() {
         
         {/* Desktop Image (Hidden on mobile, block on md screens and up) */}
         <Image
-          src="/images/bg-survey1.png"
+          src="/images/bg-survey1.webp"
           alt="Bihar Survey Background Desktop"
           fill
           priority
@@ -24,7 +24,7 @@ export default function HeroSection() {
 
         {/* Mobile Image 9:16 (Block on mobile, hidden on md screens and up) */}
         <Image
-          src="/images/bg-survey1-mobile.png" 
+          src="/images/bg-survey1-mobile.webp" 
           alt="Bihar Survey Background Mobile"
           fill
           priority

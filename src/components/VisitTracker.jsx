@@ -1,4 +1,28 @@
+
 "use client";
+
+import { useEffect, useRef } from "react";
+
+export default function VisitTracker() {
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    // Prevent React 18 Strict Mode from double-firing in development
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    // Send exactly ONE request per page load.
+    // The backend uses the IP address to automatically calculate unique vs total views.
+    fetch("/api/track-visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+  }, []);
+
+  return null; 
+}
+
+{/*"use client";
 
 import { useEffect } from "react";
 
@@ -44,3 +68,4 @@ export default function VisitTracker() {
 
   return null; // nothing visible
 }
+*/}

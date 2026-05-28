@@ -14,9 +14,9 @@ export async function POST(req) {
     if (type === "prapatra2") {
       amount = 5 * 100; // ₹5
     } else if (type === "vanshavali") {
-      amount = 10 * 100; // ₹10
+      amount = 15 * 100; // ₹15
     }else if (type === "affidavit") {
-      amount = 3 * 100; // ✅ ₹3 per document
+      amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "objectionLetter") {
       amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "cancellationJama") {
@@ -28,7 +28,7 @@ export async function POST(req) {
     }else if (type === "prapatra3") {
       amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "batwara") {
-      amount = 30 * 100; // ✅ ₹30 per document 
+      amount = 39 * 100; // ✅ ₹39 per document 
     }  else {
       return Response.json({ error: "Invalid type" }, { status: 400 });
     }

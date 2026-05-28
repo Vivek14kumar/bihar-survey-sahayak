@@ -1351,7 +1351,7 @@ useEffect(() => {
 
 <div className="grid grid-cols-2 gap-3">
 
-    {/* ⚡ PREMIUM BUTTON (Updated with ₹30 & Pricing Trick) ⚡ */}
+    {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
     <button
       onClick={() => {
           if (!validateForm()) return;
@@ -1386,7 +1386,7 @@ useEffect(() => {
           {/* लाल रंग का 'X' जो ₹99 के ठीक ऊपर दिखेगा */}
           <span className="absolute text-red-600 text-[18px] font-black select-none pointer-events-none ">✕</span>
         </div>
-        <span className="text-[18px] font-black leading-none text-gray-900">₹30</span>
+        <span className="text-[18px] font-black leading-none text-gray-900">₹39</span>
       </div>
 
       <span className="text-[10px] font-bold opacity-90">Blur और Watermark हटेगा</span>
@@ -1737,7 +1737,7 @@ useEffect(() => {
         
     <div className="grid grid-cols-2 gap-3">
 
-    {/* ⚡ PREMIUM BUTTON (Updated with ₹30 & Pricing Trick) ⚡ */}
+    {/* ⚡ PREMIUM BUTTON (Updated with ₹39 & Pricing Trick) ⚡ */}
     <button
       onClick={() => {
         const confirmMsg = "घोषणा: मैंने फॉर्म में भरी गई सभी जानकारी (नाम, खाता, खेसरा, रकबा आदि) की अच्छे से जांच कर ली है और सब सही है।\n\nभविष्य में किसी भी त्रुटि या गलती के लिए यह वेबसाइट जिम्मेदार नहीं होगी।\n\nक्या आप सुरक्षित रूप से पेमेंट पेज पर जाना चाहते हैं?";
@@ -1769,7 +1769,7 @@ useEffect(() => {
           {/* लाल रंग का 'X' जो ₹99 के ठीक ऊपर दिखेगा */}
           <span className="absolute text-red-600 text-[18px] font-black select-none pointer-events-none ">✕</span>
         </div>
-        <span className="text-[18px] font-black leading-none text-gray-900">₹30</span>
+        <span className="text-[18px] font-black leading-none text-gray-900">₹39</span>
       </div>
 
       <span className="text-[10px] font-bold opacity-90">Blur और Watermark हटेगा</span>

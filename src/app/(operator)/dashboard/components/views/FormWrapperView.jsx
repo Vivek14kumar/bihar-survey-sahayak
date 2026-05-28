@@ -1,15 +1,20 @@
 import { useState } from "react";
-import { ArrowLeft, Users, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle2, Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
 
-import Prapatra2Form from "@/components/forms/Prapatra2Form";
-import Prapatra3Form from "@/components/forms/Prapatra3Form";
-import LegalPanchnama from "@/components/forms/LegalPanchnama";
-import ParimarjanAffidavit from "@/components/forms/ParimarjanAffidavit";
-import DeathCertiAffidavit from "@/components/forms/DeathCertiAffidavit";
-import DeathCertificateDecl from "@/components/forms/DeathCertificateDecl";
-import ObjectionLetter from "@/components/forms/ObjectionLetter";
-import CancelJamabandhi from "@/components/forms/CancelJamabandhi";
-import Vanshavali from "@/components/forms/Vanshavali";
+// 🚀 BANDWIDTH FIX: Lazy Load every form component.
+// ssr: false ensures Next.js never tries to run the PDF libraries on the server.
+const loadingFallback = <div className="flex items-center justify-center p-12 text-slate-400"><Loader2 className="animate-spin mr-2" size={20} /> Loading Form Interface...</div>;
+
+const Prapatra2Form = dynamic(() => import("@/components/forms/Prapatra2Form"), { ssr: false, loading: () => loadingFallback });
+const Prapatra3Form = dynamic(() => import("@/components/forms/Prapatra3Form"), { ssr: false, loading: () => loadingFallback });
+const LegalPanchnama = dynamic(() => import("@/components/forms/LegalPanchnama"), { ssr: false, loading: () => loadingFallback });
+const ParimarjanAffidavit = dynamic(() => import("@/components/forms/ParimarjanAffidavit"), { ssr: false, loading: () => loadingFallback });
+const DeathCertiAffidavit = dynamic(() => import("@/components/forms/DeathCertiAffidavit"), { ssr: false, loading: () => loadingFallback });
+const DeathCertificateDecl = dynamic(() => import("@/components/forms/DeathCertificateDecl"), { ssr: false, loading: () => loadingFallback });
+const ObjectionLetter = dynamic(() => import("@/components/forms/ObjectionLetter"), { ssr: false, loading: () => loadingFallback });
+const CancelJamabandhi = dynamic(() => import("@/components/forms/CancelJamabandhi"), { ssr: false, loading: () => loadingFallback });
+const Vanshavali = dynamic(() => import("@/components/forms/Vanshavali"), { ssr: false, loading: () => loadingFallback });
 
 const formConfig = {
   "form_prapatra2": { title: "Prapatra 2", cost: 5, Component: Prapatra2Form },
@@ -80,7 +85,6 @@ export default function FormWrapperView({ currentView, setCurrentView, walletBal
         </button>
         <div className="bg-slate-100 px-4 py-2 rounded-lg border border-slate-200 text-center">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Generation Cost <span className="text-lg font-black text-slate-800">&nbsp;{activeForm.cost} Crs</span></p>
-          {/*<p className="text-lg font-black text-slate-800">₹{activeForm.cost}</p>*/}
         </div>
       </div>
 
@@ -100,7 +104,7 @@ export default function FormWrapperView({ currentView, setCurrentView, walletBal
         </div>
       </div>
 
-      <div >
+      <div>
         <ActiveComponent 
           isGenerating={isGenerating} 
           onGenerate={(cName, cMobile) => handleGenerateForm(activeForm.title, activeForm.cost, cName, cMobile)} 

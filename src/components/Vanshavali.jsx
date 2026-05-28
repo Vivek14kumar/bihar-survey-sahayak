@@ -628,11 +628,11 @@ export default function Vanshavali() {
 >
   <span className="flex items-center gap-2 text-lg">
     <Download size={20} />
-    Download PDF Without Watermark - ₹ 10
+    Download PDF Without Watermark - ₹ 15
   </span>
 
   <span className="text-sm font-normal opacity-90">
-    बिना वॉटरमार्क PDF डाउनलोड करें – ₹10
+    बिना वॉटरमार्क PDF डाउनलोड करें – ₹15
   </span>
 </button>
           </div>

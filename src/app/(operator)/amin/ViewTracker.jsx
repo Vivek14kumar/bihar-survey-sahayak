@@ -14,7 +14,7 @@ export default function ViewTracker({ slug }) {
           await fetch("/api/amins/track-view", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ slug }),
+            body: JSON.stringify({ slug, type: "view" }),
           });
           
           // 3. Save to browser so refresh doesn't trigger it again

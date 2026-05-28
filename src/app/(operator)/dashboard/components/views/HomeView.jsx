@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import { CheckCircle2, Search, FileSignature, FileText, Users, Activity, Scale, Wallet } from "lucide-react";
 import { MotivationWidget } from "../widgets/MotivationWidget";
 
-// FULL ARRAY OF ALL FORMS  {/**,allowedUserIds: [ "6a043eb3efcf4db1755b141c"]  */}
 const availableForms = [
   { id: "prapatra2", category: "forms", title: "Prapatra 2", desc: "Self Declaration Form.", icon: <FileSignature size={24}/>, cost: "5", badge: "Popular", badgeColor: "bg-rose-100 text-rose-700", view: "form_prapatra2" },
   { id: "prapatra3", category: "all", title: "Prapatra 3(1)", desc: "Claim details format.", icon: <FileText size={24}/>, cost: "5", view: "form_prapatra3" },
@@ -20,25 +21,35 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed,
   const [dailyTargets, setDailyTargets] = useState([]);
   const [leaderboard, setLeaderboard] = useState({ topShops: [], userRank: "Loading..." });
 
-  // Optional: Extract userType for cleaner code
   const userType = userData?.userType || 'operator';
   
+  // OPTIMIZED BANDWIDTH FIX: Added useRef to prevent double-fetching
+  const hasFetched = useRef(false);
+
   useEffect(() => {
+    // Prevent React 18 Strict Mode double-fire
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
     const fetchGamificationData = async () => {
       try {
+        // Removed 'no-store' to allow standard Vercel caching
         const [targetRes, leaderRes] = await Promise.all([
-          fetch("/api/targets/daily", { cache: 'no-store' }),
-          fetch("/api/leaderboard", { cache: 'no-store' })
+          fetch("/api/targets/daily"),
+          fetch("/api/leaderboard")
         ]);
         
         const tData = await targetRes.json();
         const lData = await leaderRes.json();
         if (tData?.targets) setDailyTargets(tData.targets);
         if (lData?.topShops) setLeaderboard(lData);
-      } catch (error) { console.error(error); }
+      } catch (error) { console.error("Failed to fetch gamification data:", error); }
     };
+
     fetchGamificationData();
-    const intervalId = setInterval(fetchGamificationData, 60000);
+    
+    // Increased interval to 5 minutes (300000 ms) to prevent tab-draining
+    const intervalId = setInterval(fetchGamificationData, 300000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -54,48 +65,27 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed,
   };
 
   const filteredForms = availableForms.filter((form) => {
-    // Get the user ID (checking common database ID fields)
     const currentUserId = userData?._id || userData?.userId; 
     let hasAccess = true;
 
-    // Check if this specific form has any restrictions applied in the array
     const hasRoleRestrictions = form.allowedRoles && form.allowedRoles.length > 0;
     const hasIdRestrictions = form.allowedUserIds && form.allowedUserIds.length > 0;
 
-    // If the form has ANY restrictions, default to false and make them prove they have access
     if (hasRoleRestrictions || hasIdRestrictions) {
       hasAccess = false; 
 
-      // 1. Grant access if their userType matches the allowedRoles
       if (hasRoleRestrictions && form.allowedRoles.includes(userType)) {
         hasAccess = true;
       }
 
-      // 2. Grant access if their specific ID is whitelisted (this overrides roles)
       if (hasIdRestrictions && form.allowedUserIds.includes(currentUserId)) {
         hasAccess = true;
       }
     }
 
-    // If they failed the access check, hide the form
     if (!hasAccess) {
       return false;
     }
-    /* --- 1. ROLE-BASED ACCESS CONTROL ---
-    if (form.id === "batwara" && userType !== "amin") {
-      return false;
-    }
-    
-    // --- 2. USER ID-BASED ACCESS CONTROL ---
-    // If the form has an allowedUserIds array, check if the current user's ID is in it
-    if (form.allowedUserIds && form.allowedUserIds.length > 0) {
-      // Use userData?.id or userData?._id depending on your database setup
-      const currentUserId = userData?.userId || userData?._id; 
-      
-      if (!form.allowedUserIds.includes(currentUserId)) {
-        return false; // Hide if their ID is not in the allowed list
-      }
-    }*/
 
     const matchesTab = activeTab === 'all' || form.category === activeTab;
     const query = searchQuery ? searchQuery.toLowerCase() : "";
@@ -105,7 +95,6 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed,
 
   return (
     <div className="animate-in fade-in duration-300">
-      {/* CHANGED: xl:flex-row is now lg:flex-row */}
       <div className="mb-6 flex flex-col lg:flex-row justify-between items-start gap-4">
         
         {/* Left Side: Header Text */}
@@ -126,8 +115,7 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed,
         </div>
         
         {/* Right Side: Widget Container */}
-        {/* CHANGED: All 'xl:' prefixes are now 'lg:' */}
-        <div className="w-full flex  lg:w-auto lg:block mt-2 lg:mt-0 ">
+        <div className="w-full flex lg:w-auto lg:block mt-2 lg:mt-0 ">
           <MotivationWidget dailyTargets={dailyTargets} leaderboard={leaderboard} onClaim={handleClaimReward} />
         </div>
 
@@ -149,19 +137,19 @@ export default function HomeView({ searchQuery, setCurrentView, onRewardClaimed,
         ) : (
           filteredForms.map((form) => (
              <div key={form.id} onClick={() => setCurrentView(form.view)} className="group p-5 rounded-2xl shadow-sm border border-slate-200 hover:-translate-y-1 hover:shadow-xl cursor-pointer bg-white flex flex-col transition-all h-full">
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="p-3 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform duration-300">{form.icon}</div>
-                    {form.badge && <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase ${form.badgeColor}`}>{form.badge}</span>}
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors">{form.title}</h3>
-                  <p className="text-[11px] text-slate-500 mb-6">{form.desc}</p>
-                </div>
-                <div className="mt-auto pt-4 border-t border-black/5 flex items-center justify-between">
-                   <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md flex items-center gap-1 border border-slate-200">
-                     <Wallet size={12} className="text-blue-600"/> Cost:{form.cost} Credits
-                   </span>
-                </div>
+               <div>
+                 <div className="flex justify-between items-start mb-4">
+                   <div className="p-3 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform duration-300">{form.icon}</div>
+                   {form.badge && <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase ${form.badgeColor}`}>{form.badge}</span>}
+                 </div>
+                 <h3 className="text-lg font-bold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors">{form.title}</h3>
+                 <p className="text-[11px] text-slate-500 mb-6">{form.desc}</p>
+               </div>
+               <div className="mt-auto pt-4 border-t border-black/5 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md flex items-center gap-1 border border-slate-200">
+                    <Wallet size={12} className="text-blue-600"/> Cost:{form.cost} Credits
+                  </span>
+               </div>
              </div>
           ))
         )}

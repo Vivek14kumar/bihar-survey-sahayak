@@ -1,6 +1,6 @@
 // 1. 🚀 PERFORMANCE WIN: Cache the entire directory for 60 seconds!
 // No more "force-dynamic". Zero DB hits for normal visitors.
-export const revalidate = 60;
+export const revalidate = 3600; //24 times a day
 
 import dbConnect from "@/app/api/utils/dbConnect";
 import Amin from "@/app/api/models/AminProfile";

@@ -135,7 +135,7 @@ export default function ViralDistrictUpdatePage() {
           className="absolute inset-0 bg-cover bg-center"
          
         > <Image
-          src="/assets/monitoring.png"
+          src="/assets/monitoring.webp"
           alt="Bihar Survey Background Desktop"
           fill
           priority
@@ -145,7 +145,7 @@ export default function ViralDistrictUpdatePage() {
 
       {/* Mobile Image 9:16 (Block on mobile, hidden on md screens and up) */}
           <Image
-            src="/assets/monitoring-mobile.png" 
+            src="/assets/monitoring-mobile.webp" 
             alt="Bihar Survey Background Mobile"
             fill
             priority

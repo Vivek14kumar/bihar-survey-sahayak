@@ -51,7 +51,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-2 py-2 flex justify-between items-center font-[var(--font-hind)]">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-1">
-            <Image src="/images/logo.png" alt="Logo" width={45} height={45} priority />
+            <Image src="/images/logo.webp" alt="Logo" width={45} height={45} priority />
             <div>
               <p className="font-black text-lg text-slate-900 leading-none">Bihar Survey Sahayak</p>
               <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mt-1">बिहार सर्वेक्षण सहायक</p>
@@ -110,7 +110,7 @@ export default function Navbar() {
       <header className="md:hidden sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-slate-200 shadow-sm print:hidden">
         <div className="flex items-center justify-between px-2 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/images/logo.png" alt="Logo" width={35} height={35} priority />
+            <Image src="/images/logo.webp" alt="Logo" width={35} height={35} priority />
             <div>
               <p className="font-black text-slate-900 leading-none">Bihar Survey Sahayak</p>
               <p className="text-[8px] font-bold text-indigo-600 uppercase tracking-widest mt-1">बिहार सर्वेक्षण सहायक</p>

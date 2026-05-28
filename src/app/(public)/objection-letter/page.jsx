@@ -158,7 +158,7 @@ export default function ObjectionLetter() {
         amount: orderData.amount,
         currency: "INR",
         name: "Bihar Survey Sahayak",
-        description: "Objection Letter Premium Print ₹3",
+        description: "Objection Letter Premium Print ₹5",
         order_id: orderData.id,
         handler: async function (response) {
           await fetch("/api/verify-payment", {

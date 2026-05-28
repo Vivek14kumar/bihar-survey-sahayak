@@ -3,6 +3,7 @@
 import React from 'react';
 import DirectionSymbol from "./DirectionSymbol";
 import { Kalam } from "next/font/google";
+import MapCanvas from './MapCanvas';
 
 function formatDate(date) {
   return new Intl.DateTimeFormat("en-GB")
@@ -190,7 +191,7 @@ export default function NazriNaksha(){
                 
             </div>
             <div className=" text-center h-100 ml-18 mt-20">
-                Canvas Map Drawing Area
+                <MapCanvas/>
             </div>
             <div className=" h-20 p-1 ">
                 नोट :- 

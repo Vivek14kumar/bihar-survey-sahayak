@@ -123,7 +123,7 @@ export default function ParimarjanAffidavit() {
         amount: orderData.amount,
         currency: "INR",
         name: "Bihar Survey Sahayak",
-        description: "Affidavit Premium Print ₹3",
+        description: "Affidavit Premium Print ₹5",
         order_id: orderData.id,
 
         handler: async function (response) {
@@ -234,11 +234,11 @@ export default function ParimarjanAffidavit() {
         >
           <div className="flex items-center gap-3">
             <Printer size={22} />
-            <span>Print Without Watermark ₹3</span>
+            <span>Print Without Watermark ₹5</span>
           </div>
 
           <span className="text-xs opacity-90 font-medium">
-            बिना वॉटरमार्क PDF प्रिंट करें – ₹3
+            बिना वॉटरमार्क PDF प्रिंट करें – ₹5
           </span>
         </button>
       </div>

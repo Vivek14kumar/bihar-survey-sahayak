@@ -105,7 +105,7 @@ export default function DashboardLayout({
           <div className="pt-6 px-6 pb-4 border-b border-slate-700 flex justify-between items-start">
             <h1 className="text-xl font-black text-white tracking-tight flex items-center gap-3">
               <div className="w-10 h-10 overflow-hidden shrink-0">
-                <img src="/images/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                <img src="/images/logo.webp" alt="Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="text-white text-lg">Bihar Survey Sahayak</span>
@@ -221,7 +221,7 @@ export default function DashboardLayout({
             {(!isSidebarOpen || isMobile) && (
               <div className="flex items-center gap-1.5 md:gap-2 mr-1 shrink-0 animate-in fade-in zoom-in duration-300">
                 <div className="w-6 h-6 md:w-8 md:h-8 overflow-hidden shrink-0">
-                  <img src="/images/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                  <img src="/images/logo.webp" alt="Logo" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-slate-800 font-black text-xs sm:text-[15px] xl:text-lg leading-tight hidden sm:block">
                   Bihar Survey Sahayak
@@ -337,7 +337,7 @@ export default function DashboardLayout({
 
           <div className="flex flex-col items-center justify-center pt-1 pb-2 shrink-0 px-2 cursor-pointer hover:scale-105 transition-transform" onClick={() => setCurrentView("dashboard")} title="Bihar Survey Sahayak">
             <div className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center mb-0.5 shadow-sm border border-slate-200">
-               <img src="/images/logo.png" alt="Logo" className="w-5 h-5 object-contain" />
+               <img src="/images/logo.webp" alt="Logo" className="w-5 h-5 object-contain" />
             </div>
             <span className="text-[9px] font-black text-slate-800 leading-tight uppercase tracking-wider">Bihar Survey</span>
           </div>

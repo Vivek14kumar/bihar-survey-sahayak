@@ -358,7 +358,7 @@ export default async function AminMobileApp(props) {
         {/* ================= TOP HERO COVER ================= */}
         <div className="relative h-[55vh] md:h-[65vh] w-full overflow-hidden rounded-b-[40px] shadow-lg z-10 border-b border-emerald-500/20">
           <Image
-            src="/images/bg-amin.png" 
+            src="/images/bg-amin.webp" 
             alt="Profile Cover"
             fill
             priority
@@ -367,7 +367,7 @@ export default async function AminMobileApp(props) {
           />
 
           <Image
-            src="/images/bg-amin-mobile.png" 
+            src="/images/bg-amin-mobile.webp" 
             alt="Profile Cover"
             fill
             priority
