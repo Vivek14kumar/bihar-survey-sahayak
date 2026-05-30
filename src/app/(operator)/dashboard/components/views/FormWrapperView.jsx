@@ -19,8 +19,8 @@ const Vanshavali = dynamic(() => import("@/components/forms/Vanshavali"), { ssr:
 const formConfig = {
   "form_prapatra2": { title: "Prapatra 2", cost: 5, Component: Prapatra2Form },
   "form_prapatra3": { title: "Prapatra 3(1)", cost: 5, Component: Prapatra3Form },
-  "form_vanshavali": { title: "Vanshavali", cost: 10, Component: Vanshavali },
-  "form_batwara": { title: "Batwara Application", cost: 30, Component: LegalPanchnama },
+  "form_vanshavali": { title: "Vanshavali", cost: 15, Component: Vanshavali },
+  "form_batwara": { title: "Batwara Application", cost: 39, Component: LegalPanchnama },
   "form_shapath": { title: "Shapath Patra", cost: 3, Component: ParimarjanAffidavit },
   "form_deathCertiAfi": { title: "Death Certificate Affidavit", cost: 5, Component: DeathCertiAffidavit },
   "form_DeathCertiDec": { title: "Death Certificate (Mukhiya)", cost: 5, Component: DeathCertificateDecl },
