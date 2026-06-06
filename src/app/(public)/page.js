@@ -1,6 +1,6 @@
 // src/app/(public)/page.js
 // ❌ CRITICAL: Do NOT put "use client" in this file!
-export const revalidate = 60;
+export const revalidate = 3600;
 
 import HeroSection from "@/components/HeroSection";
 import HomeClientContent from "@/components/HomeClientContent"; // Your new animated component
