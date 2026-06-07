@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import * as htmlToImage from 'html-to-image';
 import jsPDF from 'jspdf';
-import { Download, Printer, Loader2 } from "lucide-react";
+import { Download, Printer, Loader2, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function LandscapePage() {
@@ -177,10 +177,19 @@ const handleShareholderChange = (entryId, index, field, value) => {
   // Trigger Hindi Suggestions
   const words = value.split(" ");
   const lastWord = words[words.length - 1];
-  if (lastWord.trim()) {
+
+  // 👉 नया लॉजिक: चेक करें कि शब्द सिर्फ नंबर तो नहीं है (जैसे 12, 10.5, 800-001)
+  const isNumber = /^[0-9.,\-]+$/.test(lastWord);
+  if (lastWord.trim() && !isNumber) {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
+  } else {
+    setSuggestions([]); // अगर नंबर है तो हिंदी सजेशन बंद कर दें
   }
+  /*if (lastWord.trim()) {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
+  }*/
 };
 
   // 2. HINDI TRANSLITERATION LOGIC
@@ -281,7 +290,10 @@ const handleHindiChange = (entryId, plotIndex, field, value, isNumeric = false) 
   const words = value.split(" ");
   const lastWord = words[words.length - 1];
   
-  if (lastWord.trim()) {
+  // 👉 नया लॉजिक: चेक करें कि शब्द सिर्फ नंबर तो नहीं है
+  const isNumber = /^[0-9.,\-]+$/.test(lastWord);
+
+  if (lastWord.trim() && !isNumber) { //if (lastWord.trim()) {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
   } else {
@@ -521,6 +533,19 @@ const handleSecureAction = async (actionType) => {
   
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 no-print-bg">
+      {/* ================= HERO SECTION ================= */}
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8 print:hidden flex flex-col md:flex-row items-center gap-6">
+        <div className="bg-indigo-100 p-4 rounded-full flex-shrink-0">
+          <FileText className="w-8 h-8 text-indigo-600" />
+        </div>
+        <div className="flex-1 text-center md:text-left">
+          <h2 className="text-xl  font-bold text-gray-800 mb-2">ऑनलाइन प्रपत्र-2 भरें और डाउनलोड करें</h2>
+          <p className="text-gray-600 text-sm  leading-relaxed">
+            इस फॉर्म को सीधे अपने मोबाइल या कंप्यूटर में भरें। <b>अंग्रेजी में टाइप करें और यह अपने आप हिंदी में बदल जाएगा</b>। 
+            पूरा फॉर्म भरने के बाद, आप इसे सीधे बिना वॉटरमार्क के प्रिंट कर सकते हैं या PDF के रूप में डाउनलोड कर सकते हैं।
+          </p>
+        </div>
+      </div>
       <div className="flex justify-center gap-4 mb-6 print:hidden flex-wrap">
   
   {/* ================= DEV TEST BUTTONS (HIDDEN IN PRODUCTION) ================= 

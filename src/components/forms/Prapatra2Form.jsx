@@ -181,10 +181,20 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
     
     const words = value.split(" ");
     const lastWord = words[words.length - 1];
-    if (lastWord.trim()) {
+    
+    // 👉 नया लॉजिक: चेक करें कि शब्द सिर्फ नंबर तो नहीं है (जैसे 12, 10.5, 800-001)
+    const isNumber = /^[0-9.,\-]+$/.test(lastWord);
+    if (lastWord.trim() && !isNumber) {
       clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
+    } else {
+      setSuggestions([]); // अगर नंबर है तो हिंदी सजेशन बंद कर दें
     }
+
+   /* if (lastWord.trim()) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
+    }*/
   };
 
   // 2. HINDI TRANSLITERATION LOGIC
@@ -233,7 +243,10 @@ export default function Prapatra2Form({ isGenerating, onGenerate }) {
     const words = value.split(" ");
     const lastWord = words[words.length - 1];
     
-    if (lastWord.trim()) {
+    // 👉 नया लॉजिक: चेक करें कि शब्द सिर्फ नंबर तो नहीं है
+  const isNumber = /^[0-9.,\-]+$/.test(lastWord);
+
+  if (lastWord.trim() && !isNumber) { //if (lastWord.trim()) {
       clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
     } else {

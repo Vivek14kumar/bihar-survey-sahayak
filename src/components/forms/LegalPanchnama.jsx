@@ -95,7 +95,12 @@ const HindiInput = ({ label, name, value, onChange, placeholder, isTextarea = fa
 
     const words = val.split(" ");
     const lastWord = words[words.length - 1];
-    if (lastWord.trim()) {
+
+    // ⚡ नया अपडेट: चेक करें कि क्या शब्द में अंग्रेज़ी का कोई अक्षर है
+    const hasAlphabets = /[a-zA-Z]/.test(lastWord);
+
+    // अगर शब्द में अंग्रेज़ी अक्षर हैं, तभी API कॉल करें, वरना रोक दें
+    if (lastWord.trim() && hasAlphabets) { //if (lastWord.trim()) {
       clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => fetchSuggestions(lastWord), 300);
     } else {
@@ -135,7 +140,11 @@ const HindiInput = ({ label, name, value, onChange, placeholder, isTextarea = fa
       const words = localText.split(' ');
       const lastWord = words[words.length - 1];
 
-      if (lastWord.trim() !== '') {
+      // ⚡ नया अपडेट: चेक करें कि क्या शब्द में अंग्रेज़ी का कोई अक्षर है
+      const hasAlphabets = /[a-zA-Z]/.test(lastWord);
+      
+      // अगर अंग्रेज़ी अक्षर है, तभी Google API से कन्वर्ट करें
+      if (lastWord.trim() !== '' && hasAlphabets) { //if (lastWord.trim() !== '') {
         try {
           const res = await fetch(`https://inputtools.google.com/request?text=${lastWord}&itc=hi-t-i0-und&num=1`);
           const data = await res.json();
