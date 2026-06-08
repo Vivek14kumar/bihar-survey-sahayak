@@ -113,6 +113,7 @@ export default function LandscapePage() {
   }
 };
 
+  const [mobileNumber, setMobileNumber] = useState("");
 
   // 1. DATA STRUCTURE: Includes Header, Table, and Footer fields
   const [entries, setEntries] = useState([
@@ -414,6 +415,13 @@ const openRazorpay = async (callbackAction) => {
       name: "Bihar Survey Tool",
       description: "Prapatra-2 Premium Download",
       order_id: orderData.id,
+
+      // 👇 THIS IS THE MAGIC PART 👇
+      prefill: {
+        contact: mobileNumber, // Passes your form's mobile number to Razorpay
+        // email: "user@example.com" // You can also pass email here if you collect it
+      },
+
       handler: async function (response) {
         await fetch("/api/verify-payment", {
           method: "POST",
@@ -887,10 +895,10 @@ const handleSecureAction = async (actionType) => {
                   />
                 </p>
                   <p>दिनांक: <span className="font-bold underline">{todayDate}</span></p>
-                  <p>मोबाईल नं०: <input className="border-b border-dotted border-black outline-none w-32 font-bold bg-transparent placeholder:italic" maxLength={10} minLength={10} placeholder="लिखें" /></p>
+                  <p>मोबाईल नं०: <input className="border-b border-dotted border-black outline-none w-32 font-bold bg-transparent placeholder:italic" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} maxLength={10} minLength={10} placeholder="लिखें" /></p>
               </div>
               <div>
-                  <p>आधार सं०: <input className="border-b border-dotted border-black outline-none w-40 font-bold bg-transparent placeholder:italic" maxLength={12} minLength={12} placeholder="लिखें" /></p>
+                  <p>आधार सं०: <input className="border-b border-dotted border-black outline-none w-40 font-bold bg-transparent placeholder:italic" maxLength={12}  minLength={12} placeholder="लिखें" /></p>
               </div>
               <div className="text-center">
                 <div className="w-64"></div>
