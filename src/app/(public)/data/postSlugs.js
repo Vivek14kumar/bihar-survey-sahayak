@@ -38,5 +38,6 @@ export const postSlugs = [
   "bihar-land-survey-ai-technology-update",
   "revenue-department-anti-corruption-eou-team",
   "lpc-online-facility-benefits-bihar",
-  "minister-daily-monitoring-revenue-department"
+  "minister-daily-monitoring-revenue-department",
+  "ultimate-guide-to-make-vanshavali-bihar-survey"
 ];

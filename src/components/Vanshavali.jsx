@@ -20,6 +20,8 @@ export default function Vanshavali() {
   const [formatType, setFormatType] = useState("survey"); // 'survey' or 'blank'
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
+  const [applicantMobile, setApplicantMobile] = useState("");
+
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [currentField, setCurrentField] = useState(null);
@@ -193,6 +195,7 @@ export default function Vanshavali() {
     localStorage.removeItem("survey_data");
     setMembers([]);
     setRelation("स्वयं");   // reset relation
+    setApplicantMobile([]);
   }
 }; 
   const trackVanshawaliDownload = async () => {
@@ -250,7 +253,7 @@ export default function Vanshavali() {
       // ✅ Prefill user info
       prefill: {
         name: "Customer Name",
-        contact: "9876543210",
+        contact: applicantMobile,
         email: "customer@example.com", // add email for reliability
       },
 
@@ -309,7 +312,18 @@ export default function Vanshavali() {
   // ---------- PDF Download ----------
   const handleDownload = () => {
     // 1️⃣ Validate Form First
+  // 1️⃣ मोबाइल नंबर चेक करें
+  if (!applicantMobile) {
+    alert("कृपया आवेदक का मोबाइल नंबर दर्ज करें।");
+    return;
+  }
 
+  // भारतीय मोबाइल नंबर चेक करने का फॉर्मूला (शुरुआत 6,7,8,9 से और कुल 10 अंक)
+  const mobileRegex = /^[6-9]\d{9}$/;
+  if (!mobileRegex.test(applicantMobile)) {
+    alert("कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें ।");
+    return;
+  }
   // 2️⃣ First Confirmation (Review Form)
   const confirmReview = window.confirm(
     "Payment करने से पहले कृपया वंशावली (PREVIEW) को ध्यान से देख लें।\n\nक्या आपने सभी जानकारी सही से भर दी है?"
@@ -527,11 +541,56 @@ export default function Vanshavali() {
 
         {/* FORM */}
         <div className="bg-white shadow-xl rounded-3xl p-6 mb-6">
-          <div className="flex items-center gap-2 mb-4 text-emerald-600 font-semibold">
-            <UserPlus size={20} />
-            सदस्य जोड़ें
-          </div>
+          {/* Header & Mobile Input Section */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
 
+            {/* हेडिंग */}
+            <div className="flex items-center gap-3">
+              {/* Icon with beautiful background & soft shadow */}
+              <div className="flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-600 border border-emerald-200 shadow-sm">
+                <UserPlus size={22} strokeWidth={2.5} />
+              </div>
+
+              {/* Text with Gradient and Subtitle */}
+              <div className="flex flex-col">
+                <span className="text-xl font-extrabold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent tracking-tight">
+                  सदस्य जोड़ें
+                </span>
+                <span className="text-[11px] font-medium text-gray-500 mt-0.5">
+                  वंशावली में परिवार का विवरण दर्ज करें
+                </span>
+              </div>
+            </div>
+
+            {/* आवेदक का मोबाइल नंबर */}
+            <div className="w-full sm:w-auto">
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5 ml-1">
+                आवेदक का मोबाइल नंबर <span className="text-red-500">*</span>
+              </label>
+
+              <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all w-full sm:w-64">
+                <span className="bg-gray-100 px-3 py-2 text-gray-600 text-sm font-medium border-r border-gray-300 select-none">
+                  +91
+                </span>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={applicantMobile}
+                  onChange={(e) => {
+                    // 1. सिर्फ नंबर टाइप होने दें
+                    let val = e.target.value.replace(/\D/g, ""); 
+
+                    // 2. अगर पहला नंबर 0, 1, 2, 3, 4 या 5 है, तो उसे हटा दें
+                    val = val.replace(/^[0-5]+/, ""); 
+
+                    setApplicantMobile(val);
+                  }}
+                  placeholder="10 अंकों का नंबर"
+                  className="w-full px-3 py-2 text-sm outline-none text-gray-800 placeholder-gray-400"
+                />
+              </div>
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {renderInput(name, setName, "name", "नाम लिखें")}
 
@@ -623,18 +682,18 @@ export default function Vanshavali() {
             <FamilyTreePreview data={treeData} formatType={formatType} />
 
             <button
-  onClick={handleDownload}
-  className="w-full mt-4 bg-sky-400 hover:bg-sky-700 text-white p-4 rounded-xl font-semibold transition flex flex-col items-center gap-1"
->
-  <span className="flex items-center gap-2 text-lg">
-    <Download size={20} />
-    Download PDF Without Watermark - ₹ 15
-  </span>
+              onClick={handleDownload}
+              className="w-full mt-4 bg-sky-400 hover:bg-sky-700 text-white p-4 rounded-xl font-semibold transition flex flex-col items-center gap-1"
+            >
+              <span className="flex items-center gap-2 text-lg">
+                <Download size={20} />
+                Download PDF Without Watermark - ₹ 15
+              </span>
 
-  <span className="text-sm font-normal opacity-90">
-    बिना वॉटरमार्क PDF डाउनलोड करें – ₹15
-  </span>
-</button>
+              <span className="text-sm font-normal opacity-90">
+                बिना वॉटरमार्क PDF डाउनलोड करें – ₹15
+              </span>
+            </button>
           </div>
         )}
         {/* TESTING BYPASS BUTTON - REMOVE IN PRODUCTION 

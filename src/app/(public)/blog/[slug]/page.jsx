@@ -156,25 +156,56 @@ export default async function BlogPost({ params }) {
 )}
 
       {/* TOOL CTA */}
-      <div className="mt-14 bg-blue-50 border border-blue-200 rounded-2xl p-8 text-center">
-        <h3 className="text-2xl font-semibold mb-4">
-          Online Tool
-        </h3>
-        <Link
-          href={post.tool.link}
-          className="
-            block w-full sm:w-auto text-center
-            bg-blue-600 text-white 
-            px-5 py-3 sm:px-6
-            rounded-xl font-semibold
-            text-sm sm:text-base
-            hover:bg-blue-700
-            transition
-          "
-        >
-          {post.tool.text}
-        </Link>
-      </div>
+        {(post.tool || (post.tools && post.tools.length > 0)) && (
+          <div className="mt-14 bg-blue-50 border border-blue-200 rounded-2xl p-8 text-center">
+            <h3 className="text-2xl font-semibold mb-4">
+              {/* अगर 1 से ज्यादा टूल हैं तो 'Online Tools' दिखाएगा, वरना 'Online Tool' */}
+              {post.tools && post.tools.length > 1 ? "Online Tools" : "Online Tool"}
+            </h3>
+            
+            {/* बटन्स को एक सीध (Row) में रखने के लिए flex और gap का इस्तेमाल */}
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              
+              {/* 1. अगर पोस्ट में 'tools' (Array) है, तो map() चलाएं */}
+              {post.tools && post.tools.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.link}
+                  className="
+                    block w-full sm:w-auto text-center
+                    bg-blue-600 text-white 
+                    px-5 py-3 sm:px-6
+                    rounded-xl font-semibold
+                    text-sm sm:text-base
+                    hover:bg-blue-700
+                    transition
+                  "
+                >
+                  {item.text}
+                </Link>
+              ))}
+        
+              {/* 2. अगर पोस्ट में पुराना वाला 'tool' (Single Object) है, तो सिर्फ एक बटन दिखाएं */}
+              {!post.tools && post.tool && (
+                <Link
+                  href={post.tool.link}
+                  className="
+                    block w-full sm:w-auto text-center
+                    bg-blue-600 text-white 
+                    px-5 py-3 sm:px-6
+                    rounded-xl font-semibold
+                    text-sm sm:text-base
+                    hover:bg-blue-700
+                    transition
+                  "
+                >
+                  {post.tool.text}
+                </Link>
+              )}
+        
+            </div>
+          </div>
+        )}
 
       {/* OTHER TOOLS */}
       <div className="mt-12 border-t pt-8">

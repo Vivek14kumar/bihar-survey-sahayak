@@ -238,6 +238,8 @@ export default function LegalPanchnama() {
     aadhaar: true, witnessId: true, vanshavali: true, khatiyan: true, receipt: true, prapatra2: true
   });
 
+  const [applicantMobile, setApplicantMobile] = useState("");
+
   // डिफ़ॉल्ट रूप से 4 गवाह सेट किए गए हैं
   const [witnessCount, setWitnessCount] = useState(4);
 
@@ -687,6 +689,7 @@ useEffect(() => {
     setWitnessCount(4);
     setIsStampPaper(false);
     setErrors({});
+    setApplicantMobile([]);
     
     // पेज को ऊपर स्क्रॉल करें
     const formContainer = document.getElementById("form-container");
@@ -709,6 +712,12 @@ useEffect(() => {
 
   const openRazorpay = async (callbackAction) => {
     if (!validateForm()) return; // फॉर्म सही होने पर ही पेमेंट होगा
+
+    // 1️⃣ मोबाइल नंबर चेक करें
+  if (!applicantMobile) {
+    alert("कृपया आवेदक का मोबाइल नंबर दर्ज करें।");
+    return;
+  }
 
     if (!window.Razorpay) {
       alert("भुगतान प्रणाली लोड हो रही है... कृपया प्रतीक्षा करें।");
@@ -736,7 +745,7 @@ useEffect(() => {
         prefill: {
           name: commonData.moolRaiyat || "Guest User",
           email: "guest@biharsurveysahayak.com", // Dummy Email
-          contact: "9999999999" // Dummy Mobile Number
+          contact: applicantMobile, //  Mobile Number
         },
         handler: async function (response) {
   // 1. Kill the observer instance directly via Ref
@@ -1045,6 +1054,31 @@ useEffect(() => {
                 className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm" 
               />
             </div>
+            {/* ⚡ आवेदक का मोबाइल नंबर ⚡ */}
+             <div className='mb-2'>
+               <label className="block text-sm font-bold text-gray-800 mb-1.5">
+                 आवेदक का मोबाइल नंबर <span className="text-red-500">*</span>
+               </label>
+               <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 transition-all w-full">
+                 <span className="bg-gray-100 px-3 py-2.5 text-gray-600 text-sm font-medium border-r border-gray-300 select-none">
+                   +91
+                 </span>
+                 <input
+                   type="tel"
+                   maxLength={10}
+                   value={applicantMobile} // इसे अपने State के अनुसार चालू (uncomment) करें
+                   onChange={(e) => {
+                     // 1. सिर्फ नंबर टाइप होने दें
+                     let val = e.target.value.replace(/\D/g, ""); 
+                     // 2. अगर पहला नंबर 0, 1, 2, 3, 4 या 5 है, तो उसे हटा दें
+                     val = val.replace(/^[0-5]+/, ""); 
+                     setApplicantMobile(val); // इसे अपने State के अनुसार चालू (uncomment) करें
+                   }}
+                   placeholder="10 अंकों का नंबर"
+                   className="w-full px-3 py-2.5 text-sm outline-none text-gray-800 placeholder-gray-400"
+                 />
+               </div>
+             </div>
           {/* ⚡ मल्टिपल मूल रैयत जोड़ने का नया UI ⚡ */}
           <div className="mb-4">
             <label className="block mb-2 text-sm font-bold text-gray-800 border-b border-blue-200 pb-1">मूल रैयत का विवरण (जिनके नाम से खतियान है)</label>
