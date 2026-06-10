@@ -132,7 +132,7 @@ export const locations = [
 
   {
     district: "purnia",
-    blocks: ["purnia east","banmankhi","dhamdaha","amour","baisa","bhawanipur","kasba","rupauli"]
+    blocks: ["purnia east","banmankhi","dhamdaha","amour","baisa","baisi","bhawanipur","kasba","rupauli"]
   },
 
   {
