@@ -39,5 +39,8 @@ export const postSlugs = [
   "revenue-department-anti-corruption-eou-team",
   "lpc-online-facility-benefits-bihar",
   "minister-daily-monitoring-revenue-department",
-  "ultimate-guide-to-make-vanshavali-bihar-survey"
+  "ultimate-guide-to-make-vanshavali-bihar-survey",
+  "rajaswa-maha-abhiyan-special-camp-bihar-2026",
+  "check-revenue-court-case-status-online-bihar",
+  "abhiyan-basera-2-special-camp-bihar-2026"
 ];
