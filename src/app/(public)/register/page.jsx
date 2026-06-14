@@ -71,6 +71,7 @@ export default function Register() {
   if (type !== "checkbox") {
     if (name === "mobileNumber") {
       newValue = value.replace(/\D/g, "").slice(0, 10);
+      newValue = value.replace(/^[0-5]+/,"");
     } else if (name === "pincode") {
       newValue = value.replace(/\D/g, "").slice(0, 6);
     } else if (name === "password" || name === "confirmPassword") {

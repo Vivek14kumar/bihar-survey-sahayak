@@ -12,9 +12,9 @@ export async function POST(req) {
     // Set price based on type (Amount is in paise: ₹1 = 100 paise)
     let amount = 0;
     if (type === "prapatra2") {
-      amount = 5 * 100; // ₹5
+      amount = 10 * 100; // ₹10
     } else if (type === "vanshavali") {
-      amount = 15 * 100; // ₹15
+      amount = 20 * 100; // ₹20
     }else if (type === "affidavit") {
       amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "objectionLetter") {

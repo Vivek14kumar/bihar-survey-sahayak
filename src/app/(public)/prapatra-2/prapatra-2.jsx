@@ -589,12 +589,12 @@ const handleSecureAction = async (actionType) => {
       )}
       {isPrinting
         ? "Preparing..."
-        : "Print PDF Without Watermark – ₹5"}
+        : "Print PDF Without Watermark – ₹10"}
     </span>
 
     {!isPrinting && (
       <span className="text-xs opacity-90">
-        बिना वॉटरमार्क PDF प्रिंट करें – ₹5
+        बिना वॉटरमार्क PDF प्रिंट करें – ₹10
       </span>
     )}
   </button>
@@ -613,12 +613,12 @@ const handleSecureAction = async (actionType) => {
       )}
       {isDownloading
         ? "Downloading..."
-        : "Download PDF Without Watermark – ₹5"}
+        : "Download PDF Without Watermark – ₹10"}
     </span>
 
     {!isDownloading && (
       <span className="text-xs opacity-90">
-        बिना वॉटरमार्क PDF डाउनलोड करें – ₹5
+        बिना वॉटरमार्क PDF डाउनलोड करें – ₹10
       </span>
     )}
   </button>
@@ -927,12 +927,12 @@ const handleSecureAction = async (actionType) => {
       )}
       {isPrinting
         ? "Preparing..."
-        : "Print PDF Without Watermark – ₹5"}
+        : "Print PDF Without Watermark – ₹10"}
     </span>
 
     {!isPrinting && (
       <span className="text-xs opacity-90">
-        बिना वॉटरमार्क PDF प्रिंट करें – ₹5
+        बिना वॉटरमार्क PDF प्रिंट करें – ₹10
       </span>
     )}
   </button>
@@ -951,12 +951,12 @@ const handleSecureAction = async (actionType) => {
       )}
       {isDownloading
         ? "Downloading..."
-        : "Download PDF Without Watermark – ₹5"}
+        : "Download PDF Without Watermark – ₹10"}
     </span>
 
     {!isDownloading && (
       <span className="text-xs opacity-90">
-        बिना वॉटरमार्क PDF डाउनलोड करें – ₹5
+        बिना वॉटरमार्क PDF डाउनलोड करें – ₹10
       </span>
     )}
   </button>
