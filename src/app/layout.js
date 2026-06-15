@@ -84,6 +84,10 @@ export default function RootLayout({ children }) {
             gtag('config', 'AW-18020043700');
           `}
         </Script>
+        {/*AdSense */}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7311788999406105"
+          crossorigin="anonymous">
+        </script>
         <VisitTracker />
         <Analytics/>
         <Toaster position="top-right" reverseOrder={false} />
