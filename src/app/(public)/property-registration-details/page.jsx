@@ -11,6 +11,7 @@ import {
   FileText
 } from "lucide-react";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import AdSense from "@/components/AdSense";
 
 export const metadata = {
   title: "Property Registration Details Bihar - भूमि रजिस्ट्री (केवाला) जानकारी",
@@ -104,6 +105,8 @@ export default function PropertyRegistrationPage() {
           </p>
         </section>
 
+        <AdSense adSlot="8984133218" />
+
         {/* INFO SECTION: WHAT YOU SEE */}
         <section className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
           <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3 border-b border-slate-100 pb-4">
@@ -188,7 +191,7 @@ export default function PropertyRegistrationPage() {
 
           </div>
         </section>
-
+            <AdSense adSlot="8984133218" />
         {/* FUNNEL CTA (CALL TO ACTION) */}
         <section className="bg-gradient-to-r from-[#15803D] to-[#166534] p-10 rounded-3xl shadow-xl text-center text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 -mt-8 -mr-8 opacity-10">

@@ -10,6 +10,7 @@ import {
   FileText
 } from "lucide-react";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import AdSense from "@/components/AdSense";
 
 export const metadata = {
   title: "Bhumi Jankari Bihar Government Portal Guide | सरकारी वेबसाइट गाइड",
@@ -89,7 +90,7 @@ export default function OfficialPortalGuidePage() {
             </p>
           </div>
         </div>
-
+        <AdSense adSlot="8984133218" />
         {/* INTRO - Identifying Fake Sites */}
         <section className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-2 h-full bg-[#1E3A8A]"></div>
@@ -174,7 +175,7 @@ export default function OfficialPortalGuidePage() {
             </div>
           </div>
         </section>
-
+        <AdSense adSlot="8984133218" />
         {/* STEP GUIDE & INFO */}
         <div className="grid md:grid-cols-2 gap-6">
           

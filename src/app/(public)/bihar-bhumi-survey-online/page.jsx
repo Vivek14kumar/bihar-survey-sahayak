@@ -13,6 +13,7 @@ import {
   FileText
 } from "lucide-react";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import AdSense from "@/components/AdSense";
 
 export const metadata = {
   title: "Bihar Bhumi Survey Online - Download & Fill Form 2, 3 (Vanshavali)",
@@ -130,7 +131,7 @@ export default function SurveyOnlineHub() {
             </div>
 
             <Link
-              href="/#tools"
+              href="/prapatra-3-1"
               className="mt-auto flex items-center justify-center gap-2 bg-[#15803D] text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition-colors shadow-md relative z-10"
             >
               Form 3 बनाएँ <ChevronRight size={20} />
@@ -166,7 +167,7 @@ export default function SurveyOnlineHub() {
           </div>
 
         </div>
-
+        <AdSense adSlot="8984133218" />
         {/* STEP GUIDE & ABOUT (Two Columns on Large Screens) */}
         <section className="grid md:grid-cols-2 gap-6">
           

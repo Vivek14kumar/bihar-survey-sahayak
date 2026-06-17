@@ -8,6 +8,7 @@ import {
   Plus, X, FileSearch, AlertCircle, MapPin, ShieldCheck 
 } from 'lucide-react';
 import QuickLinksFooter from '@/components/QuickLinksFooter';
+import AdSense from '@/components/AdSense';
 
 export default function SmartPDFToolkit() {
   const [selectedIssue, setSelectedIssue] = useState("raiyat");
@@ -273,6 +274,7 @@ export default function SmartPDFToolkit() {
         </div>
       </div>
     </div>
+    <AdSense adSlot="8984133218" />
     <div>
         <QuickLinksFooter/>
     </div>

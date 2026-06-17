@@ -33,7 +33,7 @@ export default function CompactQuickLinks() {
     // --- EXISTING LINKS ---
     { name: "शपथ पत्र", href: "/shapath-patra", icon: <FileText size={18} className="text-purple-600" /> },
     { name: "बंटवारा पत्र", href: "/batwara-application-bihar", icon: <Users size={18} className="text-orange-600" /> },
-    { name: "वंशावली मेकर", href: "/#tool", icon: <Map size={18} className="text-emerald-600" /> },
+    { name: "वंशावली मेकर", href: "/vanshavali", icon: <Map size={18} className="text-emerald-600" /> },
     { name: "परिमार्जन गाइड", href: "/parimarjan-help", icon: <ShieldCheck size={18} className="text-cyan-600" /> },
     { name: "परिमार्जन स्टेटस", href: "/parimarjan-plus-status", icon: <Search size={18} className="text-green-600" /> },
     { name: "सर्वे स्टेटस", href: "/survey-status", icon: <Search size={18} className="text-blue-600" /> },

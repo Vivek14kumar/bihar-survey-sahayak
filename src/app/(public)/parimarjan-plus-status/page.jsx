@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import AdSense from "@/components/AdSense";
 
 /*export const metadata = {
   title: "परिमार्जन प्लस आवेदन स्थिति जांचें | Bihar Parimarjan Status Check",
@@ -82,7 +83,7 @@ export default function ParimarjanStatusPage() {
         </ol>
 
       </div>
-
+      <AdSense adSlot="8984133218" />
       {/* Status Types */}
       <div className="mt-8 bg-green-50 border border-green-200 rounded-xl p-6">
 

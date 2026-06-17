@@ -11,6 +11,7 @@ import {
   FileKey
 } from "lucide-react";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import AdSense from "@/components/AdSense";
 
 export const metadata = {
   title: "Bihar Land Record & Khatiyan - जमीन की जानकारी (Jamin Jankari)",
@@ -105,7 +106,7 @@ export default function LandRecordsPage() {
             इन डिजिटल रिकॉर्ड्स की मदद से आप अपनी जमीन का मालिकाना हक (Ownership), प्लॉट की जानकारी, उसका क्षेत्रफल और जमीन का पूरा इतिहास घर बैठे देख सकते हैं।
           </p>
         </section>
-
+        <AdSense adSlot="8984133218" />
         {/* KHATIYAN, KHATA, KHESRA INFO */}
         <section className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
           <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3 border-b border-slate-100 pb-4">
@@ -184,7 +185,7 @@ export default function LandRecordsPage() {
             </div>
           </div>
         </section>
-
+        <AdSense adSlot="8984133218" />
         {/* SURVEY CTA */}
         <section className="bg-gradient-to-r from-[#15803D] to-[#166534] p-8 rounded-2xl shadow-md text-white flex flex-col items-center text-center relative overflow-hidden">
           <div className="absolute top-0 right-0 -mt-4 -mr-4 opacity-10">

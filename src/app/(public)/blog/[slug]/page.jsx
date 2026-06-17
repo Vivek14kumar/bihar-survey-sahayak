@@ -75,7 +75,7 @@ export default async function BlogPost({ params }) {
       <p className="text-lg text-slate-600 mb-10 leading-relaxed">
         {post.intro}
       </p>
-
+      <AdSense adSlot="8984133218" />
       {post.sections.map((section, i) => {
         // Render the icon dynamically from the data file
         const Icon = section.icon;
@@ -115,7 +115,7 @@ export default async function BlogPost({ params }) {
           </div>
         );
       })}
-
+      <AdSense adSlot="8984133218" />
       {/* 👉 यहाँ पर Conditional Rendering लगायें 👈 */}
         {slug === "minister-daily-monitoring-revenue-department" && (
   <div className="my-10">

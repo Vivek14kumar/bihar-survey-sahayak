@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ExternalLink, Search } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import AdSense from "@/components/AdSense";
 
 export default function SurveyStatusPage() {
 
@@ -50,7 +51,7 @@ export default function SurveyStatusPage() {
         </button>
 
       </div>
-
+      <AdSense adSlot="8984133218" />
       {/* Steps */}
       <div className="mt-10 bg-white border rounded-xl p-6">
 

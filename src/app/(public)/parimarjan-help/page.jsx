@@ -6,6 +6,7 @@ import {
   ArrowRight, Sparkles, Monitor, Smartphone, Users, Lock, Unlock 
 } from "lucide-react";
 import QuickLinksFooter from "@/components/QuickLinksFooter";
+import AdSense from "@/components/AdSense";
 
 export default function ShapathPatraPage() {
   const [selectedIssue, setSelectedIssue] = useState("raiyat");
@@ -113,6 +114,7 @@ export default function ShapathPatraPage() {
                  सरकारी नियमों के अनुसार आपका आवेदन 15 दिनों के भीतर निष्पादित किया जाना अनिवार्य है।
                </p>
             </div>
+            <AdSense adSlot="8984133218" />
           </div>
 
           {/* RIGHT: DOCUMENT VIEWER & WORKFLOW */}

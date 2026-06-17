@@ -12,6 +12,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import AdSense from "@/components/AdSense";
 
 export const metadata = {
   title: "Bihar Bhumi Jankari - बिहार भूमि जानकारी | Jamabandi Register 2 Check",
@@ -131,7 +132,7 @@ export default function BiharBhumiJankariPage() {
             Through the portal, citizens can easily verify their property ownership and rectify discrepancies before the Bihar Land Survey process begins in their village.
           </p>
         </section>
-
+        <AdSense adSlot="8984133218" />
         {/* QUICK TOOLS */}
         <section className="grid md:grid-cols-2 gap-6">
           {/* Tool 1 */}
@@ -225,7 +226,7 @@ export default function BiharBhumiJankariPage() {
             </table>
           </div>
         </section>
-
+       <AdSense adSlot="8984133218" />
         {/* STEP GUIDE & SURVEY INFO (Two Columns on Large Screens) */}
         <section className="grid md:grid-cols-2 gap-6">
           

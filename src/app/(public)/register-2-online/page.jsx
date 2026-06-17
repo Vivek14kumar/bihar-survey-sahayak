@@ -196,7 +196,7 @@ export default function Register2OnlinePage() {
 
           </div>
         </section>
-
+        <AdSense adSlot="8984133218" />
         {/* FUNNEL CTA (CALL TO ACTION) */}
         <section className="bg-gradient-to-r from-[#15803D] to-[#166534] p-10 rounded-3xl shadow-xl text-center text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 -mt-8 -mr-8 opacity-10">
