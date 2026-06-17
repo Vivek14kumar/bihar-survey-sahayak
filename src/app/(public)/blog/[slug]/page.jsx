@@ -3,6 +3,7 @@ import CompactQuickLinks from "@/components/QuickLinksFooter";
 import ShareButton from "@/components/ShareButton";
 import SubscribeButton from "@/components/SubscribeButton";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import AdSense from "@/components/AdSense";
 
 // Import your data from the new file!
 import { posts } from "@/app/(public)/data/posts"; 
@@ -255,6 +256,7 @@ export default async function BlogPost({ params }) {
       </div>
       <WhatsAppButton/>
     </div>
+    <AdSense adSlot="8984133218" />
     </>
   );
 }

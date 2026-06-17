@@ -11,6 +11,7 @@ import {
   Database 
 } from 'lucide-react';
 import CompactQuickLinks from "@/components/QuickLinksFooter";
+import AdSense from '@/components/AdSense';
 
 // DYNAMIC METADATA FOR SEO
 export const metadata = {
@@ -131,7 +132,9 @@ export default function Register2OnlinePage() {
             ))}
           </div>
         </section>
-
+        
+        <AdSense adSlot="8984133218" />
+        
         {/* STEP BY STEP GUIDE */}
         <section className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
           <h2 className="text-2xl font-bold text-slate-800 mb-8 border-b border-slate-100 pb-4 flex items-center gap-3">
