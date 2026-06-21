@@ -225,7 +225,19 @@ export default function VanshavaliManual() {
       alert("भुगतान प्रणाली लोड हो रही है... कृपया प्रतीक्षा करें।");
       return;
     }
+    // 2️⃣ First Confirmation (Review Form)
+    const confirmReview = window.confirm(
+      "Payment करने से पहले कृपया वंशावली (PREVIEW) को ध्यान से देख लें।\n\nक्या आपने सभी जानकारी सही से भर दी है?"
+    );
 
+    if (!confirmReview) return;
+
+    // 3️⃣ Legal Responsibility Confirmation
+    const confirmResponsibility = window.confirm(
+      "मैंने वंशावली को ध्यान से देख लिया है।\n\nयदि कोई जानकारी गलत है तो उसकी पूरी जिम्मेदारी मेरी होगी।\n\nक्या आप डाउनलोड जारी रखना चाहते हैं?"
+    );
+
+    if (!confirmResponsibility) return;
     setIsProcessing(true);
 
     try {
@@ -706,7 +718,7 @@ export default function VanshavaliManual() {
                 <option value="landscape">Landscape (आड़ा)</option>
                 <option value="portrait">Portrait (सीधा)</option>
               </select>
-            </div>*/}
+            </div>
 
             <button
               onClick={() => processAction("print")}
@@ -720,7 +732,7 @@ export default function VanshavaliManual() {
               )}
               <Printer size={18} />
               <span>{isProcessing ? "लोडिंग..." : "प्रिंट करें"}</span>
-            </button>
+            </button>*/}
 
             <button
               onClick={() => processAction("download")}
