@@ -755,7 +755,7 @@ export default function VanshavaliManual() {
 
       {/* Bottom Section: Document Preview (A4 Dimensions enforced) */}
       <div className="w-full bg-gray-100 shadow-inner rounded-xl p-4 font-hindi print:bg-transparent print:shadow-none print:p-0 overflow-hidden">
-        <div className="w-full  pb-6 custom-scrollbar">
+        <div className="w-full md:overflow-x-hidden overflow-x-auto pb-6 custom-scrollbar">
           
           {/* यह बॉक्स एकदम A4 पेज के आकार का दिखेगा */}
           <div
