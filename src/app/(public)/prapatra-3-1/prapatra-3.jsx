@@ -715,7 +715,7 @@ const updateApplicant = (index, field, value) => {
             {renderTreeInput(formData.treeData)}
           </div>*/}
           <Link
-            href="/#tools"
+            href="/vanshavali"
             className="block mx-auto text-center p-4 bg-gradient-to-r from-green-600 to-green-700 text-white py-3.5 rounded-2xl font-bold text-[13px] hover:shadow-lg transition-all w-fit"
           >
             यहाँ से बनाये

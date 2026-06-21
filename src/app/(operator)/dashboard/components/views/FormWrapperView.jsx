@@ -15,11 +15,12 @@ const DeathCertificateDecl = dynamic(() => import("@/components/forms/DeathCerti
 const ObjectionLetter = dynamic(() => import("@/components/forms/ObjectionLetter"), { ssr: false, loading: () => loadingFallback });
 const CancelJamabandhi = dynamic(() => import("@/components/forms/CancelJamabandhi"), { ssr: false, loading: () => loadingFallback });
 const Vanshavali = dynamic(() => import("@/components/forms/Vanshavali"), { ssr: false, loading: () => loadingFallback });
-
+const VanshavaliManual = dynamic(() => import("@/components/forms/VanshavaliManual"),{ssr: false, loading: () => loadingFallback }) 
 const formConfig = {
   "form_prapatra2": { title: "Prapatra 2", cost: 5, Component: Prapatra2Form },
   "form_prapatra3": { title: "Prapatra 3(1)", cost: 5, Component: Prapatra3Form },
   "form_vanshavali": { title: "Vanshavali", cost: 15, Component: Vanshavali },
+  "form_vanshavaliManual": { title: "Vanshavali Manual", cost: 15, Component: VanshavaliManual },
   "form_batwara": { title: "Batwara Application", cost: 39, Component: LegalPanchnama },
   "form_shapath": { title: "Shapath Patra", cost: 3, Component: ParimarjanAffidavit },
   "form_deathCertiAfi": { title: "Death Certificate Affidavit", cost: 5, Component: DeathCertiAffidavit },

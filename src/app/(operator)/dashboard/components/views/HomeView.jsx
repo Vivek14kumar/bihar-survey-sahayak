@@ -8,6 +8,7 @@ const availableForms = [
   { id: "prapatra2", category: "forms", title: "Prapatra 2", desc: "Self Declaration Form.", icon: <FileSignature size={24}/>, cost: "5", badge: "Popular", badgeColor: "bg-rose-100 text-rose-700", view: "form_prapatra2" },
   { id: "prapatra3", category: "all", title: "Prapatra 3(1)", desc: "Claim details format.", icon: <FileText size={24}/>, cost: "5", view: "form_prapatra3" },
   { id: "vanshavali", category: "forms", title: "Vanshavali", desc: "Family tree layouts.", icon: <Users size={24}/>, cost: "15", badge: "High Margin", badgeColor: "bg-emerald-100 text-emerald-700", view: "form_vanshavali" },
+  { id: "vanshavaliManual", category: "forms", title: "Manual Vanshavali", desc: "Family tree layouts.", icon: <Users size={24}/>, cost: "15", badge: "High Margin", badgeColor: "bg-emerald-100 text-emerald-700", view: "form_vanshavaliManual" },
   { id: "batwara", category: "forms", title: "Batwara Application", desc: "Land partition form.", icon: <Activity size={24}/>, cost: "39", badge: "High Margin", badgeColor: "bg-emerald-100 text-emerald-700", view: "form_batwara"}, 
   { id: "shapath", category: "all", title: "Shapath Patra", desc: "General affidavit format from Notary.", icon: <Scale size={24}/>, cost: "3", view: "form_shapath" },
   { id: "deathCertiAfi", category: "affidavits", title: "Death Certificate Affidavit", desc: "Death affidavit format.", icon: <Scale size={24}/>, cost: "5", view: "form_deathCertiAfi" },
