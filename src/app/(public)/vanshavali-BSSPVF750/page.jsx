@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState, useEffect, useRef } from "react";
 import { Printer, Download, RotateCcw, Plus, X, Upload, User, Camera, Trash2, SwitchCamera } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import { toPng } from "html-to-image";
@@ -23,20 +22,12 @@ const stripPhotosFromTree = (node) => {
   return rest;
 };
 
-function VanshavaliContent() {
-  //const searchParams = useSearchParams();
+export default function VanshavaliManual() {
   const [formData, setFormData] = useState({
     applicants: [{ name: "", relName: "" }],
     treeData: INITIAL_TREE_DATA,
     date: new Date().toISOString().split("T")[0],
   });
-
-  const searchParams = useSearchParams();
-  const promoToken = searchParams.get("token");
-  
-  // Agar URL me '?token=BIHARFREE' hoga, to ye true ho jayega
-  const isFreeAccess = promoToken === "BSSPVF750";
-  const [isActionCompleted, setIsActionCompleted] = useState(false);
 
   const [applicantMobile, setApplicantMobile] = useState("");
   const [layoutMode, setLayoutMode] = useState("landscape");
@@ -47,8 +38,7 @@ function VanshavaliContent() {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [showWatermark, setShowWatermark] = useState(true);
-  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [isActionCompleted, setIsActionCompleted] = useState(false); // एक बार काम करने का लॉक
 
   // Webcam State & Refs
   const [webcamState, setWebcamState] = useState({ isOpen: false, nodeId: null });
@@ -59,7 +49,6 @@ function VanshavaliContent() {
   const debounceRef = useRef(null);
   const cacheRef = useRef({});
   const printRef = useRef(null);
-  const observerRef = useRef(null);
 
   const MAX_TREE_DEPTH = 20;
 
@@ -109,12 +98,12 @@ function VanshavaliContent() {
       }));
       setApplicantMobile("");
       setSuggestions([]);
-      //setIsActionCompleted(false);
+      setIsActionCompleted(false); // रिसेट करने पर बटन वापस चालू हो जाएंगे
     }
   };
 
   // ----------------------------------------
-  // VALIDATION & WATERMARK LOGIC
+  // VALIDATION
   // ----------------------------------------
   const isAnyNodeEmpty = (node) => {
     if (!node.name || !node.name.trim()) return true;
@@ -136,41 +125,6 @@ function VanshavaliContent() {
     return true;
   };
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => setRazorpayLoaded(true);
-    document.body.appendChild(script);
-  }, []);
-
-  useEffect(() => {
-    if (!showWatermark) {
-      if (observerRef.current) observerRef.current.disconnect();
-      return;
-    }
-    const observer = new MutationObserver((mutations) => {
-      if (!showWatermark) return;
-      for (const mutation of mutations) {
-        const isRemoval =
-          mutation.type === "childList" &&
-          Array.from(mutation.removedNodes).some(
-            (node) => node.id === "watermark-layer"
-          );
-        const isStyleChange =
-          mutation.type === "attributes" &&
-          mutation.target.id === "watermark-layer";
-        if (isRemoval || isStyleChange) {
-          alert("⚠️ सुरक्षा चेतावनी: वाटरमार्क के साथ छेड़छाड़ वर्जित है।");
-          window.location.reload();
-        }
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-    observerRef.current = observer;
-    return () => observer.disconnect();
-  }, [showWatermark]);
-
   // ----------------------------------------
   // PRINT & DOWNLOAD LOGIC
   // ----------------------------------------
@@ -178,9 +132,8 @@ function VanshavaliContent() {
     contentRef: printRef,
     documentTitle: "वंशावली",
     onAfterPrint: () => {
-      setShowWatermark(true);
       setIsProcessing(false);
-      setIsActionCompleted(true);
+      setIsActionCompleted(true); // एक बार होने के बाद लॉक
     },
   });
 
@@ -233,99 +186,31 @@ function VanshavaliContent() {
     } finally {
       setIsGeneratingPDF(false);
       setIsProcessing(false);
-      setShowWatermark(true);
-      setIsActionCompleted(true);
+      setIsActionCompleted(true); // एक बार होने के बाद लॉक
     }
   };
 
   const processAction = async (actionType) => {
     if (!validateForm()) return;
-    // ----- FREE LINK BYPASS CODE -----
-    if (isFreeAccess) {
-      setIsProcessing(true);
-      setShowWatermark(false); // Free link wale user ke liye watermark hatayein
-      
-      alert("🎁 Free Access System: Aapke liye ye download bilkul muft hai!");
-      
-      setTimeout(async () => {
-        if (actionType === "print") executePrint();
-        if (actionType === "download") await executeDownloadPDF();
-      }, 800);
-      return; // Razorpay gateway ko open nahi hone dega
-    }
-    if (!window.Razorpay) {
-      alert("भुगतान प्रणाली लोड हो रही है... कृपया प्रतीक्षा करें।");
-      return;
-    }
+
+    // ----- Confirmation Dialogs -----
     const confirmReview = window.confirm(
-      "Payment करने से पहले कृपया वंशावली (PREVIEW) को ध्यान से देख लें।\n\nक्या आपने सभी जानकारी सही से भर दी है?"
+      "Download/Print करने से पहले कृपया वंशावली (PREVIEW) को ध्यान से देख लें।\n\nक्या आपने सभी जानकारी सही से भर दी है?"
     );
     if (!confirmReview) return;
 
     const confirmResponsibility = window.confirm(
-      "मैंने वंशावली को ध्यान से देख लिया है।\n\nयदि कोई जानकारी गलत है तो उसकी पूरी जिम्मेदारी मेरी होगी।\n\nक्या आप डाउनलोड जारी रखना चाहते हैं?"
+      "मैंने वंशावली को ध्यान से देख लिया है।\n\nयदि कोई जानकारी गलत है तो उसकी पूरी जिम्मेदारी मेरी होगी।\n\nक्या आप जारी रखना चाहते हैं?"
     );
     if (!confirmResponsibility) return;
 
+    // सीधे प्रोसेसिंग शुरू करें (बिना पेमेंट के)
     setIsProcessing(true);
-
-    try {
-      const orderRes = await fetch("/api/create-razorpay-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "vanshavali-photo" }),
-      });
-      const orderData = await orderRes.json();
-
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-        amount: orderData.amount,
-        currency: "INR",
-        name: "Bihar Survey Sahayak",
-        description: "Photo Vanshavali",
-        order_id: orderData.id,
-        prefill: {
-          name: "Customer Name",
-          contact: applicantMobile,
-          email: "customer@example.com",
-        },
-        handler: async function (response) {
-          if (observerRef.current) {
-            observerRef.current.disconnect();
-            observerRef.current = null;
-          }
-          setShowWatermark(false);
-
-          try {
-            await fetch("/api/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(response),
-            });
-            await fetch("/api/track-vanshawali", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ type: "vanshavali-photo" }),
-            });
-          } catch (e) {
-            console.log(e);
-          }
-
-          setTimeout(async () => {
-            if (actionType === "print") executePrint();
-            if (actionType === "download") await executeDownloadPDF();
-          }, 800);
-        },
-        modal: { ondismiss: function () { setIsProcessing(false); } },
-        theme: { color: "#1d4ed8" },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (err) {
-      alert("भुगतान प्रारंभ नहीं हो सका। कृपया पुनः प्रयास करें।");
-      setIsProcessing(false);
-    }
+    
+    setTimeout(async () => {
+      if (actionType === "print") executePrint();
+      if (actionType === "download") await executeDownloadPDF();
+    }, 800);
   };
 
   // ----------------------------------------
@@ -345,27 +230,24 @@ function VanshavaliContent() {
   };
 
   const toggleCamera = async () => {
-  // कैमरा बंद करें
-  if (videoRef.current && videoRef.current.srcObject) {
-    videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
-  }
-
-  // मोड बदलें (बैक से फ्रंट या फ्रंट से बैक)
-  const newMode = facingMode === "environment" ? "user" : "environment";
-  setFacingMode(newMode);
-
-  // नया कैमरा खोलें
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: newMode } 
-    });
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
     }
-  } catch (err) {
-    alert("कैमरा स्विच नहीं हो सका।");
-  }
-};
+
+    const newMode = facingMode === "environment" ? "user" : "environment";
+    setFacingMode(newMode);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: newMode } 
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      alert("कैमरा स्विच नहीं हो सका।");
+    }
+  };
 
   const closeWebcam = () => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -384,7 +266,6 @@ function VanshavaliContent() {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // Image Quality 0.8 to keep size optimized
       const base64Data = canvas.toDataURL("image/jpeg", 0.8);
       
       setFormData((prev) => ({
@@ -396,7 +277,6 @@ function VanshavaliContent() {
     }
   };
 
-  // Cleanup webcam on unmount
   useEffect(() => {
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
@@ -533,7 +413,6 @@ function VanshavaliContent() {
       <li key={node.id}>
         <div className="inline-flex flex-col items-center bg-white border border-gray-200 rounded-lg p-3 shadow-sm relative z-10 mx-1">
           
-          {/* Passport Size Photo Box (User-Friendly UI) */}
           <div className="flex flex-col items-center w-full mb-3">
             <div className="w-[60px] h-[75px] bg-gray-50 border-2 border-dashed border-gray-300 rounded overflow-hidden flex flex-col items-center justify-center mb-2 relative">
               {node.photo ? (
@@ -552,7 +431,6 @@ function VanshavaliContent() {
               )}
             </div>
             
-            {/* Action Buttons: Gallery, Live Camera, Delete */}
             <div className="flex gap-1.5">
               <label 
                 className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 p-1.5 rounded cursor-pointer transition-colors flex items-center justify-center" 
@@ -589,7 +467,6 @@ function VanshavaliContent() {
             </div>
           </div>
 
-          {/* Name Input */}
           <div className="relative">
             <input
               type="text"
@@ -622,7 +499,6 @@ function VanshavaliContent() {
             )}
           </div>
 
-          {/* Add / Remove Buttons */}
           <div className="flex gap-2 mt-3">
             <button
               onClick={() => setFormData((prev) => ({ ...prev, treeData: addChildNode(prev.treeData, node.id, depth) }))}
@@ -655,7 +531,6 @@ function VanshavaliContent() {
     return (
       <li key={node.id}>
         <div className="node-box flex flex-col items-center gap-1.5">
-          {/* Passport Size Preview Box */}
           {node.photo ? (
             <img 
               src={node.photo} 
@@ -696,13 +571,11 @@ function VanshavaliContent() {
                 autoPlay 
                 playsInline 
                 className="w-full h-full object-cover transform scale-x-[-1]" 
-                // scale-x-[-1] creates a mirror effect so it feels natural like a phone selfie camera
               ></video>
               <div className="absolute inset-0 border-4 border-white/20 rounded-xl pointer-events-none"></div>
             </div>
 
             <div className="flex items-center justify-center gap-3 w-full">
-              {/* कैमरा स्विच बटन (सिर्फ मोबाइल पर दिखेगा) */}
               <button 
                 onClick={toggleCamera} 
                 className="md:hidden flex items-center justify-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 h-14 rounded-full hover:bg-blue-100 active:scale-95 transition-all shadow-md"
@@ -714,7 +587,6 @@ function VanshavaliContent() {
                 </span>
               </button>
 
-              {/* फोटो कैप्चर बटन */}
               <button 
                 onClick={capturePhotoFromWebcam} 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-14 rounded-full font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 transition-all flex-1 md:flex-none"
@@ -724,12 +596,10 @@ function VanshavaliContent() {
               </button>
             </div>
             
-            {/* Hidden canvas to process the image */}
             <canvas ref={canvasRef} className="hidden"></canvas>
           </div>
         </div>
       )}
-      {/* ---------------- END WEBCAM MODAL ---------------- */}
 
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
@@ -839,46 +709,33 @@ function VanshavaliContent() {
             transform: scale(0.95);
             transform-origin: top center;
           }
-          #watermark-layer {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-          }
         }
       `}</style>
 
       {/* Top Section: Form Input */}
-      <div
-        id="form-container"
-        className="w-full bg-white p-5 md:p-8 shadow-md rounded-xl border-t-[6px] border-blue-600 print:hidden"
-      >
-        {/* Top Header Section (Eye-Catching & Mobile Friendly) */}
+      <div id="form-container" className="w-full bg-white p-5 md:p-8 shadow-md rounded-xl border-t-[6px] border-blue-600 print:hidden">
+        
+        {/* Top Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6 border-b border-gray-200 pb-5">
           
-          {/* Heading Box */}
           <div className="flex items-center gap-3">
-            {/* 3D Icon Box */}
             <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-2.5 rounded-xl shadow-[0_4px_10px_rgba(37,99,235,0.3)] flex-shrink-0">
               <Camera size={24} strokeWidth={2} />
             </div>
             
-            {/* Text Area */}
-            <div className="flex flex-col">
+            <div className="flex flex-col cursor-default">
               <h3 className="font-extrabold text-gray-800 text-xl md:text-2xl leading-tight tracking-tight flex items-center gap-2">
                 फोटो वाली वंशावली
-                <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-md border border-amber-200 font-bold uppercase tracking-wider hidden sm:inline-block">
-                  Premium
+                <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-md border border-emerald-200 font-bold uppercase tracking-wider hidden sm:inline-block">
+                  Free Access
                 </span>
               </h3>
               <p className="text-[12px] md:text-sm text-emerald-600 font-semibold mt-0.5">
-                सर्वे और सरकारी कार्यों के लिए 
+                सर्वे और सरकारी कार्यों के लिए मान्य
               </p>
             </div>
           </div>
 
-          {/* Mobile Number Input Box */}
           <div className="w-full md:w-auto bg-gray-50 p-2 rounded-xl border border-gray-200">
             <label className="block text-[11px] font-bold text-gray-500 mb-1 ml-1 uppercase tracking-wider">
               आवेदक का मोबाइल नंबर <span className="text-red-500">*</span>
@@ -911,7 +768,6 @@ function VanshavaliContent() {
 
         {/* Action Buttons */}
         <div className="mt-8 flex flex-col lg:flex-row gap-6 justify-between items-center w-full">
-          
           <button
             onClick={handleReset}
             disabled={isProcessing}
@@ -922,7 +778,6 @@ function VanshavaliContent() {
           </button>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 ml-auto">
-            
             <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-xl px-3 py-2">
               <label className="text-sm font-bold text-gray-700">पेज लेआउट:</label>
               <select
@@ -945,9 +800,6 @@ function VanshavaliContent() {
                   : "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:shadow-lg disabled:opacity-70"
                 }`}
             >
-              {showWatermark && !isFreeAccess && !isActionCompleted && (
-                <span className="absolute -top-3 -right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹30</span>
-              )}
               <Printer size={18} />
               <span>
                 {isProcessing ? "लोडिंग..." : isActionCompleted ? "प्रिंट हो गया ✔" : "प्रिंट करें"}
@@ -963,17 +815,11 @@ function VanshavaliContent() {
                   : "bg-gradient-to-r from-yellow-400 to-amber-500 text-black hover:shadow-lg disabled:opacity-70"
                 }`}
             >
-              {showWatermark && !isFreeAccess && !isActionCompleted && (
-                <span className="absolute -top-3 -right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹30</span>
-              )}
               <Download size={18} />
               <span>
                 {isProcessing || isGeneratingPDF ? "लोडिंग..." : isActionCompleted ? "डाउनलोड हो गया ✔" : "PDF डाउनलोड"}
               </span>
             </button>
-
-            {/* --- ⚠️ सिर्फ टेस्टिंग के लिए (Live करने से पहले हटा दें) ⚠️ --- */}
-             {/*<button onClick={() => { setShowWatermark(false); if (observerRef.current) { observerRef.current.disconnect(); observerRef.current = null; } setTimeout(() => { executePrint(); }, 1000); }} className="col-span-2 mt-2 bg-gray-200 text-gray-800 py-2 rounded-xl text-xs font-bold"> 🛠️ Developer Bypass Payment (Test) </button> */}
           </div>
         </div>
       </div>
@@ -993,17 +839,6 @@ function VanshavaliContent() {
               boxSizing: "border-box",
             }}
           >
-            {showWatermark && !isGeneratingPDF && (
-              <div
-                id="watermark-layer"
-                style={{
-                  position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, pointerEvents: "none",
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='450' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='38' font-weight='900' font-family='Arial, sans-serif' fill='rgba(54, 40, 40, 0.08)' text-anchor='middle' transform='rotate(-40, 225, 225)'%3EBIHAR SURVEY SAHAYAK%3C/text%3E%3C/svg%3E")`,
-                  backgroundRepeat: "repeat",
-                }}
-              ></div>
-            )}
-
             <div className="relative z-10 w-full flex flex-col items-center">
               <h2 style={{ textAlign: "center", fontSize: "26px", fontWeight: "bold", textDecoration: "underline", marginBottom: "30px" }}>
                 वंशावली (वंशवृक्ष)
@@ -1017,17 +852,5 @@ function VanshavaliContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function VanshavaliManual() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-blue-600 font-bold">वंशावली पेज लोड हो रहा है... (Loading...)</p>
-      </div>
-    }>
-      <VanshavaliContent />
-    </Suspense>
   );
 }
