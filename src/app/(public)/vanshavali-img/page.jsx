@@ -1,6 +1,7 @@
 "use client";
+
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
 import { Printer, Download, RotateCcw, Plus, X, Upload, User, Camera, Trash2, SwitchCamera } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import { toPng } from "html-to-image";
@@ -22,7 +23,8 @@ const stripPhotosFromTree = (node) => {
   return rest;
 };
 
-export default function VanshavaliPhoto() {
+function VanshavaliContent() {
+  //const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     applicants: [{ name: "", relName: "" }],
     treeData: INITIAL_TREE_DATA,
@@ -1015,5 +1017,17 @@ export default function VanshavaliPhoto() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VanshavaliManual() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-blue-600 font-bold">वंशावली पेज लोड हो रहा है... (Loading...)</p>
+      </div>
+    }>
+      <VanshavaliContent />
+    </Suspense>
   );
 }
