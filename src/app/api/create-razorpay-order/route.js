@@ -15,6 +15,8 @@ export async function POST(req) {
       amount = 10 * 100; // ₹10
     } else if (type === "vanshavali") {
       amount = 20 * 100; // ₹20
+    } else if (type === "vanshavali-photo") {
+      amount = 30 * 100; // ₹30
     }else if (type === "affidavit") {
       amount = 5 * 100; // ✅ ₹5 per document
     }else if (type === "objectionLetter") {

@@ -52,6 +52,7 @@ export default function FormsPage() {
 
   const forms = [
     { title: "वंशावली", description: "परिवार वृक्ष / वंश सूची तैयार करें", link: "/vanshavali", icon: FamilyIcon, color: "from-green-500 to-emerald-400" },
+    { title: "फोटो वाली वंशावली", description: "परिवार वृक्ष / वंश सूची तैयार करें", link: "/vanshavali-photo", icon: FamilyIcon, color: "from-green-500 to-emerald-400" },
     { title: "प्रपत्र-2", description: "जमीन सर्वे हेतु आवश्यक मुख्य फॉर्म", link: "/prapatra-2", icon: SurveyIcon, color: "from-blue-500 to-cyan-400" },
     { title: "प्रपत्र-3 (1)", description: "जमीन सर्वे हेतु आवश्यक फॉर्म", link: "/prapatra-3-1", icon: SurveyIcon, color: "from-indigo-500 to-blue-400" },
     { title: "पारिवारिक भूमि बंटवारा", description: "आपसी सहमति से पारिवारिक भूमि बंटवारा", link: "/batwara-application-bihar", icon: FamilyIcon, color: "from-purple-500 to-pink-400" },

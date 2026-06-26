@@ -4,7 +4,7 @@ import Link from "next/link";
 import Vanshavali from "@/components/Vanshavali";
 import VanshawaliTutorial from "@/components/VanshawaliTutorial";
 import { motion } from "framer-motion";
-import { ArrowRight, FileSignature } from "lucide-react"; 
+import { ArrowRight, FileSignature,ImagePlus, Sparkles } from "lucide-react"; 
 export default function VanshavaliClient() {
   return (
     <main className="min-h-screen py-6 px-4 sm:px-6 md:px-12 bg-slate-50 relative">
@@ -20,43 +20,86 @@ export default function VanshavaliClient() {
           </p>
         </div>
         
-        {/* 🌟 नया सेक्शन: कॉम्पैक्ट और आकर्षक बटन 🌟 */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4 }}
-          className="flex justify-center mb-8 mt-2 w-full px-4"
-        >
-          <Link href="/vanshavali-manual" className="w-full sm:w-auto relative block">
-            
-            {/* छोटा बाउंस करता 'नया' बैज */}
-            <span className="absolute -top-2.5 -right-2 z-10 flex h-5 items-center rounded-full bg-red-600 px-2.5 text-[10px] font-bold text-white shadow-md animate-bounce border border-white">
-              NEW
-            </span>
+        <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+  className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 mt-2 px-4 max-w-6xl mx-auto"
+>
 
-            <button className="group relative w-full sm:w-auto flex flex-col items-center justify-center px-6 py-2.5 text-white transition-all duration-300 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 bg-[length:200%_auto] hover:bg-right border border-transparent rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 focus:outline-none">
-              
-              {/* Main Heading & Icon in one line */}
-              <div className="flex items-center gap-2 font-bold">
-               
-                <FileSignature size={18} className="text-emerald-50" />
-                <span className="text-sm md:text-base drop-shadow-sm">
-                  अपना वंशावली ट्री (वंशवृक्ष) खुद बनाएं
-                </span>
-                {/* छोटा "Click Here" जो उसी लाइन में दिखेगा */}
-                <span className="hidden sm:flex items-center bg-white/20 px-2 py-0.5 rounded-md text-[9px] uppercase tracking-wide ml-1 group-hover:bg-white/30 transition-colors">
-                  Click Here
-                </span>
-              </div>
+  {/* ================= Manual Builder ================= */}
+  <Link href="/vanshavali-manual" className="relative block">
 
-              {/* Subtext - very compact */}
-              <span className="text-[10px] sm:text-[11px] font-medium text-emerald-100/90 mt-0.5">
-                (अपनी जरूरत के अनुसार बॉक्स जोड़कर डिज़ाइन तैयार करें) अगर वंशवृक्ष बड़ी है 
-              </span>
+    <span className="absolute -top-2 -right-2 z-10 flex h-5 items-center rounded-full bg-red-600 px-2.5 text-[10px] font-bold text-white shadow-md animate-bounce border border-white">
+      NEW
+    </span>
 
-            </button>
-          </Link>
-        </motion.div>
+    <button className="group w-full flex flex-col items-center justify-center px-6 py-4 text-white transition-all duration-300 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 bg-[length:200%_auto] hover:bg-right rounded-xl shadow-lg hover:shadow-emerald-400/40 hover:-translate-y-1">
+
+      <div className="flex items-center gap-2 font-bold">
+
+        <FileSignature
+          size={22}
+          className="group-hover:rotate-6 transition-transform"
+        />
+
+        <span className="text-base">
+          अपना वंशावली ट्री खुद बनाएं
+        </span>
+
+      </div>
+
+      <p className="text-xs text-emerald-100 mt-2 text-center">
+        अपनी आवश्यकता अनुसार बॉक्स जोड़ें, एडिट करें और
+        अपना वंशवृक्ष तैयार करें।
+      </p>
+
+      <div className="mt-3 flex items-center gap-1 text-xs bg-white/20 px-3 py-1 rounded-full">
+        Click Here
+        <ArrowRight size={13}/>
+      </div>
+
+    </button>
+
+  </Link>
+
+  {/* ================= Photo Builder ================= */}
+
+  <Link href="/vanshavali-photo" className="relative block">
+
+    <span className="absolute -top-2 -right-2 z-10 flex h-5 items-center rounded-full bg-orange-500 px-2.5 text-[10px] font-bold text-white shadow-md animate-pulse border border-white">
+      🔥 HOT
+    </span>
+
+    <button className="group w-full flex flex-col items-center justify-center px-6 py-4 text-white transition-all duration-300 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-600 bg-[length:200%_auto] hover:bg-right rounded-xl shadow-lg hover:shadow-fuchsia-400/40 hover:-translate-y-1">
+
+      <div className="flex items-center gap-2 font-bold">
+
+        <ImagePlus
+          size={22}
+          className="group-hover:scale-110 transition-transform"
+        />
+
+        <span className="text-base">
+          फोटो वाली वंशावली बनाएं
+        </span>
+
+      </div>
+
+      <p className="text-xs text-purple-100 mt-2 text-center">
+        अपने परिवार के सदस्यों की फोटो के साथ प्रोफेशनल वंशवृक्ष डिज़ाइन करें।
+      </p>
+
+      <div className="mt-3 flex items-center gap-1 text-xs bg-white/20 px-3 py-1 rounded-full">
+        Try Now
+        <ArrowRight size={13}/>
+      </div>
+
+    </button>
+
+  </Link>
+
+</motion.div>
 
         {/* Tutorial Video */}
         <motion.div

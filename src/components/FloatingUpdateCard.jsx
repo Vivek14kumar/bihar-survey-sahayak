@@ -27,25 +27,25 @@ export default function FloatingViralUpdateCard() {
           <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-yellow-400 ring-2 ring-white" />
         </div>
 
-        {/* Text */}
+        {/* Text Important Notice*/}
         <div className="min-w-0 flex-1">
 
           <div className="mb-0.5 inline-flex rounded-full bg-red-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-red-700">
-            Important Notice
+            New Service
           </div>
 
           <h4 className="truncate text-[12px] font-black text-gray-900 md:text-[13px]">
-            मंत्री जी का जिलेवार समीक्षा कार्यक्रम
+            फोटो वाली वंशावली बनाएं{/*मंत्री जी का जिलेवार समीक्षा कार्यक्रम*/}
           </h4>
 
           <p className="truncate text-[10px] text-gray-500 md:text-[11px]">
-            आज किन जिलों में समीक्षा होगी देखें
+            फोटो सहित वंशावली बनाएं{/*आज किन जिलों में समीक्षा होगी देखें*/}
           </p>
         </div>
 
         {/* Button */}
         <Link
-          href="/district-review-updates"
+          href="/vanshavali-photo"
           className="flex shrink-0 items-center gap-1 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 px-3 py-2 text-[10px] font-bold text-white shadow-md transition hover:scale-[1.03]"
         >
           View
