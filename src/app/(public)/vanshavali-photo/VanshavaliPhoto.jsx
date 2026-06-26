@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Printer, Download, RotateCcw, Plus, X, Upload, User, Camera, Trash2 } from "lucide-react";
+import { Printer, Download, RotateCcw, Plus, X, Upload, User, Camera, Trash2, SwitchCamera } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
@@ -45,6 +45,7 @@ export default function VanshavaliPhoto() {
   const [webcamState, setWebcamState] = useState({ isOpen: false, nodeId: null });
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const [facingMode, setFacingMode] = useState("environment"); // डिफ़ॉल्ट बैक कैमरा
 
   const debounceRef = useRef(null);
   const cacheRef = useRef({});
@@ -309,7 +310,7 @@ export default function VanshavaliPhoto() {
   const openWebcam = async (nodeId) => {
     setWebcamState({ isOpen: true, nodeId });
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
@@ -318,6 +319,29 @@ export default function VanshavaliPhoto() {
       setWebcamState({ isOpen: false, nodeId: null });
     }
   };
+
+  const toggleCamera = async () => {
+  // कैमरा बंद करें
+  if (videoRef.current && videoRef.current.srcObject) {
+    videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+  }
+
+  // मोड बदलें (बैक से फ्रंट या फ्रंट से बैक)
+  const newMode = facingMode === "environment" ? "user" : "environment";
+  setFacingMode(newMode);
+
+  // नया कैमरा खोलें
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      video: { facingMode: newMode } 
+    });
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  } catch (err) {
+    alert("कैमरा स्विच नहीं हो सका।");
+  }
+};
 
   const closeWebcam = () => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -653,14 +677,29 @@ export default function VanshavaliPhoto() {
               <div className="absolute inset-0 border-4 border-white/20 rounded-xl pointer-events-none"></div>
             </div>
 
-            <button 
-              onClick={capturePhotoFromWebcam} 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-full font-bold flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
-            >
-              <Camera size={20} />
-              फोटो कैप्चर करें
-            </button>
+            <div className="flex items-center justify-center gap-3 w-full">
+              {/* कैमरा स्विच बटन (सिर्फ मोबाइल पर दिखेगा) */}
+              <button 
+                onClick={toggleCamera} 
+                className="md:hidden flex items-center justify-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 h-14 rounded-full hover:bg-blue-100 active:scale-95 transition-all shadow-md"
+                title="कैमरा बदलें"
+              >
+                <SwitchCamera size={22} strokeWidth={2.5} />
+                <span className="text-[11px] font-bold text-left leading-tight">
+                  Back/Front<br/>Camera
+                </span>
+              </button>
 
+              {/* फोटो कैप्चर बटन */}
+              <button 
+                onClick={capturePhotoFromWebcam} 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-14 rounded-full font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 transition-all flex-1 md:flex-none"
+              >
+                <Camera size={24} />
+                <span className="text-[16px]">फोटो खींचें</span>
+              </button>
+            </div>
+            
             {/* Hidden canvas to process the image */}
             <canvas ref={canvasRef} className="hidden"></canvas>
           </div>
@@ -791,17 +830,37 @@ export default function VanshavaliPhoto() {
         id="form-container"
         className="w-full bg-white p-5 md:p-8 shadow-md rounded-xl border-t-[6px] border-blue-600 print:hidden"
       >
-        <div className="flex items-center gap-2 mb-6 border-b border-green-300 pb-3">
-          <h3 className="font-bold text-blue-900 text-xl flex items-center gap-2">
-            <span><Camera/></span> फोटो वाली वंशावली (Family Tree) बनाएँ
-          </h3>
-          <div className="w-full sm:w-auto ml-auto">
-            <label className="block text-xs font-semibold text-gray-600 mb-1.5 ml-1">
+        {/* Top Header Section (Eye-Catching & Mobile Friendly) */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6 border-b border-gray-200 pb-5">
+          
+          {/* Heading Box */}
+          <div className="flex items-center gap-3">
+            {/* 3D Icon Box */}
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-2.5 rounded-xl shadow-[0_4px_10px_rgba(37,99,235,0.3)] flex-shrink-0">
+              <Camera size={24} strokeWidth={2} />
+            </div>
+            
+            {/* Text Area */}
+            <div className="flex flex-col">
+              <h3 className="font-extrabold text-gray-800 text-xl md:text-2xl leading-tight tracking-tight flex items-center gap-2">
+                फोटो वाली वंशावली
+                <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-md border border-amber-200 font-bold uppercase tracking-wider hidden sm:inline-block">
+                  Premium
+                </span>
+              </h3>
+              <p className="text-[12px] md:text-sm text-emerald-600 font-semibold mt-0.5">
+                सर्वे और सरकारी कार्यों के लिए 
+              </p>
+            </div>
+          </div>
+
+          {/* Mobile Number Input Box */}
+          <div className="w-full md:w-auto bg-gray-50 p-2 rounded-xl border border-gray-200">
+            <label className="block text-[11px] font-bold text-gray-500 mb-1 ml-1 uppercase tracking-wider">
               आवेदक का मोबाइल नंबर <span className="text-red-500">*</span>
             </label>
-
-            <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all w-full sm:w-64">
-              <span className="bg-gray-100 px-3 py-2 text-gray-600 text-sm font-medium border-r border-gray-300 select-none">
+            <div className="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all w-full sm:w-64">
+              <span className="bg-gray-100 px-3 py-2 text-gray-600 text-sm font-bold border-r border-gray-300 select-none">
                 +91
               </span>
               <input
@@ -814,7 +873,7 @@ export default function VanshavaliPhoto() {
                   setApplicantMobile(val);
                 }}
                 placeholder="10 अंकों का नंबर"
-                className="w-full px-3 py-2 text-sm outline-none text-gray-800 placeholder-gray-400"
+                className="w-full px-3 py-2 text-sm font-semibold outline-none text-gray-800 placeholder-gray-400"
               />
             </div>
           </div>
