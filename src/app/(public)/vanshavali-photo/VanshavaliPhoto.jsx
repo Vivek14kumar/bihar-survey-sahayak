@@ -856,7 +856,7 @@ export default function VanshavaliPhoto() {
             <button
               onClick={() => processAction("print")}
               disabled={isProcessing}
-              className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+              className="invisible md:visible relative flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {showWatermark && (
                 <span className="absolute -top-3 -right-2 text-[11px] bg-black text-white px-2 py-[2px] rounded-full shadow-lg">₹30</span>

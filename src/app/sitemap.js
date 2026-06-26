@@ -121,6 +121,27 @@ export default async function sitemap() {
       changeFrequency: "weekly",
       priority: 0.9
     },
+
+    {
+      url: `${baseUrl}/vanshavali`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+
+    {
+      url: `${baseUrl}/vanshavali-manual`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
+
+    {
+      url: `${baseUrl}/vanshavali-photo`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9
+    },
     
     {
       url: `${baseUrl}/prapatra-3-1`,
