@@ -44,14 +44,13 @@ export default function VanshavaliClient() {
         />
 
         <span className="text-base">
-          अपना वंशावली ट्री खुद बनाएं
+          अपना वंशावली ट्री खुद बनाएं और मुखिया/सरपंच से ह० एवं मुहर 
         </span>
 
       </div>
 
       <p className="text-xs text-emerald-100 mt-2 text-center">
-        अपनी आवश्यकता अनुसार बॉक्स जोड़ें, एडिट करें और
-        अपना वंशवृक्ष तैयार करें।
+        अपनी आवश्यकता अनुसार बॉक्स जोड़ें, मुखिया/सरपंच कार्य के लिए उपयुक्त।
       </p>
 
       <div className="mt-3 flex items-center gap-1 text-xs bg-white/20 px-3 py-1 rounded-full">

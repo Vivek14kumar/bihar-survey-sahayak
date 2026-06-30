@@ -529,10 +529,10 @@ export default function Vanshavali() {
     </div>
     <div>
       <h3 className="font-bold text-emerald-900 text-lg">
-        सादा वंशावली <span className="text-sm font-normal text-emerald-700 block md:inline">(Affidavit/ मुखिया/सरपंच)</span>
+        सादा वंशावली <span className="text-sm font-normal text-emerald-700 block md:inline">(Affidavit/ Blank)</span>
       </h3>
       <p className="text-sm text-gray-600 mt-1">
-        बिना किसी टेक्स्ट के। कोर्ट शपथ-पत्र (Affidavit) और नोटरी/मुखिया/सरपंच कार्य के लिए उपयुक्त।
+        बिना किसी टेक्स्ट के। 
       </p>
     </div>
   </div>
