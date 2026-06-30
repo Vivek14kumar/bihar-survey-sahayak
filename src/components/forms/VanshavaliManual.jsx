@@ -639,9 +639,9 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
             <RotateCcw size={18} /><span>RESET</span>
           </button>
           <div className="flex flex-col sm:flex-row items-center gap-4 ml-auto">
-            <button onClick={() => handleAction("print")} disabled={isButtonDisabled} className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-lg transition-all disabled:opacity-70">
+            {/*<button onClick={() => handleAction("print")} disabled={isButtonDisabled} className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-lg transition-all disabled:opacity-70">
               <Printer size={18} /><span>{isButtonDisabled ? "लोडिंग..." : "प्रिंट करें"}</span>
-            </button>
+            </button>*/}
             <button onClick={() => handleAction("download")} disabled={isButtonDisabled || isGeneratingPDF} className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-400 to-amber-500 text-black px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-lg transition-all disabled:opacity-70">
               <Download size={18} /><span>{isButtonDisabled || isGeneratingPDF ? "लोडिंग..." : "PDF डाउनलोड"}</span>
             </button>
