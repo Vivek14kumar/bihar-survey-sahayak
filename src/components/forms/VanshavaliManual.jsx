@@ -15,21 +15,20 @@ const INITIAL_TREE_DATA = {
 export default function VanshavaliManual({ isGenerating, onGenerate }) {
   const [formData, setFormData] = useState({
     treeData: INITIAL_TREE_DATA,
-    date: new Date().toISOString().split("T")[0],
   });
 
   const [layoutMode, setLayoutMode] = useState("landscape");
   const [paperSize, setPaperSize] = useState("a4");
+  const [fontSize, setFontSize] = useState("14px");
   
   const [showTopDetails, setShowTopDetails] = useState(false);
   const [address, setAddress] = useState({
     village: "", post: "", thana: "", thanaNo: "", panchayat: "", block: "", district: ""
   });
   
-  // Declaration & Signature States
   const [showDeclaration, setShowDeclaration] = useState(true);
   const [authOfficer, setAuthOfficer] = useState("");
-  const [signatureDate, setSignatureDate] = useState("");
+  const [signatureDate, setSignatureDate] = useState(new Date().toISOString().split("T")[0]);
   const [mobileNo, setMobileNo] = useState("");
 
   const [currentField, setCurrentField] = useState(null);
@@ -40,10 +39,9 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [activeAddressIndex, setActiveAddressIndex] = useState(0);
 
-  // Scale & Warning State
   const [treeScale, setTreeScale] = useState(1);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const hasAlertedOverflow = useRef(false); // For one-time alert
+  const hasAlertedOverflow = useRef(false);
 
   const [isProcessingLocal, setIsProcessingLocal] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -63,6 +61,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
     const savedTree = localStorage.getItem("vanshavali_tree_data");
     const savedLayout = localStorage.getItem("vanshavali_layout_mode");
     const savedPaper = localStorage.getItem("vanshavali_paper_size");
+    const savedFontSize = localStorage.getItem("vanshavali_font_size");
     const savedAddress = localStorage.getItem("vanshavali_address");
     const savedOfficer = localStorage.getItem("vanshavali_officer");
     const savedShowDetails = localStorage.getItem("vanshavali_show_details");
@@ -76,6 +75,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
     }
     if (savedLayout) setLayoutMode(savedLayout);
     if (savedPaper) setPaperSize(savedPaper);
+    if (savedFontSize) setFontSize(savedFontSize);
     if (savedAddress) setAddress(JSON.parse(savedAddress));
     if (savedOfficer) setAuthOfficer(savedOfficer);
     if (savedShowDetails) setShowTopDetails(JSON.parse(savedShowDetails));
@@ -88,19 +88,38 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
     localStorage.setItem("vanshavali_tree_data", JSON.stringify(formData.treeData));
     localStorage.setItem("vanshavali_layout_mode", layoutMode);
     localStorage.setItem("vanshavali_paper_size", paperSize);
+    localStorage.setItem("vanshavali_font_size", fontSize);
     localStorage.setItem("vanshavali_address", JSON.stringify(address));
     localStorage.setItem("vanshavali_officer", authOfficer);
     localStorage.setItem("vanshavali_show_details", JSON.stringify(showTopDetails));
     localStorage.setItem("vanshavali_show_declaration", JSON.stringify(showDeclaration));
     localStorage.setItem("vanshavali_sig_date", signatureDate);
     localStorage.setItem("vanshavali_mobile", mobileNo);
-  }, [formData.treeData, layoutMode, paperSize, address, authOfficer, showTopDetails, showDeclaration, signatureDate, mobileNo]);
+  }, [formData.treeData, layoutMode, paperSize, fontSize, address, authOfficer, showTopDetails, showDeclaration, signatureDate, mobileNo]);
 
+  // ----------------------------------------
+  // FULL RESET LOGIC
+  // ----------------------------------------
   const handleReset = () => {
     if (window.confirm("क्या आप वाकई सारा डेटा मिटाना चाहते हैं? यह वापस नहीं लाया जा सकेगा।")) {
       localStorage.removeItem("vanshavali_tree_data");
-      setFormData((prev) => ({ ...prev, treeData: { id: `root_${Date.now()}`, name: "", children: [] } }));
+      localStorage.removeItem("vanshavali_address");
+      localStorage.removeItem("vanshavali_officer");
+      localStorage.removeItem("vanshavali_sig_date");
+      localStorage.removeItem("vanshavali_mobile");
+
+      setFormData({ treeData: { id: `root_${Date.now()}`, name: "", children: [] } });
+      setAddress({ village: "", post: "", thana: "", thanaNo: "", panchayat: "", block: "", district: "" });
+      setAuthOfficer("");
+      setMobileNo("");
+      setSignatureDate(new Date().toISOString().split("T")[0]); 
+      
+      setPaperSize("a4");
+      setLayoutMode("landscape");
+      setFontSize("14px");
+
       setSuggestions([]);
+      setAddressSuggestions([]);
       setTreeScale(1);
       setIsOverflowing(false);
       hasAlertedOverflow.current = false;
@@ -108,18 +127,16 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
   };
 
   // ----------------------------------------
-  // AUTO-SHRINK & WARNING LOGIC (WITH ALERT)
+  // AUTO-SHRINK & WARNING LOGIC
   // ----------------------------------------
   useEffect(() => {
     const timer = setTimeout(() => {
       if (printRef.current && treeContainerRef.current) {
-        // प्रिंट कंटेनर की उपलब्ध जगह 
         const availableWidth = printRef.current.clientWidth - 40; 
         const headerSpace = showTopDetails ? 120 : 80;
         const footerSpace = showDeclaration ? 220 : 50;
         const availableHeight = printRef.current.clientHeight - (headerSpace + footerSpace); 
 
-        // ट्री की असली चौड़ाई और ऊँचाई 
         const treeUL = treeContainerRef.current.querySelector("ul");
         if (!treeUL) return;
 
@@ -131,7 +148,6 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
         if (treeWidth > availableWidth || treeHeight > availableHeight) {
           setIsOverflowing(true);
           
-          // One-time Popup Alert
           if (!hasAlertedOverflow.current) {
             alert("चेतावनी: आपका वंशवृक्ष पेज से बड़ा हो रहा है! इसे पेज में फिट करने के लिए छोटा (Scale down) किया जा रहा है। बेहतर रिज़ल्ट के लिए A3 पेपर चुनें।");
             hasAlertedOverflow.current = true;
@@ -142,7 +158,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
           newScale = Math.min(scaleX, scaleY);
         } else {
           setIsOverflowing(false);
-          hasAlertedOverflow.current = false; // Reset if it gets back to normal size
+          hasAlertedOverflow.current = false; 
         }
 
         setTreeScale(Math.max(newScale, 0.35));
@@ -150,7 +166,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [formData.treeData, paperSize, layoutMode, showTopDetails, showDeclaration]);
+  }, [formData.treeData, paperSize, layoutMode, fontSize, showTopDetails, showDeclaration]);
 
   // ----------------------------------------
   // ADDRESS HINDI SUGGESTIONS
@@ -240,16 +256,49 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
   );
 
   // ----------------------------------------
-  // PRINT & DOWNLOAD
+  // VALIDATION LOGIC
   // ----------------------------------------
+  const isAnyNodeEmpty = (node) => {
+    if (!node.name || !node.name.trim()) return true;
+    if (node.children && node.children.length > 0) {
+      return node.children.some((child) => isAnyNodeEmpty(child));
+    }
+    return false;
+  };
+
   const validateForm = () => {
-    if (!formData.treeData.name || !formData.treeData.name.trim()) {
-      alert("कृपया मुख्य पूर्वज का नाम भरें या खाली बॉक्स हटा दें।");
+    // 1. Tree Validation
+    if (isAnyNodeEmpty(formData.treeData)) {
+      alert("कृपया वंशवृक्ष के सभी सदस्यों के नाम भरें या जो बॉक्स खाली हैं उन्हें हटा दें (✕ दबाकर)।");
       return false;
     }
+
+    // 2. Address Validation
+    if (showTopDetails) {
+      if (!address.village || !address.post || !address.thana || !address.panchayat || !address.block || !address.district) {
+        alert("कृपया पता (Address) के सभी फील्ड भरें। यदि कोई जानकारी नहीं है, तो उसे खाली छोड़ने के बजाय '-' लिख दें।");
+        return false;
+      }
+    }
+
+    // 3. Declaration & Signature Validation
+    if (showDeclaration) {
+      if (!authOfficer) {
+        alert("कृपया प्राधिकृत पदाधिकारी (हस्ताक्षर हेतु) का चयन करें।");
+        return false;
+      }
+      if (!mobileNo || mobileNo.length !== 10) {
+        alert("कृपया याचिकाकर्ता का सही 10 अंकों का मोबाइल नंबर दर्ज करें।");
+        return false;
+      }
+    }
+
     return true;
   };
 
+  // ----------------------------------------
+  // PRINT & DOWNLOAD
+  // ----------------------------------------
   const executePrint = useReactToPrint({
     contentRef: printRef,
     documentTitle: "वंशावली",
@@ -446,7 +495,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
   const dim = getPaperDimensions();
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto bg-gray-50 flex flex-col gap-8 font-sans min-h-screen">
+    <div className="p-2 max-w-full mx-auto bg-gray-50 flex flex-col gap-8 font-sans min-h-screen">
       
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
@@ -454,6 +503,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
           body { background: white; margin: 0; padding: 0; }
           #print-container { box-shadow: none !important; width: ${dim.width}mm !important; height: ${dim.height}mm !important; margin: 0 !important; }
         }
+        .css-tree .node-box { font-size: ${fontSize} !important; }
       `}} />
 
       <style jsx global>{`
@@ -473,7 +523,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
         .css-tree li:last-child::before { border-right: 1.5px solid #333; border-radius: 0 4px 0 0; }
         .css-tree li:first-child::after { border-radius: 4px 0 0 0; }
         .css-tree ul ul::before { content: ""; position: absolute; top: 0; left: 50%; border-left: 1.5px solid #333; width: 0; height: 15px; }
-        .css-tree .node-box { border: 1.5px solid #333; padding: 6px 12px; font-size: 14px; font-weight: bold; display: inline-block; border-radius: 6px; background-color: #fff; position: relative; z-index: 1; white-space: nowrap; }
+        .css-tree .node-box { border: 1.5px solid #333; padding: 6px 12px; font-weight: bold; display: inline-block; border-radius: 6px; background-color: #fff; position: relative; z-index: 1; white-space: nowrap; }
 
         @media print {
           #watermark-layer { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; }
@@ -498,13 +548,13 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
           <h3 className="font-bold text-green-900 text-xl">वंशावली (Family Tree) डेटा भरें</h3>
         </div>
 
-        <div className="w-full overflow-x-auto pb-6 custom-scrollbar bg-gray-50 rounded-lg p-4 border border-gray-100">
+        <div className="w-full h-150 overflow-x-auto pb-6 custom-scrollbar bg-gray-50 rounded-lg p-4 border border-gray-100">
           <div className="css-tree min-w-max">
             <ul>{renderTreeInput(formData.treeData)}</ul>
           </div>
         </div>
 
-        {/* Form Settings Checkboxes */}
+        {/* Form Settings */}
         <div className="flex flex-col md:flex-row flex-wrap gap-4 items-center bg-blue-50 p-4 rounded-lg mt-6 border border-blue-100 justify-between">
           <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
             <div className="flex items-center gap-2">
@@ -518,6 +568,12 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
             <select value={layoutMode} onChange={e => setLayoutMode(e.target.value)} className="p-2 border border-gray-300 rounded-md font-medium text-sm outline-none bg-white">
               <option value="portrait">Portrait (सीधा)</option>
               <option value="landscape">Landscape (चौड़ा)</option>
+            </select>
+            <select value={fontSize} onChange={e => setFontSize(e.target.value)} className="p-2 border border-gray-300 rounded-md font-medium text-sm outline-none bg-white">
+              <option value="12px">Font: 12px (छोटा)</option>
+              <option value="14px">Font: 14px (सामान्य)</option>
+              <option value="16px">Font: 16px (बड़ा)</option>
+              <option value="18px">Font: 18px (बहुत बड़ा)</option>
             </select>
           </div>
 
@@ -568,7 +624,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">दिनांक (Date)</label>
-              <input type="date" className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" value={signatureDate} onChange={e => setSignatureDate(e.target.value)} />
+              <input type="date" className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white" value={signatureDate} onChange={e => setSignatureDate(e.target.value)} />
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">याचिकाकर्ता का मोबाइल नं०</label>
@@ -583,9 +639,9 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
             <RotateCcw size={18} /><span>RESET</span>
           </button>
           <div className="flex flex-col sm:flex-row items-center gap-4 ml-auto">
-            {/*<button onClick={() => handleAction("print")} disabled={isButtonDisabled} className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-lg transition-all disabled:opacity-70">
+            <button onClick={() => handleAction("print")} disabled={isButtonDisabled} className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-lg transition-all disabled:opacity-70">
               <Printer size={18} /><span>{isButtonDisabled ? "लोडिंग..." : "प्रिंट करें"}</span>
-            </button>*/}
+            </button>
             <button onClick={() => handleAction("download")} disabled={isButtonDisabled || isGeneratingPDF} className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-400 to-amber-500 text-black px-8 py-3.5 rounded-xl font-bold text-sm hover:shadow-lg transition-all disabled:opacity-70">
               <Download size={18} /><span>{isButtonDisabled || isGeneratingPDF ? "लोडिंग..." : "PDF डाउनलोड"}</span>
             </button>
@@ -615,7 +671,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
               
               <div className="w-full flex flex-col items-center">
                 {showTopDetails && (
-                  <div className="w-full text-[15px] font-bold leading-relaxed mb-6 text-left">
+                  <div className="w-full font-bold leading-relaxed mb-6 text-left" style={{ fontSize: fontSize }}>
                     ग्राम – {address.village || "......................................"}, 
                     पोस्ट - {address.post || "..................................."}, 
                     थाना - {address.thana || "..........................."}, 
@@ -626,7 +682,9 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
                   </div>
                 )}
                 
-                <h2 className="text-center text-[26px] font-bold underline mb-8 mt-2">वंशावली (वंशवृक्ष)</h2>
+                <h2 className="text-center font-bold underline mb-8 mt-2" style={{ fontSize: `calc(${fontSize} + 8px)` }}>
+                  वंशावली (वंशवृक्ष)
+                </h2>
                 
                 {/* AUTO SCALED TREE WRAPPER */}
                 <div 
@@ -641,17 +699,16 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
                     <ul>{renderTreePreview(formData.treeData)}</ul>
                   </div>
                 </div>
-
               </div>
 
               {/* DECLARATION SECTION (Now Optional) */}
               {showDeclaration && (
                 <div className="w-full mt-10 pt-4 flex-shrink-0">
-                  <p className="text-[14px] font-bold text-justify leading-relaxed mb-12">
+                  <p className="text-[14px] font-bold text-justify leading-relaxed mb-12" style={{ fontSize: fontSize }}>
                     मैं घोषणा करता हूँ कि आवेदन पत्र में अंकित सभी विवरण सत्य है तथा मेरे द्वारा कोई भी जानकारी छिपाया नहीं गया है| यदि भविष्य में कोई भी तथ्य असत्य/गलत पाया जाता है तो सुसंगत धाराओं के तहत कानूनी कार्रवाई के लिये मैं स्वयं उत्तरदायी होऊँगा/होऊँगी |
                   </p>
                   
-                  <div className="flex justify-between items-end text-[16px] font-bold w-full px-4">
+                  <div className="flex justify-between items-end font-bold w-full px-4" style={{ fontSize: `calc(${fontSize} + 2px)` }}>
                     
                     
                     
@@ -660,7 +717,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
                       
                       याचिकाकर्ता का हस्ताक्षर<br />या अंगूठे का निशान
                       
-                        <div className="mt-6 text-left text-[14px]">
+                        <div className="mt-6 text-left " style={{ fontSize: fontSize }}>
                           मो० नं० - {mobileNo}
                           <div className="text-sm mt-1">दिनांक: {new Date(signatureDate).toLocaleDateString('en-IN')}</div>
                         </div>
