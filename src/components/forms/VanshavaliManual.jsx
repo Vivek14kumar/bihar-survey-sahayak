@@ -683,14 +683,16 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
     <option value="राजस्व कर्मचारी">राजस्व कर्मचारी</option>
     <option value="अंचलाधिकारी (C.O.)">अंचलाधिकारी (C.O.)</option>
     <option value="प्रखंड विकास पदाधिकारी (B.D.O.)">प्रखंड विकास पदाधिकारी (B.D.O.)</option>
+    <option value="मुख्य पार्षद">मुख्य पार्षद</option>
     <option value="अन्य">अन्य (Other)</option>
+    
   </select>
   
   {/* 'अन्य' सेलेक्ट करने पर यह इनपुट दिखेगा */}
   {authOfficer === "अन्य" && (
     <input 
       type="text" 
-      className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none mt-2" 
+      className="w-full border p-2 bg-white rounded focus:ring-2 focus:ring-blue-500 outline-none mt-2" 
       value={customOfficer} 
       onChange={e => setCustomOfficer(e.target.value)} 
       placeholder="पदाधिकारी का पद यहाँ टाइप करें" 
@@ -745,15 +747,16 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
             <div className="relative z-10 w-full h-max min-h-full flex flex-col justify-between box-border" style={{ padding: "15mm" }}>
               
               <div className="w-full flex flex-col items-center">
-                {showTopDetails && (
-                  <div className="w-full font-bold leading-relaxed mb-6 text-left text-sm">
-                    ग्राम – {address.village || "......................................"}, 
-                    पोस्ट - {address.post || "..................................."}, 
-                    थाना - {address.thana || "..........................."}, 
-                    थाना नं० - {address.thanaNo || ".........."}, 
-                    पंचायत - {address.panchayat || ".............................."}, 
-                    प्रखंड - {address.block || "........................"}, 
-                    जिला – {address.district || "........................"} का/की स्थायी निवासी हूँ|
+                {/* DYNAMIC ADDRESS RENDER */}
+                {showTopDetails && selectedAddressFields.length > 0 && (
+                  <div className="w-full font-bold leading-relaxed mb-6 text-left" style={{ fontSize: fontSize }}>
+                    {ADDRESS_FIELD_CONFIG.filter((f) => selectedAddressFields.includes(f.key)).map((field, index, arr) => (
+                      <React.Fragment key={field.key}>
+                        {field.label} - {address[field.key] || "........................"}
+                        {index < arr.length - 1 ? ", " : " "}
+                      </React.Fragment>
+                    ))}
+                    का/की स्थायी निवासी हूँ|
                   </div>
                 )}
 
