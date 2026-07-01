@@ -12,6 +12,22 @@ const INITIAL_TREE_DATA = {
   children: [],
 };
 
+// 1️⃣ सभी संभावित एड्रेस फील्ड्स का कॉन्फ़िगरेशन
+const ADDRESS_FIELD_CONFIG = [
+  { key: "pata", label: "पता" },
+  { key: "village", label: "ग्राम" },
+  { key: "post", label: "पोस्ट" },
+  { key: "thana", label: "थाना" },
+  { key: "thanaNo", label: "थाना नं०", noSuggest: true },
+  { key: "panchayat", label: "पंचायत" },
+  { key: "block", label: "प्रखंड" },
+  { key: "district", label: "जिला" },
+  { key: "state", label: "राज्य" },
+];
+
+// डिफ़ॉल्ट रूप से ये फील्ड्स चेक (Select) रहेंगे
+const DEFAULT_ADDRESS_FIELDS = ["village", "post", "thana", "thanaNo", "panchayat", "block", "district"];
+
 export default function VanshavaliManual({ isGenerating, onGenerate }) {
   const [formData, setFormData] = useState({
     treeData: INITIAL_TREE_DATA,
@@ -22,12 +38,17 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
   const [fontSize, setFontSize] = useState("14px");
   
   const [showTopDetails, setShowTopDetails] = useState(false);
+  // 2️⃣ Address State (अब 'pata' और 'state' भी शामिल हैं)
   const [address, setAddress] = useState({
-    village: "", post: "", thana: "", thanaNo: "", panchayat: "", block: "", district: ""
+    pata: "", village: "", post: "", thana: "", thanaNo: "", panchayat: "", block: "", district: "", state: ""
   });
   
+  // 3️⃣ Selected Fields State
+  const [selectedAddressFields, setSelectedAddressFields] = useState(DEFAULT_ADDRESS_FIELDS);
+
   const [showDeclaration, setShowDeclaration] = useState(true);
   const [authOfficer, setAuthOfficer] = useState("");
+  const [customOfficer, setCustomOfficer] = useState("");
   const [signatureDate, setSignatureDate] = useState(new Date().toISOString().split("T")[0]);
   const [mobileNo, setMobileNo] = useState("");
 
@@ -64,6 +85,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
     const savedFontSize = localStorage.getItem("vanshavali_font_size");
     const savedAddress = localStorage.getItem("vanshavali_address");
     const savedOfficer = localStorage.getItem("vanshavali_officer");
+    const savedCustomOfficer = localStorage.getItem("vanshavali_custom_officer");
     const savedShowDetails = localStorage.getItem("vanshavali_show_details");
     const savedShowDeclaration = localStorage.getItem("vanshavali_show_declaration");
     const savedSigDate = localStorage.getItem("vanshavali_sig_date");
@@ -78,6 +100,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
     if (savedFontSize) setFontSize(savedFontSize);
     if (savedAddress) setAddress(JSON.parse(savedAddress));
     if (savedOfficer) setAuthOfficer(savedOfficer);
+    if (savedCustomOfficer) setCustomOfficer(savedCustomOfficer);
     if (savedShowDetails) setShowTopDetails(JSON.parse(savedShowDetails));
     if (savedShowDeclaration !== null) setShowDeclaration(JSON.parse(savedShowDeclaration));
     if (savedSigDate) setSignatureDate(savedSigDate);
@@ -91,6 +114,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
     localStorage.setItem("vanshavali_font_size", fontSize);
     localStorage.setItem("vanshavali_address", JSON.stringify(address));
     localStorage.setItem("vanshavali_officer", authOfficer);
+    localStorage.setItem("vanshavali_custom_officer", customOfficer);
     localStorage.setItem("vanshavali_show_details", JSON.stringify(showTopDetails));
     localStorage.setItem("vanshavali_show_declaration", JSON.stringify(showDeclaration));
     localStorage.setItem("vanshavali_sig_date", signatureDate);
@@ -105,12 +129,15 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
       localStorage.removeItem("vanshavali_tree_data");
       localStorage.removeItem("vanshavali_address");
       localStorage.removeItem("vanshavali_officer");
+      localStorage.removeItem("vanshavali_custom_officer");
       localStorage.removeItem("vanshavali_sig_date");
       localStorage.removeItem("vanshavali_mobile");
 
       setFormData({ treeData: { id: `root_${Date.now()}`, name: "", children: [] } });
-      setAddress({ village: "", post: "", thana: "", thanaNo: "", panchayat: "", block: "", district: "" });
+      setAddress({ pata: "", village: "", post: "", thana: "", thanaNo: "", panchayat: "", block: "", district: "", state: "" });
+      setSelectedAddressFields(DEFAULT_ADDRESS_FIELDS);
       setAuthOfficer("");
+      setCustomOfficer("");
       setMobileNo("");
       setSignatureDate(new Date().toISOString().split("T")[0]); 
       
@@ -273,10 +300,11 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
       return false;
     }
 
-    // 2. Address Validation
-    if (showTopDetails) {
-      if (!address.village || !address.post || !address.thana || !address.panchayat || !address.block || !address.district) {
-        alert("कृपया पता (Address) के सभी फील्ड भरें। यदि कोई जानकारी नहीं है, तो उसे खाली छोड़ने के बजाय '-' लिख दें।");
+    // Dynamic Address Validation
+    if (showTopDetails && selectedAddressFields.length > 0) {
+      const isAnyFieldMissing = selectedAddressFields.some(key => !address[key] || !address[key].trim());
+      if (isAnyFieldMissing) {
+        alert("कृपया पता (Address) के आपके द्वारा चुने गए सभी फील्ड भरें। यदि कोई जानकारी नहीं है, तो उसे खाली छोड़ने के बजाय '-' लिख दें।");
         return false;
       }
     }
@@ -287,6 +315,10 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
         alert("कृपया प्राधिकृत पदाधिकारी (हस्ताक्षर हेतु) का चयन करें।");
         return false;
       }
+      if (authOfficer === "अन्य" && !customOfficer.trim()) {
+    alert("कृपया पदाधिकारी का पद (Custom Officer Post) टाइप करें।");
+    return false;
+  }
       if (!mobileNo || mobileNo.length !== 10) {
         alert("कृपया याचिकाकर्ता का सही 10 अंकों का मोबाइल नंबर दर्ज करें।");
         return false;
@@ -494,6 +526,15 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
   };
   const dim = getPaperDimensions();
 
+  // Dynamic Checkbox Handler
+  const handleFieldToggle = (key) => {
+    if (selectedAddressFields.includes(key)) {
+      setSelectedAddressFields(selectedAddressFields.filter((k) => k !== key));
+    } else {
+      setSelectedAddressFields([...selectedAddressFields, key]);
+    }
+  };
+
   return (
     <div className="p-2 max-w-full mx-auto bg-gray-50 flex flex-col gap-8 font-sans min-h-screen">
       
@@ -590,19 +631,41 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
           </div>
         </div>
 
-        {/* Address Input Fields */}
+        {/* Dynamic Address Input Fields */}
         {showTopDetails && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 bg-gray-100 p-5 border border-gray-200 rounded-lg">
-            {renderAddressInput("ग्राम", "village", "Space दबाएं")}
-            {renderAddressInput("पोस्ट", "post", "Space दबाएं")}
-            {renderAddressInput("थाना", "thana", "Space दबाएं")}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">थाना नं०</label>
-              <input type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" value={address.thanaNo} onChange={e => setAddress({...address, thanaNo: e.target.value})} placeholder="नंबर टाइप करें" />
+          <div className="mt-4 bg-gray-100 p-5 border border-gray-200 rounded-lg">
+            
+            {/* Field Selector */}
+            <div className="mb-5 pb-4 border-b border-gray-300">
+              <span className="block text-sm font-bold text-gray-700 mb-2">आपको पते (Address) में कौन-कौन सी जानकारी चाहिए? उसे चुनें:</span>
+              <div className="flex flex-wrap gap-3">
+                {ADDRESS_FIELD_CONFIG.map((field) => (
+                  <label key={field.key} className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full border cursor-pointer select-none transition-colors ${selectedAddressFields.includes(field.key) ? "bg-blue-100 border-blue-500 text-blue-800 font-bold" : "bg-white border-gray-300 text-gray-600"}`}>
+                    <input type="checkbox" className="hidden" checked={selectedAddressFields.includes(field.key)} onChange={() => handleFieldToggle(field.key)} />
+                    {field.label}
+                  </label>
+                ))}
+              </div>
             </div>
-            {renderAddressInput("पंचायत", "panchayat", "Space दबाएं")}
-            {renderAddressInput("प्रखंड", "block", "Space दबाएं")}
-            {renderAddressInput("जिला", "district", "Space दबाएं")}
+
+            {/* Render Only Selected Fields */}
+            {selectedAddressFields.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {ADDRESS_FIELD_CONFIG.filter((f) => selectedAddressFields.includes(f.key)).map((field) => {
+                  if (field.noSuggest) {
+                    return (
+                      <div key={field.key}>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">{field.label}</label>
+                        <input type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" value={address[field.key]} onChange={e => setAddress({...address, [field.key]: e.target.value})} placeholder="नंबर टाइप करें" />
+                      </div>
+                    );
+                  }
+                  return <div key={field.key}>{renderAddressInput(field.label, field.key, "Space दबाएं")}</div>;
+                })}
+              </div>
+            ) : (
+              <div className="text-center text-red-500 text-sm font-bold">कृपया ऊपर से कोई जानकारी चुनें, अन्यथा 'पता दिखाएं' को बंद कर दें।</div>
+            )}
           </div>
         )}
 
@@ -610,18 +673,30 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
         {showDeclaration && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 bg-blue-50 p-5 border border-blue-200 rounded-lg">
              <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">प्राधिकृत पदाधिकारी (हस्ताक्षर हेतु)</label>
-              <select value={authOfficer} onChange={e => setAuthOfficer(e.target.value)} className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                <option value="">-- चुनें --</option>
-                <option value="वार्ड सदस्य">वार्ड सदस्य</option>
-                <option value="मुखिया">मुखिया</option>
-                <option value="सरपंच">सरपंच</option>
-                <option value="पंचायत समिति">पंचायत समिति</option>
-                <option value="राजस्व कर्मचारी">राजस्व कर्मचारी</option>
-                <option value="अंचलाधिकारी (C.O.)">अंचलाधिकारी (C.O.)</option>
-                <option value="प्रखंड विकास पदाधिकारी (B.D.O.)">प्रखंड विकास पदाधिकारी (B.D.O.)</option>
-              </select>
-            </div>
+  <label className="block text-sm font-bold text-gray-700 mb-1">प्राधिकृत पदाधिकारी (हस्ताक्षर हेतु)</label>
+  <select value={authOfficer} onChange={e => setAuthOfficer(e.target.value)} className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+    <option value="">-- चुनें --</option>
+    <option value="वार्ड सदस्य">वार्ड सदस्य</option>
+    <option value="मुखिया">मुखिया</option>
+    <option value="सरपंच">सरपंच</option>
+    <option value="पंचायत समिति">पंचायत समिति</option>
+    <option value="राजस्व कर्मचारी">राजस्व कर्मचारी</option>
+    <option value="अंचलाधिकारी (C.O.)">अंचलाधिकारी (C.O.)</option>
+    <option value="प्रखंड विकास पदाधिकारी (B.D.O.)">प्रखंड विकास पदाधिकारी (B.D.O.)</option>
+    <option value="अन्य">अन्य (Other)</option>
+  </select>
+  
+  {/* 'अन्य' सेलेक्ट करने पर यह इनपुट दिखेगा */}
+  {authOfficer === "अन्य" && (
+    <input 
+      type="text" 
+      className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none mt-2" 
+      value={customOfficer} 
+      onChange={e => setCustomOfficer(e.target.value)} 
+      placeholder="पदाधिकारी का पद यहाँ टाइप करें" 
+    />
+  )}
+</div>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">दिनांक (Date)</label>
               <input type="date" className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white" value={signatureDate} onChange={e => setSignatureDate(e.target.value)} />
@@ -671,7 +746,7 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
               
               <div className="w-full flex flex-col items-center">
                 {showTopDetails && (
-                  <div className="w-full font-bold leading-relaxed mb-6 text-left" style={{ fontSize: fontSize }}>
+                  <div className="w-full font-bold leading-relaxed mb-6 text-left text-sm">
                     ग्राम – {address.village || "......................................"}, 
                     पोस्ट - {address.post || "..................................."}, 
                     थाना - {address.thana || "..........................."}, 
@@ -681,8 +756,9 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
                     जिला – {address.district || "........................"} का/की स्थायी निवासी हूँ|
                   </div>
                 )}
-                
-                <h2 className="text-center font-bold underline mb-8 mt-2" style={{ fontSize: `calc(${fontSize} + 8px)` }}>
+
+                {/**style={{ fontSize: `calc(${fontSize} + 8px)` }} */}
+                <h2 className="text-center font-bold underline mb-8 mt-2 text-2xl" >
                   वंशावली (वंशवृक्ष)
                 </h2>
                 
@@ -701,23 +777,24 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
                 </div>
               </div>
 
-              {/* DECLARATION SECTION (Now Optional) */}
+              {/* DECLARATION SECTION (Now Optional) style={{ fontSize: fontSize }} */}
               {showDeclaration && (
                 <div className="w-full mt-10 pt-4 flex-shrink-0">
-                  <p className="text-[14px] font-bold text-justify leading-relaxed mb-12" style={{ fontSize: fontSize }}>
+                  <p className="text-[14px] font-bold text-justify leading-relaxed mb-12 text-sm" >
                     मैं घोषणा करता हूँ कि आवेदन पत्र में अंकित सभी विवरण सत्य है तथा मेरे द्वारा कोई भी जानकारी छिपाया नहीं गया है| यदि भविष्य में कोई भी तथ्य असत्य/गलत पाया जाता है तो सुसंगत धाराओं के तहत कानूनी कार्रवाई के लिये मैं स्वयं उत्तरदायी होऊँगा/होऊँगी |
                   </p>
-                  
-                  <div className="flex justify-between items-end font-bold w-full px-4" style={{ fontSize: `calc(${fontSize} + 2px)` }}>
+
+                  {/**style={{ fontSize: fontSize }} */}
+                  <div className="flex justify-between items-end font-bold w-full px-4 text-sm"  >
                     
                     
                     
-                    {/* Petitioner Side */}
+                    {/* Petitioner Side style={{ fontSize: fontSize }} */}
                     <div className="text-center">
                       
                       याचिकाकर्ता का हस्ताक्षर<br />या अंगूठे का निशान
                       
-                        <div className="mt-6 text-left " style={{ fontSize: fontSize }}>
+                        <div className="mt-6 text-left text-sm " >
                           मो० नं० - {mobileNo}
                           <div className="text-sm mt-1">दिनांक: {new Date(signatureDate).toLocaleDateString('en-IN')}</div>
                         </div>
@@ -729,7 +806,9 @@ export default function VanshavaliManual({ isGenerating, onGenerate }) {
                       {authOfficer ? (
                         <>
                           <div className="mb-8">हस्ताक्षर एवं मुहर</div>
-                          <div className="border-t border-black pt-1 px-2">{authOfficer}</div>
+                          <div className="border-t border-black pt-1 px-2">
+                            {authOfficer === "अन्य" ? customOfficer : authOfficer}
+                          </div>
                           <div className="text-sm mt-4">दिनांक: ______________________</div>
                         </>
                       ) : (
